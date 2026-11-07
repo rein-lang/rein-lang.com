@@ -14,6 +14,8 @@ const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
   'docs/decisions.md': '/reference/decisions',
 }
+// Flows live in examples/.rein/<flow>/. A link to one flow folder opens its example page.
+const flowFolder = /^examples\/\.rein\/([\w-]+)\/?$/
 
 export default withMermaid(
   defineConfig({
@@ -29,11 +31,11 @@ export default withMermaid(
             for (const child of block.children ?? []) {
               if (child.type !== 'link_open') continue
               const href = child.attrGet('href') ?? ''
-              const example = /^examples\/([\w-]+)\/?$/.exec(href)
+              const flow = flowFolder.exec(href)
               if (href in siteLinks) {
                 child.attrSet('href', siteLinks[href])
-              } else if (example) {
-                child.attrSet('href', `/examples/${example[1]}`)
+              } else if (flow) {
+                child.attrSet('href', `/examples/${flow[1]}`)
               } else if (/^(docs|examples|editors|crates)\//.test(href)) {
                 child.attrSet('href', repoBlob + href)
               }

@@ -1,6 +1,6 @@
 # Getting started
 
-This page builds the `rein` command and runs a first project. It needs a Rust toolchain with `cargo`.
+This page builds the `rein` command and runs a first flow. It needs a Rust toolchain with `cargo`.
 
 ## Install the CLI
 
@@ -19,15 +19,13 @@ The VS Code extension adds highlighting, diagnostics, and navigation. It uses th
 
 ## Make a first project
 
-A project is a folder with a `rein.toml` marker file and a `main.rein` entry point. Create a folder named `hello`.
+A flow is a folder with a `main.rein` entry point. Flows live in a `.rein/` folder, one subfolder per flow. The project needs no `rein.toml`. Create a folder named `hello` with one flow named `ticket`:
 
-`rein.toml` marks the project root. One comment line is enough:
-
-```toml
-# Rein project root
+```sh
+mkdir -p hello/.rein/ticket
 ```
 
-`main.rein` is the agent's entry point. This one asks one question and returns one of two instructions:
+`main.rein` is the agent's entry point. This one asks one question and returns one of two instructions. Save it as `hello/.rein/ticket/main.rein`:
 
 ```rein
 /**
@@ -44,36 +42,60 @@ export default function main(
 }
 ```
 
-## Check the project
+For the folder rules, see [spec section 1a](docs/spec.md#1a-flows-and-scopes).
 
-Check the project for errors. A clean project prints `0 errors, 0 warnings`:
+## Check the flow
 
-```sh
-rein check hello
-```
-
-## Run a step
-
-Run the entry point without an answer. Rein asks for the input it needs and exits with code 2:
+Check the flow for errors. A clean flow prints `0 errors, 0 warnings`:
 
 ```sh
-rein run --root hello
+rein check hello/.rein/ticket
 ```
 
-```text
-need input urgent: boolean - Is the ticket urgent?
-hint: rerun with --set urgent=<value>
-```
+## Connect the agent
 
-Give the answer and run again:
+Run the install command in the project folder. It writes the agent hook to `.claude/settings.json`:
 
 ```sh
-rein run --root hello --set urgent=yes
+cd hello
+rein install claude-code --project
 ```
 
-```text
-Escalate the ticket to on-call now.
+For what the hook does, see [spec section 12](docs/spec.md#12-agent-integration).
+
+## List the flows
+
+From the project folder, list the flows the CLI can see:
+
+```sh
+rein flows
 ```
+
+The output shows `ticket`, its scope, its path, and its description.
+
+## Step the flow
+
+Step the flow by name. Rein asks for the input it needs and exits with code 2:
+
+```sh
+rein step --flow ticket --json
+```
+
+```json
+{"kind":"question","version":1,"key":"main.urgent","function":"main","name":"urgent","type":"boolean","options":null,"description":"Is the ticket urgent?","answers":{},"trace":["main"]}
+```
+
+Give the answer under its `key`, then step again. The flow ends with `kind` set to `done`:
+
+```sh
+rein step --flow ticket --answer main.urgent=yes --json
+```
+
+```json
+{"kind":"done","version":1,"instruction":"Escalate the ticket to on-call now.","answers":{"main.urgent":"yes"},"trace":["main"]}
+```
+
+For the full protocol, see [spec section 11](docs/spec.md#11-stepping-agent-interface).
 
 ## Next steps
 
