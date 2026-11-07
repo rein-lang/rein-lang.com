@@ -16,6 +16,7 @@ Rein is a strict subset of TypeScript. Every Rein file is valid TypeScript synta
 - A reference resolves only inside the same project (section 4, Imports).
 - `rein.toml` is a marker. The examples hold one comment line.
 - The directory walk skips hidden directories (names starting with `.`), `target/` and `node_modules/`.
+- A subdirectory with its own `rein.toml` is another project. The walk does not enter it.
 - The walk follows symlinks. A symlink loop does not repeat a directory.
 - A `.rein` file that cannot be read (for example, not UTF-8) is an error on that file. The file stays in the project, with empty text. The message is `cannot read file: <io error>`.
 - When two sources map to the same function name, the later one wins. This applies to editor overlays only.
@@ -211,24 +212,36 @@ A function returns on every path under these rules:
   - a STRING: the agent does what the text says.
   - a REF: the agent runs the target function next, using its description and inputs. The REF is the target's project path, such as `ci/fix`.
   - a request for a parameter: the agent answers the question, then runs again.
-- Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members.
+- Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members. Setting one name twice is an error: `input `name` set twice`.
 
 ## 10. CLI
 
 | Command | Purpose |
 | --- | --- |
-| `rein check [PATH]` | Check a project directory, or one file. Default `.`. Prints `file:line:col: error: message`. Exit code 1 when there are errors. |
-| `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `@target` with the target's description and inputs. Exit code 2 when an input is needed. |
+| `rein check [PATH]` | Check a project directory, a directory inside a project, or one `.rein` file. Default `.`. Prints `file:line:col: error: message` for the files under PATH. Exit code 1 when there are errors, when PATH does not exist, or when PATH is not a `.rein` file. |
+| `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when an input is needed. A name given twice with `--set` is an error. |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. |
-| `rein graph [--root DIR]` | Print a Mermaid flowchart of the imports. The `main` node is drawn as a stadium shape. |
+| `rein graph [--root DIR]` | Print a Mermaid flowchart of the imports. Node ids are `n0`, `n1`, ... in name order, and the label is the function name. The `main` node is drawn as a stadium shape. |
 | `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
+
+Columns are 1-based and count Unicode characters. The language server counts character positions in UTF-16 code units, as the LSP protocol requires.
 
 ### Input request output
 
 Text form:
 
 ```text
-need input <name> (<type>): <description>
+need input <name>: <type> - <description>
+```
+
+`<type>` is `boolean`, or a union as TypeScript writes it, such as `"green" | "red"`.
+
+Reference output, from `rein run` when the next step is another function:
+
+```text
+next: <function>
+  <description>
+  <name>: <type> - <description>
 ```
 
 ### `rein run --json`
@@ -238,10 +251,10 @@ Each run prints one of these objects:
 ```json
 {"kind":"text","value":"..."}
 {"kind":"ref","function":"...","description":"...","inputs":[...]}
-{"kind":"need_input","input":{"name":"...","type":"bool|choice","options":["..."],"description":"..."}}
+{"kind":"need_input","input":{"name":"...","type":"boolean|union","options":["..."],"description":"..."}}
 ```
 
-`options` appears only for `choice` inputs. A union parameter is reported as `choice` in the CLI and JSON output.
+`options` appears only for `union` inputs. A boolean input has `"type":"boolean"`. A union input has `"type":"union"`, and its members are in `options`.
 
 ### `rein describe` output
 
@@ -250,15 +263,15 @@ Each run prints one of these objects:
   "name": "merge_pr",
   "description": "...",
   "inputs": [
-    {"name": "docsOnly", "type": "bool", "description": "..."},
-    {"name": "ci", "type": "choice", "options": ["green", "red", "pending"], "description": "..."}
+    {"name": "docsOnly", "type": "boolean", "description": "..."},
+    {"name": "ci", "type": "union", "options": ["green", "red", "pending"], "description": "..."}
   ]
 }
 ```
 
 ### Language server
 
-- Diagnostics: the checker's errors and warnings, on each open file.
+- Diagnostics: the checker's errors and warnings, on each open file. A file that leaves its project (deleted, or moved into another project) gets an empty list, so its errors clear.
 - Hover: on an import name or a returned name, the target's description and inputs. On a parameter name, its type and doc comment.
 - Go to definition: on an import path, an import name, or a returned name, the target file.
-- Completion: after `return `, the imported names. Inside an import path, the project files as relative paths. Elsewhere, the parameter names and keywords.
+- Completion: after `return `, the imported names. Inside an import path, the project files as relative paths that start with the text typed so far. Each item replaces the whole string content. Elsewhere, the parameter names and keywords.
