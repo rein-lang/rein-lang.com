@@ -13,6 +13,8 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 6. A return value is always a string or a reference to another function.
 7. This repo is a proof of concept, private for now. It holds everything known for a fact so far: the language server, a VS Code extension, and several example projects.
 8. Use Rust as much as possible. The core, the CLI and the language server are Rust. The VS Code extension is a thin JS client.
+9. Descriptions follow the TypeScript convention: a `/** */` doc comment at the top of the file, with one `@param` per input.
+10. Every project has a `main.rein`; it is the agent's entry point.
 
 ## PoC choices (revisable)
 
@@ -22,7 +24,9 @@ Each choice can change. The reason is one line.
 - Project root is the directory with a `rein.toml` marker file. Why: one clear root for names and references.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed.
 - References are written `@name`. Why: a reference can never be confused with a string.
-- Inputs are typed: `bool` or `choice(...)`. Each input has a description, which is the question the agent must answer. Why: the agent knows what to ask and the checker can test values.
+- Inputs are typed: `bool` or `choice(...)`. Each input has a `@param` tag in the doc comment, which is the question the agent must answer. Why: the agent knows what to ask and the checker can test values.
+- `rein run` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
+- Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing reference.
 - Evaluation is lazy. The runtime asks only for the inputs the taken path needs. Why: the agent does not answer questions that do not change the result.
 - Conditions allow `and`, `or`, `not`, and `==` / `!=` on choice inputs. Why: enough logic for branching, with no arithmetic or loops.
 - A function must return on every path. The checker enforces it. Why: an agent must always get a next step.
