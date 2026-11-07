@@ -22,6 +22,8 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 15. Every function returns something on every path: a string, a template, or a reference to another function.
 16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
+18. Flows live in scoped `.rein/` folders like `.claude/`: project, user, system; the closest scope wins.
+19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
 
 ## PoC choices (revisable)
 
@@ -29,7 +31,10 @@ Each choice can change. The reason is one line.
 
 - Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
-- Project root is the directory with a `rein.toml` marker file. Why: one clear root for names and references.
+- A flow root is a directory that holds `main.rein`. The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
+- Scopes: project (`.rein/` up the tree), user (`~/.rein/`), system (`/etc/rein/`). Why: the same layout as `.claude/`, so a user knows where a flow lives.
+- The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
+- `install` writes only `claude-code`. Why: polyhook's `tools.toml` gives docs links for the other tools, but no config file location.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
 - Functions are used through references: `return @./ci/fix;`. Why: no import statement; a reference is a path from the current file, so a file is moved with its folder.
 - A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.

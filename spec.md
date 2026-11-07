@@ -7,19 +7,37 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 
 ## 1. Project layout
 
-- A project root is a directory that contains a `rein.toml` file.
+- A flow root is a directory that contains a `main.rein` file. A flow is a flow root found through scopes (section 1a), or a directory passed to a command.
 - Each function is one file with the `.rein` extension.
-- Every project has a `main.rein` at the project root. It is the agent's entry point. The checker reports a project without it.
-- A function name is the file path relative to the project root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
+- Every flow root has a `main.rein`. It is the agent's entry point. The checker reports a flow root without it.
+- A function name is the file path relative to the flow root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
 - The name of the `export default function` inside a file is a TypeScript identifier. It need not match the file name.
 - Subdirectories are allowed.
-- A reference resolves only inside the same project (section 4, References).
-- `rein.toml` is a marker. The examples hold one comment line.
+- A reference resolves only inside the same flow root (section 4, References).
 - The directory walk skips hidden directories (names starting with `.`), `target/` and `node_modules/`.
-- A subdirectory with its own `rein.toml` is another project. The walk does not enter it.
+- A subdirectory with its own `main.rein` is another flow. The walk does not enter it.
 - The walk follows symlinks. A symlink loop does not repeat a directory.
 - A `.rein` file that cannot be read (for example, not UTF-8) is an error on that file. The file stays in the project, with empty text. The message is `cannot read file: <io error>`.
 - When two sources map to the same function name, the later one wins. This applies to editor overlays only.
+
+### 1a. Flows and scopes
+
+Flows live in scoped `.rein/` folders, like `.claude/`. One subfolder per flow:
+
+```text
+repo/.rein/merge-pr/main.rein          project scope (the `.rein/` in the working directory or any ancestor)
+~/.rein/my-pr-review/main.rein         user scope
+/etc/rein/deploy-gate/main.rein        system scope (macOS also /Library/Application Support/Rein/)
+```
+
+- A flow is a folder directly under a scoped `.rein/` (or a system folder) that holds `main.rein`. A folder without `main.rein` is not a flow and is not listed.
+- The flow name is the folder name.
+- The project scope walks up from the working directory and uses every `.rein/` it finds. The user scope is not also a project scope when it is an ancestor of the working directory.
+- Precedence on a name clash: project, then user, then system. Inside the project scope, the nearest `.rein/` up the tree wins.
+- A flow that loses a clash is shadowed. `rein flows` lists it and marks it.
+- `REIN_HOME` replaces the user scope folder. `REIN_SYSTEM_DIRS` replaces the system folders, as a colon-separated list. Both exist for tests and daemons.
+- `rein check <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
+- Imports do not exist. References (`@./`, `@../`) stay inside the flow root.
 
 ## 2. Lexical rules
 
@@ -284,7 +302,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | An answer is a `string`, or has no doc comment |
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
-| The project has no `main.rein` at the root (`project has no main.rein; it is the agent's entry point`). It is reported on `rein.toml`, at 1:1 |
+| The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1 |
 
 ### Warnings
 
@@ -317,7 +335,11 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. A name given twice with `--set` is an error. |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
 | `rein graph [--root DIR]` | Print a Mermaid flowchart of the references. Node ids are `n0`, `n1`, ... in name order, and the label is the function name. The `main` node is drawn as a stadium shape. |
-| `rein step [--root DIR] [--entry FN] [--answer key=value]... [--stdin] [--json]` | Step the whole flow from `main`. The agent-facing interface (section 11). |
+| `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. The agent-facing interface (section 11). |
+| `rein flows [--json]` | List the flows visible from here: name, scope, path, description, shadowed. |
+| `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
+| `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
+| `rein install <tool> [--project \| --user] [--dry-run]` | Write the tool's hook config so it runs `rein hook` (section 12). Only `claude-code`. |
 | `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.
@@ -399,7 +421,12 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 {"version": 1, "entry": "main", "answers": {"main.vip": "no"}}
 ```
 
-- `version`: default `1`. Another value is an error.
+```json
+{"version": 1, "flow": "support-ticket", "answers": {"main.vip": "no"}}
+```
+
+- `version`: default `1`. Another value is an error. Adding the optional `flow` field did not change the version.
+- `flow`: optional. The name of a visible flow (section 1a). The CLI resolves it to a flow root and steps that root. Give `flow` or a root, not both.
 - `entry`: the function to start from, by its path. Default `main`.
 - `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
 
@@ -431,8 +458,23 @@ The response depends only on the project and the request. The runtime keeps noth
 ### CLI
 
 ```text
-rein step --root examples/support-ticket --answer main.vip=no --json
-rein step --root examples/support-ticket --stdin < request.json
+rein step --root examples/.rein/support-ticket --answer main.vip=no --json
+rein step --root examples/.rein/support-ticket --stdin < request.json
+rein step --flow support-ticket --json
 ```
 
 `--stdin` reads one request as JSON, and then the output is always JSON. Do not combine `--stdin` with `--entry` or `--answer`. `--answer` repeats for each key. An answer key may be given once.
+
+## 12. Agent integration
+
+Rein puts itself into an agent session with a hook. The hook is built on polyhook, so the same hook code works across agents.
+
+- `rein install claude-code --project` writes `.claude/settings.json`. `--user` writes `~/.claude/settings.json`. The merge keeps every other key and every other hook. A second run adds nothing. `--dry-run` prints the file and writes nothing.
+- The hook runs `rein hook --caller claude-code` on two events: `SessionStart` and `UserPromptSubmit`.
+- `SessionStart` marks the session as pending. It writes nothing to the agent.
+- The first `UserPromptSubmit` of a pending session gets the agent context (`rein agent-context`) as `additionalContext`. Later prompts of that session get nothing. A `SessionStart` from a resume, clear or compact makes the next prompt pending again.
+- Every other event is a no-op: no output, exit 0. Errors are a no-op too, with the reason on stderr. The hook never blocks the agent.
+- Other tools are not supported yet. Their config file location is not in polyhook's `tools.toml`.
+
+The context block says what flows are, lists the visible flows with their descriptions, and shows the stepping rule from section 11.
+
