@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Dark is the default, to match the concept video. */
+:root {
+  --bg: #0c1018;
+  --surface: #151a23;
+  --surface-2: #1b2230;
+  --line: #2b3441;
+  --text: #e6edf5;
+  --muted: #a3adbd;
+  --accent: #2dd4bf;
+  --accent-ink: #04201c;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f7f9fb;
+    --surface: #ffffff;
+    --surface-2: #eef2f6;
+    --line: #cfd8e3;
+    --text: #0f1722;
+    --muted: #4b5565;
+    --accent: #0f766e;
+    --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 1rem;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn:hover {
+  text-decoration: underline;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-secondary {
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+/* Flow diagrams. Colors come from the tokens above, so both themes work. */
+.flow-card {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.flow-title {
+  fill: var(--muted);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.flow-bar {
+  fill: var(--line);
+}
+
+/* Concept diagram ("Rein flips it"): large labels, so they stay readable at 390px. */
+.turn-title {
+  fill: var(--text);
+  font-size: 52px;
+  font-weight: 600;
+}
+
+.flow-pill {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.flow-pill-question {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.flow-label {
+  fill: var(--text);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.flow-edge {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2.5;
+}
+
+.flow-edge-accent {
+  stroke: var(--accent);
+}
+
+.flow-edge-dashed {
+  stroke-dasharray: 7 7;
+}
+
+.flow-arrow-head {
+  fill: var(--muted);
+}
+
+.flow-note {
+  fill: var(--muted);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.flow-icon-check {
+  fill: var(--accent);
+}
+
+.flow-icon-check-mark {
+  fill: none;
+  stroke: var(--accent-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
