@@ -3,131 +3,160 @@
 Status: proof of concept. Private. Rules here drive the checker and the evaluator.
 Design reasons and open questions live in [decisions.md](decisions.md).
 
+Rein is a strict subset of TypeScript. Every Rein file is valid TypeScript syntax. `npm run check-ts-syntax` in `editors/vscode` proves it for `examples/`.
+
 ## 1. Project layout
 
 - A project root is a directory that contains a `rein.toml` file.
 - Each function is one file with the `.rein` extension.
 - Every project has a `main.rein` at the project root. It is the agent's entry point. The checker reports a project without it.
 - A function name is the file path relative to the project root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
+- The name of the `export default function` inside a file is a TypeScript identifier. It need not match the file name.
 - Subdirectories are allowed.
-- A reference resolves only inside the same project.
+- A reference resolves only inside the same project (section 4, Imports).
 - `rein.toml` is a marker. The examples hold one comment line.
 - The directory walk skips hidden directories (names starting with `.`), `target/` and `node_modules/`.
 - The walk follows symlinks. A symlink loop does not repeat a directory.
 - A `.rein` file that cannot be read (for example, not UTF-8) is an error on that file. The file stays in the project, with empty text. The message is `cannot read file: <io error>`.
 - When two sources map to the same function name, the later one wins. This applies to editor overlays only.
-- A function file name must follow the rule in section 8.
 
 ## 2. Lexical rules
 
 - A line comment starts with `//` and ends at the end of the line.
 - A doc comment starts with `/**` and ends at the first `*/`. Its raw text is the doc block (section 4). `/**/` is an empty doc comment.
-- A plain block comment `/* ... */` is not supported. Use `//` for comments or `/** */` for the doc block.
+- A plain block comment `/* ... */` is not supported. The error is `use `//` for comments or `/** */` for the doc block`.
 - An unterminated doc comment is an error: `unterminated doc comment; add */`.
-- A STRING is text in double quotes. Escapes: `\"`, `\\`, `\n`. A raw newline is not allowed inside a STRING.
-- An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`. An IDENT cannot be a keyword.
-- A REF is `@` followed by one or more segments separated by `/`. Segment characters: see open questions.
-- Keywords: `input`, `if`, `else`, `switch`, `case`, `default`, `return`, `bool`, `choice`, `not`, `and`, `or`.
-- `description` is not a keyword. It is an ordinary IDENT.
-- `true`, `false`, `yes`, `no` are not keywords. They are bool values (section 7).
+- A STRING is text in double quotes or single quotes. Escapes: `\"`, `\'`, `\\`, `\n`. A raw newline is not allowed inside a STRING.
+- An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`.
+- Keywords: `import`, `from`, `export`, `default`, `function`, `if`, `else`, `switch`, `case`, `return`, `boolean`. A keyword cannot be a name.
+- Reserved words: `for`, `while`, `do`, `const`, `let`, `var`. They are not Rein. Using one gives a helpful error (section 3). A file name segment cannot be one either.
+- Operators: `===`, `!==`, `&&`, `||`, `!`, `|`, `(`, `)`, `{`, `}`, `,`, `:`, `;`.
+  - `==` is an error: `use `===` instead of `==``.
+  - `!=` is an error: `use `!==` instead of `!=``.
+- Any other character, such as `@`, is an error: `unexpected character`.
 - A UTF-8 byte order mark at the start of a file is whitespace.
 
 ## 3. Grammar
 
 ```
-file        := DOC? input* stmt*
-input       := "input" IDENT ":" type
-type        := "bool" | "choice" "(" STRING ("," STRING)* ","? ")"
-stmt        := if | switch | return
-if          := "if" expr block ("else" (if | block))?
-switch      := "switch" IDENT "{" case* default? "}"
-case        := "case" STRING block
-default     := "default" block
+file        := import* DOC? "export" "default" "function" IDENT "(" params? ")" block
+import      := "import" IDENT "from" STRING ";"?
+params      := param ("," param)* ","?
+param       := DOC IDENT ":" type            // DOC is required; the checker reports a missing one
+type        := "boolean" | "|"? STRING ("|" STRING)*
 block       := "{" stmt* "}"
-return      := "return" (STRING | REF)
-expr        := and ("or" and)*
-and         := unary ("and" unary)*
-unary       := "not" unary | atom
-atom        := "(" expr ")" | IDENT (("==" | "!=") STRING)?
+stmt        := if | switch | return
+if          := "if" "(" expr ")" block ("else" (if | block))?
+switch      := "switch" "(" IDENT ")" "{" clause* "}"
+clause      := ("case" STRING ":")+ (block | stmt*)   // a label with no body joins the next body
+             | "default" ":" (block | stmt*)          // default is the last clause
+return      := "return" (STRING | IDENT) ";"?
+expr        := and ("||" and)*
+and         := unary ("&&" unary)*
+unary       := "!" unary | atom
+atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 ```
 
-`DOC` is a doc comment token (section 2). It is allowed only as the first token of the file. Line comments may come before it.
+The function doc (`DOC?`) is optional in the grammar so the checker can name the missing doc. Every parameter has a doc comment in the same way: the checker reports `parameter `x` needs a doc comment`.
+
+Helpful errors from the parser:
+
+| Input | Message |
+| --- | --- |
+| `for`, `while`, `do` in a body | `Rein has no loops yet` |
+| `const`, `let`, `var` in a body | `Rein has no variables` |
+| `true` or `false` in a condition or comparison | `use the boolean parameter directly` |
+| a doc comment in any other place | `the doc comment must go right before `export default function` or a parameter` |
+| a second `export default function` | `expected end of file ...; a file holds one `export default function`` |
 
 ## 4. Declarations
 
-### Doc block
+### Imports
 
-The doc block is the `/** */` comment at the top of the file. It follows the TypeScript convention.
+`import name from "./path";` binds `name` to another function. The body returns it with `return name;`.
 
-```rein
-// optional line comments may come before the doc block
+- The path starts with `./` or `../`. It has no extension.
+- The path is relative to the directory of the importing file. `import x from "../merge_pr"` in `ci/fix.rein` names `merge_pr`.
+- The path must stay inside the project root. `import x from "../../outside"` in `ci/fix.rein` is an error: `import '../../outside' leaves the project root`.
+- A path with no file is an error on the path string: `cannot find module './x'`.
+- A binding name is unique in the file. It also differs from every parameter name.
+- An import that the body never returns gives a warning: `unused import`.
+- Imports come first in the file. A `;` is optional.
+
+### Doc comments
+
+Rein has two kinds of doc comment. Each one holds only its own text.
+
+- The function doc comment. It sits right before `export default function`, after the imports. It gives the function description.
+- A parameter doc comment. It sits right before the parameter, inside the parameter list. It gives the question the agent must answer for that parameter.
+
+```ts
+import escalate from "./escalate";
+
 /**
- * Decide whether a pull request can be merged.
- *
- * Longer text may span lines and paragraphs.
- *
- * @param docs_only Does the PR change only documentation files?
- * @param ci - What is the CI status of the PR?
- *   Continuation lines belong to the previous tag.
+ * Route a new support ticket to the right handling.
  */
-input docs_only: bool
-input ci: choice("green", "red", "pending")
+export default function handleTicket(
+  /** What kind of ticket is it? */
+  category: "billing" | "bug" | "question",
+  /**
+   * Is the customer a VIP?
+   * Check the account tier in the CRM.
+   */
+  vip: boolean,
+) {
+  if (vip) {
+    return escalate;
+  }
+
+  return "Answer the ticket.";
+}
 ```
 
-Parsing rules:
+Parsing rules, for each doc block:
 
 - For each line, strip the leading whitespace, then one leading `*`, then one following space if present.
-- The text before the first line that starts with `@` is the function description. It is trimmed. Line breaks are kept. Three or more line breaks in a row become one paragraph break.
-- `@param <name> [-] <text>` gives an input its question. The optional `-` is removed. The text runs on through the following lines, up to the next `@` line. Continuation lines are joined with a space, and the text is trimmed.
-- Any other tag (for example `@returns` or `@example`) is not part of the description. It gives a warning (section 8).
-- A `/**` anywhere except the first token is a syntax error: `the doc comment must be at the top of the file`.
-- A plain `/* */` comment is a syntax error (section 2).
+- The text before the first line that starts with `@` is the description. It is trimmed. Line breaks are kept. Three or more line breaks in a row become one paragraph break.
+- Text after an `@` line is not part of the description.
+- A `@` tag is an error when it is `@param`: `describe each parameter in its own doc comment, right before it`. Any other tag gives a warning: `unknown tag`.
+- An empty function description is an error. An empty parameter doc comment is an error: `parameter `x` needs a doc comment: /** question */ x: ...`.
 
-### Functions
+### Function
 
-- The doc block gives the function description. It must be present and not empty.
-- Each input must have one `@param` with the same name, and the text after the name is its question.
+- `export default function NAME(params) block` is the whole function. The file holds exactly one.
+- The parameter list may end with a comma.
+- The body is a block.
 
-### Inputs
+### Parameters
 
-- `input` declares a value the agent must provide. The `@param` text for that input is the question the agent must answer.
-- Input names are unique within a file.
-- Input types:
-  - `bool`: true or false.
-  - `choice(...)`: one value from a list of options. A choice needs at least 2 unique, non-empty options.
-
-Example. The doc block and the `input` lines together describe the input `ci`:
-
-```rein
-/**
- * Decide whether a pull request can be merged.
- *
- * @param ci What is the CI status of the PR?
- */
-input ci: choice("green", "red", "pending")
-```
+- A parameter is `name: type`. The type is `boolean` or a union of strings.
+- `boolean` is true or false.
+- A union is one of its string members. It needs at least 2 unique, non-empty members. A leading `|` is allowed, so a long union can start on its own line.
+- Parameter names are unique within a function.
 
 ## 5. Statements
 
-- `if` runs a block when its condition holds. `else` runs when it does not. `else` may chain to another `if`.
-- `switch` picks one `case` by the value of a choice input. `default` runs when no case matches.
-- `default` must be the last branch of a switch. A `case` after `default` is a syntax error.
-- A `switch` with no matching case and no `default` falls through to the next statement. This is the same as an `if` without `else`. The "every path returns" rule (section 8) still catches a function that then ends without returning.
-- `return` ends the function with a STRING or a REF.
-- Rein has no `for` and no `while`.
+- `if (cond) { ... }` runs its block when the condition holds. `else` runs when it does not. `else` may chain to another `if`.
+- `switch (name) { ... }` picks one group of `case` labels by the value of a union parameter.
+  - Labels with no body join the next body: `case "a": case "b": return x;` is one group with two labels.
+  - A clause body is a block or statements. The body ends at the next label or at `}`.
+  - A body with statements must end in a terminating statement (section 6). Otherwise the error is `case falls through; end it with return`. The same rule applies to `default` (`default falls through; end it with return`).
+  - `default` must be the last clause. It cannot share a body with a `case`.
+  - A `switch` with no matching case and no `default` falls through to the next statement, as an `if` without `else` does. The "not all paths return" rule still catches a function that then ends without returning.
+- `return "text";` or `return name;` ends the function. The `;` is optional.
 
 ## 6. Conditions
 
-- A bool input is used bare: `docs_only`.
-- A choice input is compared with `==` or `!=`: `ci == "green"`.
-- `not`, `and`, `or` combine conditions. `not` binds tightest, then `and`, then `or`. Parentheses group.
-- Evaluation of `and` and `or` stops early when the result is known.
+- A boolean parameter is used bare: `if (docsOnly)`, or negated: `if (!docsOnly)`.
+- A union parameter is compared with `===` or `!==`: `if (ci === "green")`.
+- `!`, `&&`, `||` combine conditions. `!` binds tightest, then `&&`, then `||`. Parentheses group.
+- Evaluation of `&&` and `||` stops early when the result is known.
 
 ## 7. Values
 
-- Bool values: `true`, `false`, `yes`, `no`. Both `yes` and `true` mean true. Both `no` and `false` mean false. Case does not matter: `TRUE`, `Yes` and `No` are valid.
-- Choice values: one of the declared options, as a string.
-- Return values: a STRING, or a REF to another function.
+- Boolean values: `true`, `false`, `yes`, `no` on the command line. `yes` and `true` mean true. `no` and `false` mean false. Case does not matter.
+- Union values: one of the declared members, as a string.
+- Return values: a STRING, or an imported function. A return of anything else is an error: `` `x` is not an imported function ``.
 
 ## 8. Checker rules
 
@@ -137,54 +166,52 @@ When a file has a syntax error, only that error is reported for the file. It is 
 
 | Rule |
 | --- |
-| A function file name has a `/` part that is not an identifier or is a keyword (`invalid function file name`) |
-| The file has no doc comment (`missing doc comment; start the file with /** description */`) |
-| A doc comment is not the first token of the file (`the doc comment must be at the top of the file`) |
-| A doc comment is not closed (`unterminated doc comment; add */`) |
-| A plain `/* */` comment is used (`use `//` for comments or `/** */` for the doc block`) |
+| A function file name has a `/` part that is not an identifier, or is a keyword or reserved word (`invalid function file name`) |
+| The file has no function doc comment (`missing doc comment; put /** description */ right before `export default function``) |
 | The function description is empty |
-| An input has no `@param` (`input x has no description; add @param x <question> to the doc comment`) |
-| A `@param` names no input (`@param y does not match any input`) |
-| A `@param` name is used twice (`duplicate @param x`) |
-| A `@param` has no text after its name (`@param x needs a question after the name`) |
-| A `@param` has no name (`@param needs an input name`) |
-| Two inputs share a name |
-| A choice has fewer than 2 options |
-| A choice has a duplicate option or an empty option |
-| A condition uses a choice input bare |
-| A condition compares a bool input with `==` or `!=` |
-| A condition uses an undeclared name |
-| `switch` subject is not a choice input |
-| A compared value or case value is not an option of the input |
-| Two `case` blocks use the same value |
-| A path through the function ends without `return` |
-| A REF points to a file that does not exist in the project |
-| The project has no `main.rein` at the root (`project has no main.rein; it is the agent's entry point`). It is reported on `rein.toml`, at 1:1. |
+| A parameter has no doc comment or an empty one (`parameter x needs a doc comment: /** question */ x: ...`) |
+| A doc comment has `@param` (`describe each parameter in its own doc comment, right before it`) |
+| Two parameters share a name |
+| A union has fewer than 2 members |
+| A union has a duplicate or an empty member |
+| A condition uses a union parameter bare |
+| A condition compares a boolean parameter with `===` or `!==` |
+| A condition or switch subject names an unknown parameter |
+| `switch` subject is not a union parameter |
+| A compared value or case value is not a member of the union |
+| Two case labels use the same value |
+| A `case` or `default` body does not end in a terminating statement (`case falls through; end it with return`) |
+| A path through the function ends without `return` (`not all paths return a value`) |
+| A `return` names something that is not an import (`` `x` is not an imported function ``) |
+| An import path is not `./` or `../`, has an extension, leaves the root, or names no file |
+| Two bindings share a name, or a binding shares a parameter name |
+| The project has no `main.rein` at the root (`project has no main.rein; it is the agent's entry point`). It is reported on `rein.toml`, at 1:1 |
 
 A function returns on every path under these rules:
 
 - `if` returns only when it has an `else`, and both branches return.
-- `switch` returns when every `case` returns and either `default` returns, or the cases cover every option.
+- `switch` returns when every case group returns and either `default` returns, or the cases cover every member.
 
 ### Warnings
 
 | Rule |
 | --- |
-| An input is declared but never used |
+| A parameter is declared but never used |
+| An import is never returned |
 | A statement can never run (for example, code after `return`) |
-| References form a cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every `@ref` that lies on the cycle, so an N-file cycle gives N warnings. A self-reference (a file that returns its own `@ref`) is a cycle. |
-| A doc tag other than `@param` (`unknown tag @x; Rein supports @param`) |
-| A function cannot be reached from `main` through references (`x is not reachable from main`). This warning is not given when `main` is missing or has a syntax error. |
+| References form a cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every `return` of an import that lies on the cycle. A self-reference is a cycle |
+| A doc tag other than `@param` (`unknown tag `@x``) |
+| A function cannot be reached from `main` through imports (`x is not reachable from main`). This warning is not given when `main` is missing or has a syntax error |
 
 ## 9. Evaluation
 
 - One run evaluates one function. By default that is `main`.
-- The runtime asks for an input only when the taken path needs it. This is lazy evaluation.
+- The runtime asks for a parameter only when the taken path needs it. This is lazy evaluation.
 - A run returns one of:
   - a STRING: the agent does what the text says.
-  - a REF: the agent runs the target function next, using its description and inputs.
-  - a request for an input: the agent answers the question, then runs again.
-- Input values come from `--set name=value`. A bool takes `true`, `false`, `yes`, or `no`. A choice takes one of its options.
+  - a REF: the agent runs the target function next, using its description and inputs. The REF is the target's project path, such as `ci/fix`.
+  - a request for a parameter: the agent answers the question, then runs again.
+- Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members.
 
 ## 10. CLI
 
@@ -193,7 +220,7 @@ A function returns on every path under these rules:
 | `rein check [PATH]` | Check a project directory, or one file. Default `.`. Prints `file:line:col: error: message`. Exit code 1 when there are errors. |
 | `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `@target` with the target's description and inputs. Exit code 2 when an input is needed. |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. |
-| `rein graph [--root DIR]` | Print a Mermaid flowchart of the references. The `main` node is drawn as a stadium shape. |
+| `rein graph [--root DIR]` | Print a Mermaid flowchart of the imports. The `main` node is drawn as a stadium shape. |
 | `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
 
 ### Input request output
@@ -214,7 +241,7 @@ Each run prints one of these objects:
 {"kind":"need_input","input":{"name":"...","type":"bool|choice","options":["..."],"description":"..."}}
 ```
 
-`options` appears only for `choice` inputs.
+`options` appears only for `choice` inputs. A union parameter is reported as `choice` in the CLI and JSON output.
 
 ### `rein describe` output
 
@@ -223,8 +250,15 @@ Each run prints one of these objects:
   "name": "merge_pr",
   "description": "...",
   "inputs": [
-    {"name": "docs_only", "type": "bool", "description": "..."},
+    {"name": "docsOnly", "type": "bool", "description": "..."},
     {"name": "ci", "type": "choice", "options": ["green", "red", "pending"], "description": "..."}
   ]
 }
 ```
+
+### Language server
+
+- Diagnostics: the checker's errors and warnings, on each open file.
+- Hover: on an import name or a returned name, the target's description and inputs. On a parameter name, its type and doc comment.
+- Go to definition: on an import path, an import name, or a returned name, the target file.
+- Completion: after `return `, the imported names. Inside an import path, the project files as relative paths. Elsewhere, the parameter names and keywords.
