@@ -16,35 +16,43 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 9. Rein mimics TypeScript types and syntax as much as possible (for example `|` unions for choices), because TypeScript is very good to write and read.
 10. Every project has a `main.rein`; it is the agent's entry point.
 11. Each component holds its own docs: the function has its doc comment, and each input has its own doc comment right before it.
+12. Rein is as strict as possible: every case is handled explicitly. There is no `default` and no `else`. Every `if` block returns, and the code after it handles the other case.
+13. Templates work like Rust macros: they expand to a string. A standard library ships templates such as `delegate(model, task)`.
+14. A function can send the agent an async request and branch on the typed response (`const x: boolean = await request(...)`).
+15. Every function returns something on every path: a string, a template, or a reference to another function.
+16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
 
 ## PoC choices (revisable)
 
 Each choice can change. The reason is one line.
 
-- Every Rein file is valid TypeScript syntax (checked by `npm run check-ts-syntax`). Why: the owner wants TypeScript syntax, and the check keeps the claim true.
+- Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
-- Project root is the directory with a `rein.toml` marker file. Why: one clear root for names and imports.
+- Project root is the directory with a `rein.toml` marker file. Why: one clear root for names and references.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
-- Functions are used through imports: `import fixCi from "./ci/fix"`, then `return fixCi;`. Why: the same form as TypeScript modules, and the checker can see each dependency.
-- Import paths start with `./` or `../` and have no extension, and must stay inside the project. Why: a path that is relative and bounded keeps every function inside one project, as before.
-- Inputs are parameters of the exported function: `boolean`, or a union of strings such as `"green" | "red"`. Why: a TypeScript signature the agent can read, and the checker can test values.
+- Functions are used through references: `return @./ci/fix;`. Why: no import statement; a reference is a path from the current file, so a file is moved with its folder.
+- A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.
+- Std names need no import: `delegate`, `askUser`, `request`. Why: the std library is part of the language, so it is always there.
+- Templates are files with `string` parameters, called by a std name or a reference. Why: a template is a string builder, and calls keep the caller in control of the values.
+- Inputs are parameters of the exported function: `boolean`, a union of strings such as `"green" | "red"`, or `string` for a template. Why: a TypeScript signature the agent can read, and the checker can test values.
 - Each parameter has its own doc comment right before it. The function has its own doc comment before `export default function`. Why: each component holds its own docs, so an edit to one parameter never touches another.
+- An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
 - `rein run` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
-- Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing import.
+- Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing reference.
 - Evaluation is lazy. The runtime asks only for the parameters the taken path needs. Why: the agent does not answer questions that do not change the result.
+- `if` is a guard with no `else`. Why: each branch returns, so a function is a list of checks, and the reader sees each case in order.
 - Conditions allow `&&`, `||`, `!`, and `===` / `!==` on union parameters. Why: enough logic for branching, with no arithmetic or loops.
-- Switch case labels with no body join the next body, as in TypeScript. A non-empty clause must end in `return`. Why: no silent fallthrough, and the TypeScript shape stays.
-- A function must return on every path. The checker enforces it. Why: an agent must always get a next step.
+- Switch has no `default`. Every union member needs a case. Why: a new member is a compile error, not a silent fallback.
+- A function must return on every path. Why: an agent must always get a next step.
 - Reference cycles are allowed, but the checker warns. Why: a cycle acts like a loop, and Rein has no loops yet. A retry flow needs one.
 - One step per run. `rein run` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
 
 ## Open questions
 
-- Imports that pass arguments. Today a target gets no values from the caller.
-- Free-text inputs and string interpolation. Today a parameter is only `boolean` or a union of strings.
-- Loops and retries. Today a retry is an import cycle.
+- Free-text inputs. Today a parameter is `boolean`, a union of strings, or `string` only in a template.
+- Loops and retries. Today a retry is a reference cycle.
 - How agents consume flows: CLI, MCP tool, or library.
-- Side effects and actions inside functions. Today a return value is text for the agent to act on.
-- Imports across projects. Today imports stay inside one project.
+- Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
+- References across projects. Today references stay inside one project.
 - Who answers inputs: agent judgment, or deterministic tools.
