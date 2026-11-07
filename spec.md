@@ -317,6 +317,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. A name given twice with `--set` is an error. |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
 | `rein graph [--root DIR]` | Print a Mermaid flowchart of the references. Node ids are `n0`, `n1`, ... in name order, and the label is the function name. The `main` node is drawn as a stadium shape. |
+| `rein step [--root DIR] [--entry FN] [--answer key=value]... [--stdin] [--json]` | Step the whole flow from `main`. The agent-facing interface (section 11). |
 | `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.
@@ -385,3 +386,53 @@ Each run prints one of these objects:
 - Hover: on a reference, the target's description and inputs. On a std name, its doc. On a parameter name, its type and doc comment.
 - Go to definition: on a reference, the target file.
 - Completion: after `@./` or `@../`, the project functions relative to the current file. Each item replaces the whole reference token. Elsewhere, the parameter names, the std names, and keywords.
+
+## 11. Stepping (agent interface)
+
+`rein step` steps the whole flow in one call. It is the interface for agents. `rein run` evaluates one function, and is the debug command. The stepping logic lives in `rein_core::step`. It is pure: no I/O and no state. The CLI only parses flags, calls it, and prints.
+
+Protocol version 1. A request and a response are JSON objects, each with a `version` field. A daemon or another transport can carry the same objects unchanged.
+
+### Request
+
+```json
+{"version": 1, "entry": "main", "answers": {"main.vip": "no"}}
+```
+
+- `version`: default `1`. Another value is an error.
+- `entry`: the function to start from, by its path. Default `main`.
+- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
+
+### Response
+
+`kind` is one of four values. Every response has `version`, `answers` (the answers the request gave, echoed back), and `trace` (the function paths visited, in order).
+
+| `kind` | Fields | Meaning | Exit code |
+| --- | --- | --- | --- |
+| `question` | `key`, `function`, `name`, `type` (`boolean` or `union`), `options` (union members, else `null`), `description` | Answer `key`, then step again. | 2 |
+| `request` | `key`, `function`, `instruction`, `response` (`name`, `type`, `options`, `description`) | Do `instruction`, then answer `key`, then step again. | 3 |
+| `done` | `instruction` | The flow ended. Do `instruction`. | 0 |
+| `error` | `message`, `key` (or `null`), `diagnostics` (`file`, `line`, `column`, `message`) | The request is not valid. Fix it and step again. | 1 |
+
+### Stepping rules
+
+- The step starts at `entry`. It evaluates the function with the answers whose key names that function. The lazy rules of section 9 apply.
+- A reference is followed in the same call. Only a question, a request, a final instruction, or an error ends a call. The `trace` shows each hop.
+- A flow may visit at most 64 functions in one call. A flow that goes further is an error: `flow did not finish in 64 steps (reference cycle?)`.
+- An answer is checked before the flow runs. An unknown key is an error, and the error names the key. A value outside the type is an error, and the message lists the accepted values.
+- A string parameter cannot be answered. Only a template takes one.
+- A project with checker errors is refused. The error lists the diagnostics. Warnings do not block a step.
+- A template cannot be the entry.
+
+### Statelessness
+
+The response depends only on the project and the request. The runtime keeps nothing between calls, so the caller sends every answer so far. A harness adds the key from the last response to `answers`, then steps again. The same project and the same request always give a byte-equal response. The code uses no clock, no randomness, and no global state.
+
+### CLI
+
+```text
+rein step --root examples/support-ticket --answer main.vip=no --json
+rein step --root examples/support-ticket --stdin < request.json
+```
+
+`--stdin` reads one request as JSON, and then the output is always JSON. Do not combine `--stdin` with `--entry` or `--answer`. `--answer` repeats for each key. An answer key may be given once.

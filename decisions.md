@@ -21,6 +21,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 14. A function can send the agent an async request and branch on the typed response (`const x: boolean = await request(...)`).
 15. Every function returns something on every path: a string, a template, or a reference to another function.
 16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
+17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
 
 ## PoC choices (revisable)
 
@@ -47,12 +48,12 @@ Each choice can change. The reason is one line.
 - Reference cycles are allowed, but the checker warns. Why: a cycle acts like a loop, and Rein has no loops yet. A retry flow needs one.
 - One step per run. `rein run` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
+- Agents consume flows through `rein step` (protocol v1, see [spec.md section 11](spec.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same flow. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
 
 ## Open questions
 
 - Free-text inputs. Today a parameter is `boolean`, a union of strings, or `string` only in a template.
 - Loops and retries. Today a retry is a reference cycle.
-- How agents consume flows: CLI, MCP tool, or library.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
 - References across projects. Today references stay inside one project.
 - Who answers inputs: agent judgment, or deterministic tools.
