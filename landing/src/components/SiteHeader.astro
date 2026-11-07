@@ -1,0 +1,14 @@
+---
+import { EARLY_ACCESS_HREF } from "../../site.config.mjs";
+---
+
+<header class="border-b border-line">
+  <nav aria-label="Main" class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <a href="/" class="text-xl font-bold tracking-tight no-underline">Rein</a>
+    <div class="flex items-center gap-2 text-sm font-medium sm:gap-5">
+      <a href="/#use-cases" class="hidden no-underline sm:inline">Use cases</a>
+      <a href="/docs/" class="btn btn-secondary px-3 py-2 no-underline">Docs</a>
+      <a href={EARLY_ACCESS_HREF} class="btn btn-primary px-3 py-2 no-underline">Request early access</a>
+    </div>
+  </nav>
+</header>

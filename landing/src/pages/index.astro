@@ -1,0 +1,297 @@
+---
+import Base from "../layouts/Base.astro";
+import FlowDiagram from "../components/FlowDiagram.astro";
+import ConceptTurn from "../components/ConceptTurn.astro";
+import { SITE_URL, EARLY_ACCESS_HREF } from "../../site.config.mjs";
+import { flows } from "../data/flows";
+import { useCases } from "../data/useCases";
+
+const title = "Rein: instructions, not infrastructure for agents";
+const description =
+  "Rein is an alpha, private language for agent decision flows. Write each decision as a small function in its own file. Every path ends in an instruction or a pointer.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Rein",
+  description,
+  url: new URL("/", SITE_URL).href,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Any",
+};
+---
+
+<Base title={title} description={description} path="/" jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24" aria-labelledby="hero-heading">
+    <div class="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+      <div>
+        <p class="inline-flex items-center rounded-full border border-accent px-3 py-1 text-sm font-semibold text-accent">
+          Alpha, private
+        </p>
+        <h1 id="hero-heading" class="mt-6 text-4xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">
+          Give agents instructions, not infrastructure
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+          Rein is a strict, TypeScript-like language for agent decision flows. Write each decision as a small
+          function, one file each. The agent answers the questions, then follows the pointers to its next step.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={EARLY_ACCESS_HREF} class="btn btn-primary">Request early access</a>
+          <a href="/docs/" class="btn btn-secondary">Docs</a>
+        </div>
+      </div>
+      <div class="card p-4 sm:p-6">
+        <FlowDiagram
+          spec={flows.hero}
+          label="Diagram. A decision asks questions, then leads to one of several instructions."
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem -->
+  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="problem-heading">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+      <div>
+        <h2 id="problem-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Agent systems turn into machines</h2>
+        <p class="mt-5 text-lg leading-relaxed text-muted">
+          Agent frameworks ask you to build the machine. You define graphs, nodes, edges, shared state and retry
+          logic. The instructions end up spread across the wiring.
+        </p>
+        <p class="mt-4 text-lg leading-relaxed text-muted">
+          Rein does not build a harness or a graph. It gives the agent instructions for the decision it faces now.
+        </p>
+      </div>
+      <figure class="card overflow-hidden">
+        <img
+          src="/images/concept-hook.webp"
+          width="1280"
+          height="720"
+          loading="lazy"
+          alt="A dark diagram of square nodes joined by many lines, a tangled graph. The caption reads: Frameworks make you build the machine."
+          class="h-auto w-full"
+        />
+      </figure>
+    </div>
+    <div class="mx-auto mt-16 grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+      <figure class="card overflow-hidden p-4 lg:order-2 sm:p-6">
+        <ConceptTurn />
+      </figure>
+      <div>
+        <h3 class="text-2xl font-bold tracking-tight">Rein flips it</h3>
+        <p class="mt-4 text-lg leading-relaxed text-muted">
+          You do not wire the agent. You write what it should decide, and what it should do for each answer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Four concept steps -->
+  <section id="how-it-works" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="steps-heading">
+    <div class="mx-auto max-w-6xl">
+      <h2 id="steps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Four ideas make a flow</h2>
+      <ol class="mt-12 grid gap-6 md:grid-cols-2">
+        <li class="card flex flex-col gap-5 p-5 sm:p-6">
+          <figure class="overflow-hidden rounded-xl">
+            <img
+              src="/images/concept-step-one.webp"
+              width="1280"
+              height="720"
+              loading="lazy"
+              alt="A stack of rounded cards, the front one outlined in teal. The caption reads: One decision, one function, one file."
+              class="h-auto w-full"
+            />
+          </figure>
+          <div>
+            <h3 class="text-xl font-semibold"><span class="text-accent">1.</span> One decision, one file</h3>
+            <p class="mt-2 text-muted">
+              Each decision is a small function. Each function sits in its own file and starts with a description of
+              what it decides.
+            </p>
+          </div>
+        </li>
+        <li class="card flex flex-col gap-5 p-5 sm:p-6">
+          <figure class="overflow-hidden rounded-xl">
+            <img
+              src="/images/concept-step-two.webp"
+              width="1280"
+              height="720"
+              loading="lazy"
+              alt="A decision card sends three question chips to one point, which leads to three answer options with one ticked. The caption reads: Inputs are questions the agent answers."
+              class="h-auto w-full"
+            />
+          </figure>
+          <div>
+            <h3 class="text-xl font-semibold"><span class="text-accent">2.</span> Inputs are questions</h3>
+            <p class="mt-2 text-muted">
+              The inputs are questions the agent answers from what it sees. Each one is a yes or no, or one of a few
+              options.
+            </p>
+          </div>
+        </li>
+        <li class="card flex flex-col gap-5 p-5 sm:p-6">
+          <figure class="overflow-hidden rounded-xl">
+            <div class="rounded-xl bg-surface-2 p-4">
+              <FlowDiagram
+                spec={flows.twoMoves}
+                label="Diagram. A decision asks yes or no. Yes leads to an instruction. No asks for a case, which leads to a pointer or a template."
+              />
+            </div>
+          </figure>
+          <div>
+            <h3 class="text-xl font-semibold"><span class="text-accent">3.</span> Two moves in the body</h3>
+            <p class="mt-2 text-muted">
+              The body branches on an answer, or picks one case from a fixed set. Every case is written out. There are
+              no loops, by design, for now.
+            </p>
+          </div>
+        </li>
+        <li class="card flex flex-col gap-5 p-5 sm:p-6">
+          <figure class="overflow-hidden rounded-xl">
+            <img
+              src="/images/concept-step-four.webp"
+              width="1280"
+              height="720"
+              loading="lazy"
+              alt="A decision card leads to an instruction bubble, and through a teal arrow to the next card. The caption reads: Every path ends in one of two things."
+              class="h-auto w-full"
+            />
+          </figure>
+          <div>
+            <h3 class="text-xl font-semibold"><span class="text-accent">4.</span> Every path ends in one of two things</h3>
+            <p class="mt-2 text-muted">
+              An instruction, written out or built from a template such as a delegated task. Or a pointer to the next
+              function.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Flow -->
+  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="flow-heading">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+      <div>
+        <h2 id="flow-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Start at main. Answer. Follow the pointers.</h2>
+        <p class="mt-5 text-lg leading-relaxed text-muted">
+          Every project has a main function. It is the agent's entry point. The agent answers only the questions on
+          its path, and follows each pointer until it reaches an instruction.
+        </p>
+      </div>
+      <figure class="card overflow-hidden">
+        <img
+          src="/images/concept-flow.webp"
+          width="1280"
+          height="720"
+          loading="lazy"
+          alt="Four cards in a row, each with question chips above it, linked by a teal line that ends in an instruction. The caption reads: Start at main. Answer. Follow the pointers."
+          class="h-auto w-full"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- Guarantees -->
+  <section id="guarantees" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="guarantees-heading">
+    <div class="mx-auto max-w-6xl">
+      <h2 id="guarantees-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A checker guards every flow</h2>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+        The checker reads your functions and reports gaps. It catches these three problems before a flow goes to an
+        agent.
+      </p>
+      <ul class="mt-10 grid gap-5 md:grid-cols-3">
+        <li class="card p-6">
+          <h3 class="text-lg font-semibold">Every case is handled</h3>
+          <p class="mt-2 text-muted">A new option without a case fails the check. Nothing falls back to a silent default.</p>
+        </li>
+        <li class="card p-6">
+          <h3 class="text-lg font-semibold">Every path returns</h3>
+          <p class="mt-2 text-muted">A path that ends without an instruction or a pointer fails the check.</p>
+        </li>
+        <li class="card p-6">
+          <h3 class="text-lg font-semibold">Every pointer is real</h3>
+          <p class="mt-2 text-muted">A pointer to a function that does not exist fails the check.</p>
+        </li>
+      </ul>
+      <div class="mt-12 grid items-center gap-10 lg:grid-cols-2">
+        <figure class="card overflow-hidden">
+          <img
+            src="/images/concept-checks.webp"
+            width="1280"
+            height="720"
+            loading="lazy"
+            alt="Four lines, each ending in a teal check mark, beside an editor-style window with a wavy teal underline. The caption reads: Checked as you type."
+            class="h-auto w-full"
+          />
+        </figure>
+        <div>
+          <h3 class="text-2xl font-bold tracking-tight">Editor support</h3>
+          <p class="mt-4 text-lg leading-relaxed text-muted">
+            The language server shows these problems as you type. Editor support starts with VS Code.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video -->
+  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="video-heading">
+    <div class="mx-auto max-w-4xl">
+      <h2 id="video-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Watch the concept</h2>
+      <p class="mt-4 text-lg leading-relaxed text-muted">A concept video of about 70 seconds. It shows the four ideas and one flow.</p>
+      <figure class="card mt-8 overflow-hidden">
+        <!--
+          TODO: host the concept video (an mp4 built from videos/concept, not committed to this repo)
+          on a public video host. The host is not decided yet. When it is, set src on the video below,
+          add controls, and add captions that match the narration in videos/concept/script.md.
+        -->
+        <video
+          poster="/images/concept-close.webp"
+          preload="none"
+          playsinline
+          width="1280"
+          height="720"
+          aria-label="Rein concept video, about 70 seconds. Video hosting is not set up yet."
+          class="block h-auto w-full"
+        ></video>
+        <figcaption class="p-4 text-sm text-muted">Concept video coming soon.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Alpha notice -->
+  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="alpha-heading">
+    <div class="card mx-auto max-w-4xl p-6 sm:p-10">
+      <p class="eyebrow">Alpha notice</p>
+      <h2 id="alpha-heading" class="mt-3 text-3xl font-bold tracking-tight">Rein is alpha and private</h2>
+      <p class="mt-4 text-lg leading-relaxed text-muted">
+        Rein is a proof of concept. Syntax, tools and behavior can still change. Request early access by email, and
+        tell us which decision flow you want to build.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={EARLY_ACCESS_HREF} class="btn btn-primary">Request early access</a>
+        <a href="/docs/" class="btn btn-secondary">Docs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use cases -->
+  <section id="use-cases" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="use-cases-heading">
+    <div class="mx-auto max-w-6xl">
+      <h2 id="use-cases-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Use cases</h2>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">Each page shows one flow, in concept terms.</p>
+      <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {useCases.map((u) => (
+          <li>
+            <a href={`/use-cases/${u.slug}/`} class="card block h-full p-6 no-underline hover:underline">
+              <span class="block text-lg font-semibold">{u.h1}</span>
+              <span class="mt-2 block text-muted">{u.teaser}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

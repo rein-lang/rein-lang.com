@@ -1,0 +1,14 @@
+---
+import { EARLY_ACCESS_HREF } from "../../site.config.mjs";
+---
+
+<footer class="mt-8 border-t border-line">
+  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <p>Rein is in alpha and private. Syntax can still change.</p>
+    <nav aria-label="Footer" class="flex flex-wrap gap-x-6 gap-y-2">
+      <a href="/#use-cases" class="text-ink">Use cases</a>
+      <a href="/docs/" class="text-ink">Docs</a>
+      <a href={EARLY_ACCESS_HREF} class="text-ink">Request early access</a>
+    </nav>
+  </div>
+</footer>

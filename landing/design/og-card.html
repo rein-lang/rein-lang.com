@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rein Open Graph card</title>
+    <style>
+      /* Source for public/og.png (1200x630). Render it with a 1200x630 viewport screenshot. */
+      html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        background: #0c1018;
+        color: #e6edf5;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+        position: relative;
+      }
+      .grid {
+        position: absolute; inset: 0;
+        background-image: radial-gradient(#1c2330 1.2px, transparent 1.2px);
+        background-size: 28px 28px;
+      }
+      .copy { position: absolute; left: 80px; top: 120px; width: 620px; }
+      .bar { width: 120px; height: 8px; border-radius: 4px; background: #2dd4bf; }
+      h1 { margin: 36px 0 0; font-size: 150px; line-height: 1; font-weight: 800; letter-spacing: -0.03em; }
+      .tag { margin-top: 28px; font-size: 40px; line-height: 1.2; font-weight: 600; color: #e6edf5; }
+      .pill {
+        display: inline-block; margin-top: 40px; padding: 12px 22px;
+        border: 2px solid #2dd4bf; border-radius: 999px;
+        color: #2dd4bf; font-size: 24px; font-weight: 700;
+      }
+      .stack { position: absolute; right: 90px; top: 150px; width: 380px; height: 330px; }
+      .card {
+        position: absolute; width: 300px; height: 210px; border-radius: 22px;
+        background: #151a23; border: 2px solid #2b3441;
+      }
+      .card.front { border-color: #2dd4bf; left: 0; top: 60px; }
+      .card.back1 { left: 40px; top: 30px; opacity: .8; }
+      .card.back2 { left: 80px; top: 0; opacity: .6; }
+      .line { position: absolute; left: 26px; height: 14px; border-radius: 7px; background: #2b3441; }
+      .line.hot { background: #2dd4bf; }
+      .chip { position: absolute; right: -20px; width: 150px; height: 46px; border-radius: 23px; border: 2px solid #2dd4bf; background: #151a23; }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="copy">
+      <div class="bar"></div>
+      <h1>Rein</h1>
+      <p class="tag">Give agents instructions, not infrastructure.</p>
+      <span class="pill">Alpha, private</span>
+    </div>
+    <div class="stack" aria-hidden="true">
+      <div class="card back2"></div>
+      <div class="card back1"></div>
+      <div class="card front">
+        <div class="line hot" style="top: 30px; width: 248px;"></div>
+        <div class="line" style="top: 66px; width: 248px;"></div>
+        <div class="line" style="top: 92px; width: 200px;"></div>
+        <div class="line" style="top: 118px; width: 230px;"></div>
+        <div class="line" style="top: 144px; width: 150px;"></div>
+      </div>
+    </div>
+  </body>
+</html>

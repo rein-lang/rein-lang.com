@@ -1,0 +1,78 @@
+---
+import type { FlowSpec } from "../data/flows";
+
+interface Props {
+  spec: FlowSpec;
+  label: string;
+}
+
+const { spec, label } = Astro.props;
+const markerId = `arrow-${spec.id}`;
+const markerUrl = `url(#${markerId})`;
+---
+
+<svg
+  viewBox={`0 0 ${spec.width} ${spec.height}`}
+  role="img"
+  aria-label={label}
+  class="block h-auto w-full"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <marker id={markerId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="flow-arrow-head"></path>
+    </marker>
+  </defs>
+
+  {spec.edges.map((edge) => (
+    <g>
+      <path
+        d={edge.d}
+        class:list={["flow-edge", edge.accent && "flow-edge-accent", edge.dashed && "flow-edge-dashed"]}
+        marker-end={markerUrl}
+      ></path>
+      {edge.label && <text x={edge.label.x} y={edge.label.y} class="flow-note">{edge.label.text}</text>}
+    </g>
+  ))}
+
+  {spec.nodes.map((node) => {
+    if (node.type === "card") {
+      const bars = Array.from({ length: node.lines }, (_, i) => ({
+        x: node.x + 14,
+        y: node.y + 52 + i * 24,
+        w: node.w - 28 - (i % 2) * 36,
+      }));
+      return (
+        <g>
+          <rect x={node.x} y={node.y} width={node.w} height={node.h} rx="14" class="flow-card"></rect>
+          <text x={node.x + 14} y={node.y + 30} class="flow-title">{node.title}</text>
+          {bars.map((bar) => (
+            <rect x={bar.x} y={bar.y} width={bar.w} height="10" rx="5" class="flow-bar"></rect>
+          ))}
+        </g>
+      );
+    }
+    const iconSpace = node.icon ? 30 : 0;
+    const textX = node.x + (node.w - iconSpace) / 2;
+    const cy = node.y + node.h / 2;
+    return (
+      <g>
+        <rect
+          x={node.x}
+          y={node.y}
+          width={node.w}
+          height={node.h}
+          rx={node.h / 2}
+          class:list={[node.variant === "question" ? "flow-pill-question" : "flow-pill"]}
+        ></rect>
+        <text x={textX} y={cy} text-anchor="middle" dominant-baseline="central" class="flow-label">{node.text}</text>
+        {node.icon === "check" && (
+          <g>
+            <circle cx={node.x + node.w - 22} cy={cy} r="11" class="flow-icon-check"></circle>
+            <path d={`M${node.x + node.w - 27} ${cy} l4 4 l7 -8`} class="flow-icon-check-mark"></path>
+          </g>
+        )}
+      </g>
+    );
+  })}
+</svg>
