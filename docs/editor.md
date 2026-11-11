@@ -1,1 +1,1 @@
-<!--@include: ../../../editors/vscode/README.md-->
+<!--@include: ../../editors/vscode/README.md-->
