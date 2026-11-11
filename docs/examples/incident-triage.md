@@ -1,6 +1,14 @@
+---
+description: "Decide how the on-call agent handles a new production alert."
+---
+
 <!--@include: ../../../examples/rein/incident-triage/README.md-->
 
 ## Source
+
+### `rein.json`
+
+<<< ../../../examples/rein/incident-triage/rein.json{json}
 
 ### `main.rein`
 
@@ -17,4 +25,3 @@
 ### `ticket/open.rein`
 
 <<< ../../../examples/rein/incident-triage/ticket/open.rein{rein}
-
