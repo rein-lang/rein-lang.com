@@ -346,7 +346,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A call or a hand-off gives one parameter twice (`` `a` is given twice in call to `@./tpl`; give each name once ``) |
 | A call or a hand-off leaves a parameter out (`` missing argument `b` in call to `@./tpl`; write `b=value` ``) |
 | A call or a hand-off gives arguments to a function with no `string` parameter (`` `@./x` takes no arguments; return it without a call ``) |
-| A `request` value calls a function that is not a template (`only templates can be called; return the function to hand off`) |
+| A call to a function that is not a template is not the value of a `return`, for example inside an argument or a `request` value (`A hand-off cannot be an argument of a call.`) |
 | A std name is unknown, or a call names a std item that is not a template |
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
 | A template parameter is not used |
