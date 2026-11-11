@@ -3,7 +3,7 @@
 Status: proposal. Not decided. No code implements it.
 The current rules are in [spec.md section 11](spec.md#11-stepping-agent-interface) and [section 12](spec.md#12-agent-integration). The reasons for the current choices are in [decisions.md](decisions.md).
 
-In this file, a program is a flow as spec.md defines it.
+The built interface is in [interface.md](interface.md): the MCP host, `rein run`, and programs as named apps. This file proposes what comes next.
 
 ## Principle
 
@@ -17,14 +17,14 @@ The agent is the sensor and the actuator. The runtime is the memory, the fact re
 | Read a fact that a command can read | Runtime |
 | Stop a guarded action until the program allows it | Runtime |
 
-With `rein step`, the agent has all five jobs. The proposal moves the last three to the runtime.
+With `rein step`, the agent has all five jobs. The MCP host moves the third job to the runtime while a run lives. The proposal moves the last three to the runtime, and keeps the state after a run ends.
 
 ## The interface today
 
 | Contract | Today | Source |
 | --- | --- | --- |
 | Trigger | One context block on the first prompt. The agent decides when a task matches a program. | [hook.rs](../crates/rein/src/hook.rs) |
-| Step | `rein step`. The agent sends every answer on each call. | [step.rs](../crates/rein-core/src/step.rs) |
+| Step | The MCP host keeps the answers of a live run in memory. `rein step` stays for replay, and there the agent sends every answer. | [interface.md](interface.md) |
 | Answer source | The agent answers every question. | [decisions.md](decisions.md), last open question |
 | Outcome | `done` holds free text. | [spec.md section 11](spec.md#11-stepping-agent-interface) |
 
@@ -92,9 +92,9 @@ A limit: the hook must answer with a denial or with nothing. An approval skips t
 
 ### 2. Step: the run keeps the answers
 
-- A run has an id. The runtime keeps its answers. The agent sends one value for each step.
-- The core stays pure: `step(project, answers)`. The run is the caller. This agrees with owner fact 17 in [decisions.md](decisions.md).
-- The run writes an append-only log to disk: one line for each answer, then the outcome. The hook is a different process, so it can read a run only from disk.
+The MCP host already does the first part: a run has an id, and the host keeps its answers. The core stays pure: `step(project, answers)`. Two parts are not built:
+
+- The run writes an append-only log to disk: one line for each answer, then the outcome. The hook is a different process, so it can read a run only from disk. A live run in memory is also lost when the host exits.
 - An answer names the key it answers. A value for a different key is an error. This guards against two answers that an agent sends at the same time.
 - The response does not repeat every answer.
 
@@ -122,6 +122,43 @@ Each question names who answers it.
 - `done` gets a status next to its text: allow or block. A std template such as `allow("...")` can set it.
 - A gate opens only on an allow, and only one time.
 - The run log and the outcome are the audit record of the decision.
+
+## State between runs
+
+Owner direction, 2026-11-11: the program holds the state, like a computer app. A user of an app does not enter everything again for each action.
+
+Contract 2 covers one run. This section covers what stays after a run ends.
+
+The state hangs on a subject, such as one pull request. A subject is like a document in an app. A run starts with its subject, and a later run on the same subject continues from the stored state.
+
+Not all state is equal:
+
+| Kind | Example | Rule |
+| --- | --- | --- |
+| An answer that the agent or the user gave | "Does the PR change permissions code?", "May I merge?" | Remember it. Ask one time. |
+| A fact of the world | The CI status, the review state | Do not remember it. Read it again on each run. |
+| Progress | The open step, the number of retries | Remember it. |
+
+An app works the same way. It keeps what the user typed, and it loads the inbox again.
+
+Effects on the `pr-handling` example:
+
+- After a pushed CI fix, the next run does not ask for the draft state or the task again.
+- "Run the failed job again, one time" becomes a rule. The program can count the retries.
+- A retry is new progress, not a second visit with old answers. Finding 1 does not occur.
+
+The core stays pure. The state is the run log of the subject, and a step is a function of that log.
+
+Recommended place for the state: the state folder of the user, with one file for each repo and subject. Reasons:
+
+- The hook and every session on the machine can read it.
+- Nothing goes into git, and a cloned repo brings no state with it.
+
+A limit: a second machine does not see the state. State that lives with the subject, such as on the pull request, can solve that later.
+
+A stored answer can become wrong. A new commit can add permissions code after the agent answered "no". An answer needs a rule for when it expires.
+
+Recommended expiry rule: an answer about the content of the subject expires when the content changes. For a pull request, that is a new head commit. An approval from the user expires the same way. Progress does not expire.
 
 ## Worked example: merge-pr
 
@@ -204,15 +241,18 @@ For the CLI in an agent mode: exit with code 0 for `question`, `request` and `do
 
 Each step is usable without the next one.
 
-1. The run keeps the answers, with the log on disk and the key guard.
-2. The outcome status and one gate.
-3. Probes and run arguments.
+1. The run log on disk and the key guard, on top of the MCP host.
+2. State between runs: the subject, the three kinds, and the expiry rule.
+3. The outcome status and one gate.
+4. Probes and run arguments.
 
 ## Open questions
 
 - Where does a program declare its gate: a doc tag in `main.rein`, or the manifest?
 - Cycles: answers for each visit, or a checker error?
 - How does the hook match a run to a session? The hook can record the run id from the event after the start tool call. A weaker match is the working directory.
+- State: when does the state of a subject end? For a pull request, merged or closed is the likely end.
+- State: how does a program declare the kind of each question: remember, or read again?
 - Trust: a probe runs a command from a program file. Does a project-scope program from a cloned repo need consent first?
 - Contract 4 opens a gate one time. Does a failed tool call need a second try without a new run?
 - How does a gate pass a value from the guarded command to the run, such as the pull request number?
