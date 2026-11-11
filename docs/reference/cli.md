@@ -32,7 +32,7 @@ A small language for agent decision flows
 * `eval` — Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 * `step` — Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
 * `describe` — Print a function's schema as JSON
-* `graph` — Print the reference graph as a Mermaid flowchart
+* `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs
 * `list` — List the programs visible from here: name, scope, path, description, and first question
 * `show` — Print a program's source: its manifest and every .rein file
 * `serve` — Serve the agent interface. Holds live runs in memory
@@ -137,13 +137,25 @@ Print a function's schema as JSON
 
 ## `rein graph`
 
-Print the reference graph as a Mermaid flowchart
+Print the program graph: functions, questions, branches, outcomes, and hand-offs
 
-**Usage:** `rein graph [OPTIONS]`
+**Usage:** `rein graph [OPTIONS] [PROGRAM]`
+
+###### **Arguments:**
+
+* `<PROGRAM>` — Program to draw: a `.rein` file, or a name (see `rein list`). Default: the project around the current directory
 
 ###### **Options:**
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
+* `--refs` — Draw only the references: one node per function, one edge per reference
+* `--format <FORMAT>` — Output format
+
+  Default value: `mermaid`
+
+  Possible values: `mermaid`, `dot`, `json`
+
+* `-o`, `--output <FILE>` — Write to FILE instead of stdout. A `.svg` or `.png` FILE is rendered from DOT by Graphviz `dot`
 
 
 
