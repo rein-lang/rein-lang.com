@@ -7,9 +7,9 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 
 ## 1. Project layout
 
-- A flow root is a directory that contains a `main.rein` file. A flow is a flow root found through scopes (section 1a), or a directory passed to a command.
+- A flow root is a directory that contains a `main.rein` file. A flow is a flow root found through scopes (section 1a), or a directory passed to a command. A program can also be one `.rein` file: its folder is the flow root and its name is the entry (section 1a).
 - Each function is one file with the `.rein` extension.
-- Every flow root has a `main.rein`. It is the agent's entry point. The checker reports a flow root without it.
+- Every flow root has a `main.rein`. It is the agent's entry point. The checker reports a flow root without it. A program run from its own entry file needs none (section 1a).
 - A function name is the file path relative to the flow root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
 - The name of the `export default function` inside a file is a TypeScript identifier. It need not match the file name.
 - Subdirectories are allowed.
@@ -38,6 +38,7 @@ repo/rein/merge-pr/rein.json                       project scope (a visible `rei
 - `rein install <path>` links a program folder into the user scope under its name.
 - `REIN_HOME` replaces the user scope folder. `REIN_SYSTEM_DIRS` replaces the system folders, as a colon-separated list. Both exist for tests and daemons.
 - `rein check <dir>`, `rein eval --root <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
+- A program is also one `.rein` file, the file form. `rein step <file.rein>`, `rein run <file.rein>` and `rein check <file.rein>` take it: the file's folder is the flow root, and the file name without `.rein` is the entry. No folder, manifest or scope is needed. Scopes and `rein list` only find programs by name.
 - Imports do not exist. References (`@./`, `@../`) stay inside the flow root.
 
 ## 2. Lexical rules
@@ -356,7 +357,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | An answer is a `string`, or has no doc comment |
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
-| The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1 |
+| The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
 
 ### Warnings
 
@@ -524,9 +525,12 @@ The response depends only on the project and the request. The runtime keeps noth
 
 ```text
 rein step --root examples/rein/support-ticket --answer main.vip=no --json
+rein step examples/rein/support-ticket/main.rein --answer main.vip=no --json
 rein step --root examples/rein/support-ticket --stdin < request.json
 rein step --flow support-ticket --json
 ```
+
+The program is a `.rein` path or a `rein list` name, and it may be given as the positional argument. A path is the program itself: its folder is the root and its name is the entry (section 1a). `--flow` and `--root` still work.
 
 `--stdin` reads one request as JSON, and then the output is always JSON. Do not combine `--stdin` with `--entry`, `--answer` or `--input`. `--answer` repeats for each key. An answer key may be given once. `--input` repeats for each name.
 

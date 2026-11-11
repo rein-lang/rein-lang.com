@@ -14,7 +14,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 7. This repo is a proof of concept, private for now. It holds everything known for a fact so far: the language server, a VS Code extension, and several example projects.
 8. Use Rust as much as possible. The core, the CLI and the language server are Rust. The VS Code extension is a thin JS client.
 9. Rein mimics TypeScript types and syntax as much as possible (for example `|` unions for choices), because TypeScript is very good to write and read.
-10. Every project has a `main.rein`; it is the agent's entry point.
+10. Every project has a `main.rein`; it is the agent's entry point. A program run from its own file needs none (fact 25).
 11. Each component holds its own docs: the function has its doc comment, and each input has its own doc comment right before it.
 12. Rein is as strict as possible: every case is handled explicitly. There is no `default` and no `else`. Every `if` block returns, and the code after it handles the other case.
 13. Templates work like Rust macros: they expand to a string. A standard library ships templates such as `delegate(model, task)`.
@@ -22,13 +22,14 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 15. Every function returns something on every path: a string, a template, or a reference to another function.
 16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
-18. Programs are named apps in visible folders: project (`rein/`), user (the user programs folder, filled by `rein install`), system; the closest scope wins. The agent finds and launches them by name, not by navigating a dot-folder.
+18. A program is its entry file (fact 25). Scoped folders are only a catalog: project (`rein/`), user (the user programs folder, filled by `rein install`), system; the closest scope wins. `rein list` shows the catalog. The agent finds a program there by name, not by navigating a dot-folder. (Amended 2026-11-12.)
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
 20. A program holds its state, like a computer app. The agent does not enter every answer again.
 21. A program takes inputs, such as a pull request link.
 22. No global scope. A function gets a value only from its parameters. The caller passes it.
 23. Templates are permanent, and user templates (`templates/*.rein`) stay, not only the std `delegate` and `askUser`. A template call is a value, not a step: it nests as an argument and adds no hop to the `rein step` trace. Template arguments are always checked: the count equals the parameter count, every parameter is used in the template literal, and every parameter has its own doc comment. (2026-11-12)
 24. Call arguments are named, as in Python: `f(name=value, other=value)`. A positional argument is a compile error, and no flag allows it. Order does not matter. Each name is a parameter, given once. A name says what a value is, and it still works when a parameter moves. (2026-11-12)
+25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see Planned). (2026-11-12)
 
 ## PoC choices (revisable)
 
@@ -36,7 +37,7 @@ Each choice can change. The reason is one line.
 
 - Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
-- A flow root is a directory that holds `main.rein`. The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
+- A flow root is a directory that holds `main.rein`, or the folder of a program's entry file (fact 25). The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
 - Scopes: project (`rein/` up the tree), user (`~/.config/rein/programs/`), system (`/etc/rein/`). Why: visible folders an agent can read and write with its normal tools.
 - The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
 - `install` writes only `claude-code`. Why: polyhook's `tools.toml` gives docs links for the other tools, but no config file location.
@@ -64,7 +65,13 @@ Each choice can change. The reason is one line.
 - Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
 - Programs live in a visible `rein/` folder with a `rein.json` manifest, and `rein install` registers them. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
 
+## Planned (not built)
+
+- Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
+
 ## Open questions
+
+- The one-file format. How several functions live in one file, and how references resolve inside it.
 
 - Free-text answers. A free-text answer from the agent is still not possible. Each question is a `boolean` or a union.
 - Loops and retries. Today a retry is a reference cycle.
