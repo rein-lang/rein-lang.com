@@ -73,7 +73,8 @@ switch      := "switch" "(" IDENT ")" "{" clause* "}"
 clause      := "case" STRING ":" (block | stmt*)   // a label with no body joins the next body
 answer      := DOC "const" IDENT ":" type "=" "await" "request" "(" value ")" ";"?
 return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?   // REF with args: a template call or a hand-off
-args        := value ("," value)* ","?       // the args of a call or a hand-off
+args        := arg ("," arg)* ","?           // the args of a call or a hand-off
+arg         := IDENT "=" value               // named, as in Python. A value with no name is a checker error
 value       := STRING | TEMPLATE | IDENT | IDENT "(" args ")" | REF "(" args ")"
 expr        := and ("||" and)*
 and         := unary ("&&" unary)*
@@ -82,6 +83,8 @@ atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 ```
 
 A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller, or a template call. A hand-off cannot be an argument of a call.
+
+Every argument has a name, as in Python: `name=value`. The name is a parameter of the callee. The order of the arguments does not matter. A positional argument is a checker error, and no flag allows it. A parameter is given once.
 
 Helpful errors from the parser:
 
@@ -161,7 +164,7 @@ A reference names another function of the project. The path is relative to the f
 - A missing target is an error on the reference: `` cannot find function `@../x` ``.
 - Function identity is the root-relative name (`ci/fix`). The CLI, JSON, graph, cycles, and reachability from `main` use it.
 - `return @./path;` hands the agent to the function (section 9). The function must have no `string` parameter.
-- `return @./path(args);` calls a template (section 4, Templates). It hands the agent to a normal function with values (section 4, Inputs).
+- `return @./path(name=value);` calls a template (section 4, Templates). It hands the agent to a normal function with values (section 4, Inputs).
 - A reference to a template without a call is an error: `` `@./tpl` is a template; call it with arguments, like `@./tpl(...)` ``.
 
 ### Std
@@ -185,8 +188,8 @@ A template is a file whose function meets every rule below. It is like a Rust ma
 - Every parameter is used in the template literal: `` template parameter `x` is not used; add ${x} to the template ``.
 - A template is called from a function, by a std name (`delegate(...)`) or a reference (`@./templates/reply(...)`).
 - A template call is a value, not a step. It adds no hop to the `rein step` trace.
-- Call arguments are strings, template literals, bare names of a `string` parameter of the caller, or template calls. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
-- The number of arguments must equal the number of parameters: `` `@./tpl` takes 2 arguments, got 1 ``.
+- Call arguments are named (`name=value`) and their values are strings, template literals, bare names of a `string` parameter of the caller, or template calls. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
+- Every parameter is given once, by name: `` missing argument `b` in call to `@./tpl`; write `b=value` ``.
 - A template is never run by itself: `rein eval <template>` is an error, `templates are called from functions, not run`.
 
 Example, `templates/tell_customer.rein`:
@@ -211,9 +214,9 @@ A `string` parameter of a normal function is an input. The caller passes its val
 
 - An input is used only in a template literal, as `${name}`, or as a bare name argument of a call.
 - A condition or a switch subject cannot read an input. Error: `` `pr` is a string input; a condition cannot read it ``.
-- `return @./merge(pr);` hands the agent to a normal function and passes the value. The arguments bind to the target's `string` parameters, in declaration order.
-- An argument is a STRING, a template literal, or a bare name of a `string` parameter of the caller. Any other bare name is an error: `` `x` is not a string input ``.
-- The number of arguments equals the number of `string` parameters of the target. `return @./merge;` to that function is an error: `` `@./merge` takes 1 argument, got 0 ``.
+- `return @./merge(pr=pr);` hands the agent to a normal function and passes the value. The arguments bind by name to the target's `string` parameters.
+- An argument is `name=value`, where the value is a STRING, a template literal, or a bare name of a `string` parameter of the caller. Any other bare name is an error: `` `x` is not a string input ``.
+- Every `string` parameter of the target is given by name, once. `return @./merge;` to that function is an error: `` `@./merge` takes 1 argument, got 0 ``.
 - Arguments to a function with no `string` parameter are an error: `` `@./x` takes no arguments; return it without a call ``.
 
 Example, `main.rein` and `merge.rein`. `main` passes `pr` to `merge`. `merge` uses it in a template literal. `merge` also asks the agent for `ci`, a union, so it is a normal function.
@@ -226,7 +229,7 @@ export default function main(
   /** The pull request link. */
   pr: string,
 ) {
-  return @./merge(pr);
+  return @./merge(pr=pr);
 }
 ```
 
@@ -272,7 +275,7 @@ export default async function answerFaq(
 ```
 
 - The `const` must have a doc comment, a type (`boolean` or a union of strings; not `string`), `= await request(value)`, and an optional `;`.
-- `value` is a string, a template literal, or a template call. `await request(delegate("use opus model", "code review the pr"))` is valid.
+- `value` is a string, a template literal, or a template call. `await request(delegate(model="use opus model", task="code review the pr"))` is valid.
 - The `const` is the only `const` in Rein. It is an answer, not a variable. Its name is a parameter for the rest of its block. A name clash with a parameter or another answer is an error: `duplicate name`. Using the name before its declaration is an error: `` `x` is used before it is declared ``.
 - `await` needs `export default async function`. An `async` function with no `await` is a warning: `` `async` function has no `await`; drop `async` ``.
 - The answer is stateless. When the run reaches the `await`, and no value is given for the answer, the run stops with a request (section 9).
@@ -337,7 +340,10 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A statement follows a terminating statement (`unreachable statement`) |
 | A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A reference to a template is returned without a call |
-| A call or a hand-off has the wrong number of arguments (`` `@./tpl` takes 2 arguments, got 1 ``) |
+| A call or a hand-off has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
+| A call or a hand-off names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
+| A call or a hand-off gives one parameter twice (`` `a` is given twice in call to `@./tpl`; give each name once ``) |
+| A call or a hand-off leaves a parameter out (`` missing argument `b` in call to `@./tpl`; write `b=value` ``) |
 | A call or a hand-off gives arguments to a function with no `string` parameter (`` `@./x` takes no arguments; return it without a call ``) |
 | A `request` value calls a function that is not a template (`only templates can be called; return the function to hand off`) |
 | A std name is unknown, or a call names a std item that is not a template |
@@ -374,7 +380,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 - Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members. A `string` parameter takes any text, and it is never a question. Setting one name twice is an error: `input `name` set twice`.
 - `--set` also gives an answer its value. An answer's value is checked when the run reaches its `const`.
 - A template run by itself is an error.
-- A hand-off with arguments carries their values to the target. The agent runs the target with them (section 4, Inputs).
+- A hand-off with arguments carries their values, by name, to the target. The agent runs the target with them (section 4, Inputs).
 
 ## 10. CLI
 
