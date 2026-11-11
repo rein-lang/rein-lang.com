@@ -1,6 +1,8 @@
 // Generate website/docs/examples/*.md from the programs in examples/rein/<name>/ (each has a rein.json).
 // Run `node website/docs/scripts/generate-examples.mjs`. Pass `--check` to fail, without writing,
 // when a page, the overview, or the sidebar in .vitepress/config.mts differs from the examples.
+// Each page embeds the program graph from `rein graph`, so the script needs `cargo`.
+import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -26,6 +28,14 @@ function reinFiles(name) {
     .sort()
 }
 
+// The Mermaid flowchart of one program, from the Rust CLI, so the page and `rein graph` never differ.
+function graph(name) {
+  return execFileSync('cargo', ['run', '--quiet', '-p', 'rein', '--', 'graph', '--root', join(programs, name)], {
+    cwd: join(docs, '../..'),
+    encoding: 'utf8',
+  })
+}
+
 function examplePage(name) {
   const m = manifest(name)
   const readme = readFileSync(join(programs, name, 'README.md'), 'utf8')
@@ -34,7 +44,8 @@ function examplePage(name) {
   if (!files.includes(m.entry)) throw new Error(`${name}/rein.json entry "${m.entry}" is not a .rein file`)
   const base = `../../../examples/rein/${name}`
   let out = `---\ndescription: ${JSON.stringify(m.description)}\n---\n\n`
-  out += `<!--@include: ${base}/README.md-->\n\n## Source\n\n`
+  out += `<!--@include: ${base}/README.md-->\n\n`
+  out += `## Graph\n\nThe decision flow, from \`rein graph ${name}\`:\n\n\`\`\`mermaid\n${graph(name)}\`\`\`\n\n## Source\n\n`
   out += `### \`rein.json\`\n\n<<< ${base}/rein.json{json}\n`
   // The entry file comes first, then the rest in path order.
   for (const f of [m.entry, ...files.filter((f) => f !== m.entry)]) {
