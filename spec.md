@@ -22,21 +22,22 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 
 ### 1a. Flows and scopes
 
-Flows live in scoped `.rein/` folders, like `.claude/`. One subfolder per flow:
+Programs (flows) live in scoped folders. One subfolder per program:
 
 ```text
-repo/.rein/merge-pr/main.rein          project scope (the `.rein/` in the working directory or any ancestor)
-~/.rein/my-pr-review/main.rein         user scope
-/etc/rein/deploy-gate/main.rein        system scope (macOS also /Library/Application Support/Rein/)
+repo/rein/merge-pr/rein.json                       project scope (a visible `rein/` in the working directory or any ancestor)
+~/.config/rein/programs/my-pr-review/rein.json     user scope (`$XDG_CONFIG_HOME/rein/programs/` when set)
+/etc/rein/deploy-gate/main.rein                    system scope (macOS also /Library/Application Support/Rein/)
 ```
 
-- A flow is a folder directly under a scoped `.rein/` (or a system folder) that holds `main.rein`. A folder without `main.rein` is not a flow and is not listed.
-- The flow name is the folder name.
-- The project scope walks up from the working directory and uses every `.rein/` it finds. The user scope is not also a project scope when it is an ancestor of the working directory.
-- Precedence on a name clash: project, then user, then system. Inside the project scope, the nearest `.rein/` up the tree wins.
-- A flow that loses a clash is shadowed. `rein flows` lists it and marks it.
+- A program is a folder directly under a scope folder that holds a `rein.json` manifest or a `main.rein`. Any other folder is not listed.
+- The manifest is `{"name": "...", "description": "...", "entry": "main.rein"}`. Each field is optional. The defaults are the folder name, the first paragraph of the entry doc comment, and `main.rein`.
+- The project scope walks up from the working directory and uses every `rein/` it finds. The user scope is not also a project scope when it is an ancestor of the working directory.
+- Precedence on a name clash: project, then user, then system. Inside the project scope, the nearest folder up the tree wins.
+- A program that loses a clash is shadowed. `rein list` lists it and marks it.
+- `rein install <path>` links a program folder into the user scope under its name.
 - `REIN_HOME` replaces the user scope folder. `REIN_SYSTEM_DIRS` replaces the system folders, as a colon-separated list. Both exist for tests and daemons.
-- `rein check <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
+- `rein check <dir>`, `rein eval --root <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
 - Imports do not exist. References (`@./`, `@../`) stay inside the flow root.
 
 ## 2. Lexical rules
@@ -185,7 +186,7 @@ A template is a file whose function meets every rule below. It is like a Rust ma
 - A template is called from a function, by a std name (`delegate(...)`) or a reference (`@./templates/reply(...)`).
 - Call arguments are strings, template literals, or bare names of a `string` parameter of the caller. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
 - The number of arguments must equal the number of parameters: `` `@./tpl` takes 2 arguments, got 1 ``.
-- A template is never run by itself: `rein run <template>` is an error, `templates are called from functions, not run`.
+- A template is never run by itself: `rein eval <template>` is an error, `templates are called from functions, not run`.
 
 Example, `templates/tell_customer.rein`:
 
@@ -378,14 +379,17 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | Command | Purpose |
 | --- | --- |
 | `rein check [PATH]` | Check a project directory, a directory inside a project, or one `.rein` file. Default `.`. Prints `file:line:col: error: message` for the files under PATH. Exit code 1 when there are errors, when PATH does not exist, or when PATH is not a `.rein` file. |
-| `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. `--set` also gives a value to a `string` parameter. A name given twice with `--set` is an error. |
+| `rein eval [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. `--set` also gives a value to a `string` parameter. A name given twice with `--set` is an error. |
+| `rein run [NAME] [--root DIR] [--entry FN] [--json]` | Run a program as a live process. Writes one step per line, reads one answer per line on stdin. See [interface.md](interface.md). |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
 | `rein graph [--root DIR]` | Print a Mermaid flowchart of the references. Node ids are `n0`, `n1`, ... in name order, and the label is the function name. The `main` node is drawn as a stadium shape. |
 | `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--input name=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. `--input` gives a value to a `string` parameter of the entry function. The agent-facing interface (section 11). |
-| `rein flows [--json]` | List the flows visible from here: name, scope, path, description, shadowed. |
+| `rein list [--json]` | List the programs visible from here: name, scope, path, description, shadowed, entry, and the first step. `rein flows` is an alias. |
+| `rein show <NAME>` | Print a program's manifest and every `.rein` file, entry first. |
+| `rein serve --mcp` | The MCP host. Holds live runs in memory. Tools: `rein_programs`, `rein_show`, `rein_start`, `rein_answer`, `rein_status`, `rein_stop`, `rein_list`. See [interface.md](interface.md). |
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
-| `rein install <tool> [--project \| --user] [--dry-run]` | Write the tool's hook config so it runs `rein hook` (section 12). Only `claude-code`. |
+| `rein install <tool \| path> [--project \| --user] [--dry-run]` | A program folder: link it into the user scope (section 1a). A tool: write its hook config so it runs `rein hook` (section 12). Only `claude-code`. |
 | `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.
@@ -404,7 +408,7 @@ need input <name>: <type> - <description>
 
 ### Request output
 
-Text form, from `rein run` when the agent must act (exit code 3):
+Text form, from `rein eval` when the agent must act (exit code 3):
 
 ```text
 request: <instruction>
@@ -414,7 +418,7 @@ hint: rerun with --set <name>=<value>
 
 ### Reference output
 
-Text form, from `rein run` when the next step is another function:
+Text form, from `rein eval` when the next step is another function:
 
 ```text
 next: <function>
@@ -422,7 +426,7 @@ next: <function>
   <name>: <type> - <description>
 ```
 
-### `rein run --json`
+### `rein eval --json`
 
 Each run prints one of these objects:
 
@@ -457,7 +461,7 @@ Each run prints one of these objects:
 
 ## 11. Stepping (agent interface)
 
-`rein step` steps the whole flow in one call. It is the interface for agents. `rein run` evaluates one function, and is the debug command. The stepping logic lives in `rein_core::step`. It is pure: no I/O and no state. The CLI only parses flags, calls it, and prints.
+`rein step` steps the whole flow in one call. It is the interface for agents. `rein eval` evaluates one function, and is the debug command. Live runs (`rein run`, `rein serve --mcp`) call the same logic and keep the answers above it; see [interface.md](interface.md). The stepping logic lives in `rein_core::step`. It is pure: no I/O and no state. The CLI only parses flags, calls it, and prints.
 
 Protocol version 1. A request and a response are JSON objects, each with a `version` field. A daemon or another transport can carry the same objects unchanged.
 
@@ -511,8 +515,8 @@ The response depends only on the project and the request. The runtime keeps noth
 ### CLI
 
 ```text
-rein step --root examples/.rein/support-ticket --answer main.vip=no --json
-rein step --root examples/.rein/support-ticket --stdin < request.json
+rein step --root examples/rein/support-ticket --answer main.vip=no --json
+rein step --root examples/rein/support-ticket --stdin < request.json
 rein step --flow support-ticket --json
 ```
 

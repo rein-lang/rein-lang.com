@@ -41,7 +41,7 @@ Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build
    {"kind":"error", ... "message":"flow did not finish in 64 steps (reference cycle?)", ...}
    ```
 
-   The retry in the `merge-pr` example does not work. The same path fails in `rein-lang/pr-handling`.
+   That run failed on that commit. The `merge-pr` example now ends the retry with a text, so `ci/fix` no longer references `merge_pr`.
 2. On the CLI, a question exits with code 2 and a request exits with code 3. In Claude Code, the shell tool reports a non-zero exit code as an error. A normal result looks like a failure.
 3. Nothing checks that the agent started a program or finished it. The hook gives advice only.
 4. With `rein step`, the agent can change an earlier answer between two calls. The runtime cannot see the change, because it keeps nothing.

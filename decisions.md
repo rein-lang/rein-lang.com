@@ -22,7 +22,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 15. Every function returns something on every path: a string, a template, or a reference to another function.
 16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
-18. Flows live in scoped `.rein/` folders like `.claude/`: project, user, system; the closest scope wins.
+18. Programs are named apps in visible folders: project (`rein/`), user (the user programs folder, filled by `rein install`), system; the closest scope wins. The agent finds and launches them by name, not by navigating a dot-folder.
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
 20. A program holds its state, like a computer app. The agent does not enter every answer again.
 21. A program takes inputs, such as a pull request link.
@@ -35,7 +35,7 @@ Each choice can change. The reason is one line.
 - Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
 - A flow root is a directory that holds `main.rein`. The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
-- Scopes: project (`.rein/` up the tree), user (`~/.rein/`), system (`/etc/rein/`). Why: the same layout as `.claude/`, so a user knows where a flow lives.
+- Scopes: project (`rein/` up the tree), user (`~/.config/rein/programs/`), system (`/etc/rein/`). Why: visible folders an agent can read and write with its normal tools.
 - The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
 - `install` writes only `claude-code`. Why: polyhook's `tools.toml` gives docs links for the other tools, but no config file location.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
@@ -47,7 +47,7 @@ Each choice can change. The reason is one line.
 - A `string` parameter is an input: the caller passes it. A `boolean` or a union is a question. Why: the type decides, so no new keyword is needed.
 - Each parameter has its own doc comment right before it. The function has its own doc comment before `export default function`. Why: each component holds its own docs, so an edit to one parameter never touches another.
 - An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
-- `rein run` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
+- `rein eval` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
 - Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing reference.
 - Evaluation is lazy. The runtime asks only for the parameters the taken path needs. Why: the agent does not answer questions that do not change the result.
 - `if` is a guard with no `else`. Why: each branch returns, so a function is a list of checks, and the reader sees each case in order.
@@ -55,9 +55,11 @@ Each choice can change. The reason is one line.
 - Switch has no `default`. Every union member needs a case. Why: a new member is a compile error, not a silent fallback.
 - A function must return on every path. Why: an agent must always get a next step.
 - Reference cycles are allowed, but the checker warns. Why: a cycle acts like a loop, and Rein has no loops yet. A retry flow needs one.
-- One step per run. `rein run` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
+- One step per eval. `rein eval` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
 - Agents consume flows through `rein step` (protocol v1, see [spec.md section 11](spec.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same flow. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
+- Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
+- Programs live in a visible `rein/` folder with a `rein.json` manifest, and `rein install` registers them. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
 
 ## Open questions
 
