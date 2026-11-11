@@ -114,7 +114,7 @@ Each question names who answers it.
 | `user` | The user only. | Approval, such as "may I deploy?" |
 
 - A probe needs no agent turn. A program that reads its facts with probes asks fewer questions.
-- A probe needs run arguments, such as the pull request number. An argument is a `string`. It goes into templates and probes only, and never into a condition.
+- A probe needs a program input, such as the pull request number. Program inputs are built ([spec.md section 4](spec.md#4-declarations)). Probes are still a proposal. An input is a `string`. It goes into templates and probes only, and never into a condition.
 - The response for a `user` question says so. The harness can then use its own ask dialog, and the agent must not answer.
 
 ### 4. Outcome: a verdict that a gate can read
@@ -130,6 +130,8 @@ Owner direction, 2026-11-11: the program holds the state, like a computer app. A
 Contract 2 covers one run. This section covers what stays after a run ends.
 
 The state hangs on a subject, such as one pull request. A subject is like a document in an app. A run starts with its subject, and a later run on the same subject continues from the stored state.
+
+The subject of a run is a program input, such as the pull request link. The caller passes it as a `string` parameter ([spec.md section 4](spec.md#4-declarations)).
 
 Not all state is equal:
 
@@ -244,7 +246,7 @@ Each step is usable without the next one.
 1. The run log on disk and the key guard, on top of the MCP host.
 2. State between runs: the subject, the three kinds, and the expiry rule.
 3. The outcome status and one gate.
-4. Probes and run arguments.
+4. Probes and program inputs. Inputs are built; probes are not.
 
 ## Open questions
 

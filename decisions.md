@@ -24,6 +24,9 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
 18. Flows live in scoped `.rein/` folders like `.claude/`: project, user, system; the closest scope wins.
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
+20. A program holds its state, like a computer app. The agent does not enter every answer again.
+21. A program takes inputs, such as a pull request link.
+22. No global scope. A function gets a value only from its parameters. The caller passes it.
 
 ## PoC choices (revisable)
 
@@ -40,7 +43,8 @@ Each choice can change. The reason is one line.
 - A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.
 - Std names need no import: `delegate`, `askUser`, `request`. Why: the std library is part of the language, so it is always there.
 - Templates are files with `string` parameters, called by a std name or a reference. Why: a template is a string builder, and calls keep the caller in control of the values.
-- Inputs are parameters of the exported function: `boolean`, a union of strings such as `"green" | "red"`, or `string` for a template. Why: a TypeScript signature the agent can read, and the checker can test values.
+- Inputs are parameters of the exported function: `boolean`, a union of strings such as `"green" | "red"`, or `string`. Why: a TypeScript signature the agent can read, and the checker can test values.
+- A `string` parameter is an input: the caller passes it. A `boolean` or a union is a question. Why: the type decides, so no new keyword is needed.
 - Each parameter has its own doc comment right before it. The function has its own doc comment before `export default function`. Why: each component holds its own docs, so an edit to one parameter never touches another.
 - An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
 - `rein run` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
@@ -57,7 +61,7 @@ Each choice can change. The reason is one line.
 
 ## Open questions
 
-- Free-text inputs. Today a parameter is `boolean`, a union of strings, or `string` only in a template.
+- Free-text answers. A free-text answer from the agent is still not possible. Each question is a `boolean` or a union.
 - Loops and retries. Today a retry is a reference cycle.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
 - References across projects. Today references stay inside one project.

@@ -3,7 +3,7 @@
 Status: proof of concept. Private. Rules here drive the checker and the evaluator.
 Design reasons and open questions live in [decisions.md](decisions.md).
 
-Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no variables except answers, and no `default` or `else`.
+Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no global scope, and no `default` or `else`. A function gets its values only from its parameters and its answers.
 
 ## 1. Project layout
 
@@ -71,16 +71,16 @@ if          := "if" "(" expr ")" block       // no else: see section 5
 switch      := "switch" "(" IDENT ")" "{" clause* "}"
 clause      := "case" STRING ":" (block | stmt*)   // a label with no body joins the next body
 answer      := DOC "const" IDENT ":" type "=" "await" "request" "(" value ")" ";"?
-return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?
-args        := value ("," value)* ","?       // the args of a template call
-value       := STRING | TEMPLATE | IDENT "(" args ")" | REF "(" args ")"
+return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?   // REF with args: a template call or a hand-off
+args        := value ("," value)* ","?       // the args of a call or a hand-off
+value       := STRING | TEMPLATE | IDENT | IDENT "(" args ")" | REF "(" args ")"
 expr        := and ("||" and)*
 and         := unary ("&&" unary)*
 unary       := "!" unary | atom
 atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 ```
 
-A template call argument is a STRING or a TEMPLATE. A call cannot be an argument of a call. `value` is an argument of `request` only, so it can be a template call.
+A call argument is a STRING, a TEMPLATE, or a bare name of a `string` parameter of the caller. A call cannot be an argument of a call. `value` is an argument of `request` only, so it can be a template call.
 
 Helpful errors from the parser:
 
@@ -148,7 +148,7 @@ Parsing rules, for each doc block:
 
 - A parameter is `name: type`. The type is `boolean`, a union of strings, or `string`.
 - `boolean` is true or false. A union is one of its string members. It needs at least 2 unique, non-empty members. A leading `|` is allowed.
-- `string` is text. Only a template takes string parameters (section 4, Templates).
+- `string` is text. It is an input: the caller passes its value, and the agent is never asked for it (section 4, Inputs).
 - Parameter names are unique within a function.
 
 ### References
@@ -159,8 +159,8 @@ A reference names another function of the project. The path is relative to the f
 - The reference resolves to `<dir of current file>/<path>.rein`. The target must stay inside the project root. `@../../outside` in `ci/fix.rein` is an error: `` `@../../outside` leaves the project root ``.
 - A missing target is an error on the reference: `` cannot find function `@../x` ``.
 - Function identity is the root-relative name (`ci/fix`). The CLI, JSON, graph, cycles, and reachability from `main` use it.
-- `return @./path;` hands the agent to the function (section 9).
-- `return @./path(args);` calls a template (section 4, Templates).
+- `return @./path;` hands the agent to the function (section 9). The function must have no `string` parameter.
+- `return @./path(args);` calls a template (section 4, Templates). It hands the agent to a normal function with values (section 4, Inputs).
 - A reference to a template without a call is an error: `` `@./tpl` is a template; call it with arguments, like `@./tpl(...)` ``.
 
 ### Std
@@ -177,13 +177,13 @@ An unknown std name is an error that lists the std names: `` `x` is not in std; 
 
 ### Templates
 
-A template is a file whose function has at least one `string` parameter. It is like a Rust macro: it expands to a string.
+A template is a file whose function meets every rule below. It is like a Rust macro: it expands to a string. Any other function is a normal function. A normal function may mix `string` parameters with boolean and union parameters.
 
-- Every parameter is `string`, with its own doc comment.
+- It has at least one parameter. Every parameter is `string`, with its own doc comment.
 - The body is exactly one `return` of a template literal. There is no `if`, no `switch`, no import, and no other statement.
 - Every parameter is used in the template literal: `` template parameter `x` is not used; add ${x} to the template ``.
 - A template is called from a function, by a std name (`delegate(...)`) or a reference (`@./templates/reply(...)`).
-- Call arguments are strings or template literals. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
+- Call arguments are strings, template literals, or bare names of a `string` parameter of the caller. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
 - The number of arguments must equal the number of parameters: `` `@./tpl` takes 2 arguments, got 1 ``.
 - A template is never run by itself: `rein run <template>` is an error, `templates are called from functions, not run`.
 
@@ -200,6 +200,48 @@ export default function tellCustomer(
   nextStep: string,
 ) {
   return `${opening} ${nextStep}`;
+}
+```
+
+### Inputs
+
+A `string` parameter of a normal function is an input. The caller passes its value. The agent is never asked for it.
+
+- An input is used only in a template literal, as `${name}`, or as a bare name argument of a call.
+- A condition or a switch subject cannot read an input. Error: `` `pr` is a string input; a condition cannot read it ``.
+- `return @./merge(pr);` hands the agent to a normal function and passes the value. The arguments bind to the target's `string` parameters, in declaration order.
+- An argument is a STRING, a template literal, or a bare name of a `string` parameter of the caller. Any other bare name is an error: `` `x` is not a string input ``.
+- The number of arguments equals the number of `string` parameters of the target. `return @./merge;` to that function is an error: `` `@./merge` takes 1 argument, got 0 ``.
+- Arguments to a function with no `string` parameter are an error: `` `@./x` takes no arguments; return it without a call ``.
+
+Example, `main.rein` and `merge.rein`. `main` passes `pr` to `merge`. `merge` uses it in a template literal. `merge` also asks the agent for `ci`, a union, so it is a normal function.
+
+```ts
+/**
+ * Merge the pull request when it is ready.
+ */
+export default function main(
+  /** The pull request link. */
+  pr: string,
+) {
+  return @./merge(pr);
+}
+```
+
+```ts
+/**
+ * Merge the pull request when CI is green.
+ */
+export default function merge(
+  /** The pull request link. */
+  pr: string,
+  /** What is the CI status of the PR? */
+  ci: "green" | "red" | "pending",
+) {
+  if (ci === "green") {
+    return `Merge ${pr}. Then delete its branch.`;
+  }
+  return "Wait for CI, then start this program again.";
 }
 ```
 
@@ -250,6 +292,7 @@ export default async function answerFaq(
 
 - A boolean parameter or answer is used bare: `if (docsOnly)`, or negated: `if (!docsOnly)`.
 - A union parameter or answer is compared with `===` or `!==`: `if (ci === "green")`.
+- A `string` parameter cannot be read by a condition or a switch (section 4, Inputs).
 - `!`, `&&`, `||` combine conditions. `!` binds tightest, then `&&`, then `||`. Parentheses group.
 - Evaluation of `&&` and `||` stops early when the result is known.
 
@@ -279,6 +322,8 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A condition uses a union parameter bare |
 | A condition compares a boolean parameter with `===` or `!==` |
 | A condition or switch subject names an unknown parameter |
+| A condition or switch subject names a `string` parameter (`` `pr` is a string input; a condition cannot read it ``) |
+| A bare name in an argument is not a `string` parameter of the caller (`` `x` is not a string input ``) |
 | `switch` subject is not a union |
 | A compared value or case value is not a member of the union |
 | A switch does not have a case for every member |
@@ -289,11 +334,10 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A statement follows a terminating statement (`unreachable statement`) |
 | A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A reference to a template is returned without a call |
-| A reference to a function is called (`only templates can be called; return the function to hand off`) |
-| A call has the wrong number of arguments (`` `@./tpl` takes 2 arguments, got 1 ``) |
+| A call or a hand-off has the wrong number of arguments (`` `@./tpl` takes 2 arguments, got 1 ``) |
+| A call or a hand-off gives arguments to a function with no `string` parameter (`` `@./x` takes no arguments; return it without a call ``) |
 | A std name is unknown, or a call names a std item that is not a template |
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
-| A template takes a union or a boolean parameter |
 | A template parameter is not used |
 | A template interpolates a boolean, or a name that is not a parameter or an answer |
 | An import statement is in the file (`Rein has no imports`) |
@@ -323,19 +367,20 @@ When a file has a syntax error, only that error is reported for the file. It is 
   - a REF: the agent runs the target function next, using its description and inputs. The REF is the target's project path, such as `ci/fix`.
   - a request for a parameter: the agent answers the question, then runs again.
   - a request for the agent to act: the agent does the instruction, then answers the `const`, then runs again.
-- Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members. Setting one name twice is an error: `input `name` set twice`.
+- Parameter values come from `--set name=value`. A boolean takes `true`, `false`, `yes`, or `no`. A union takes one of its members. A `string` parameter takes any text, and it is never a question. Setting one name twice is an error: `input `name` set twice`.
 - `--set` also gives an answer its value. An answer's value is checked when the run reaches its `const`.
 - A template run by itself is an error.
+- A hand-off with arguments carries their values to the target. The agent runs the target with them (section 4, Inputs).
 
 ## 10. CLI
 
 | Command | Purpose |
 | --- | --- |
 | `rein check [PATH]` | Check a project directory, a directory inside a project, or one `.rein` file. Default `.`. Prints `file:line:col: error: message` for the files under PATH. Exit code 1 when there are errors, when PATH does not exist, or when PATH is not a `.rein` file. |
-| `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. A name given twice with `--set` is an error. |
+| `rein run [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. `--set` also gives a value to a `string` parameter. A name given twice with `--set` is an error. |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
 | `rein graph [--root DIR]` | Print a Mermaid flowchart of the references. Node ids are `n0`, `n1`, ... in name order, and the label is the function name. The `main` node is drawn as a stadium shape. |
-| `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. The agent-facing interface (section 11). |
+| `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--input name=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. `--input` gives a value to a `string` parameter of the entry function. The agent-facing interface (section 11). |
 | `rein flows [--json]` | List the flows visible from here: name, scope, path, description, shadowed. |
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
@@ -425,9 +470,14 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 {"version": 1, "flow": "support-ticket", "answers": {"main.vip": "no"}}
 ```
 
-- `version`: default `1`. Another value is an error. Adding the optional `flow` field did not change the version.
+```json
+{"version": 1, "entry": "main", "inputs": {"pr": "https://example.com/pr/1"}, "answers": {}}
+```
+
+- `version`: default `1`. Another value is an error. Adding the optional `flow` and `inputs` fields did not change the version.
 - `flow`: optional. The name of a visible flow (section 1a). The CLI resolves it to a flow root and steps that root. Give `flow` or a root, not both.
 - `entry`: the function to start from, by its path. Default `main`.
+- `inputs`: optional. An object. Each key is the name of a `string` parameter of the entry function, and each value is its text. Default `{}`.
 - `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
 
 ### Response
@@ -443,11 +493,13 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 
 ### Stepping rules
 
-- The step starts at `entry`. It evaluates the function with the answers whose key names that function. The lazy rules of section 9 apply.
+- The step starts at `entry`. It evaluates the function with its inputs and the answers whose key names that function. The lazy rules of section 9 apply.
 - A reference is followed in the same call. Only a question, a request, a final instruction, or an error ends a call. The `trace` shows each hop.
 - A flow may visit at most 64 functions in one call. A flow that goes further is an error: `flow did not finish in 64 steps (reference cycle?)`.
 - An answer is checked before the flow runs. An unknown key is an error, and the error names the key. A value outside the type is an error, and the message lists the accepted values.
-- A string parameter cannot be answered. Only a template takes one.
+- A string parameter cannot be answered. It is an input: give it in `inputs`.
+- A `string` parameter of the entry function that has no key in `inputs` is an error: `` missing input `pr`; give it with --input pr=<value> ``.
+- A key in `inputs` that is not a `string` parameter of the entry function is an error: `` unknown input `x` ``.
 - A project with checker errors is refused. The error lists the diagnostics. Warnings do not block a step.
 - A template cannot be the entry.
 
@@ -463,7 +515,7 @@ rein step --root examples/.rein/support-ticket --stdin < request.json
 rein step --flow support-ticket --json
 ```
 
-`--stdin` reads one request as JSON, and then the output is always JSON. Do not combine `--stdin` with `--entry` or `--answer`. `--answer` repeats for each key. An answer key may be given once.
+`--stdin` reads one request as JSON, and then the output is always JSON. Do not combine `--stdin` with `--entry`, `--answer` or `--input`. `--answer` repeats for each key. An answer key may be given once. `--input` repeats for each name.
 
 ## 12. Agent integration
 
