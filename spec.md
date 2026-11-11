@@ -399,7 +399,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
 | `rein install <tool \| path> [--project \| --user] [--dry-run]` | A program folder: link it into the user scope (section 1a). A tool: write its hook config so it runs `rein hook` (section 12). Only `claude-code`. |
-| `rein lsp` | Run the language server over stdio. Provides diagnostics, hover, go to definition, and completion. |
+| `rein lsp` | Run the language server over stdio. See [Language server](#language-server) for its features. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.
 
@@ -463,10 +463,20 @@ Each run prints one of these objects:
 
 ### Language server
 
+The code is in `crates/rein/src/lsp/`, one module per feature. It reads the tree from `rein_core`'s parser and resolves references with `rein_core::project`. A reference cannot leave its program, so every feature below stays in one program, except workspace symbols.
+
 - Diagnostics: the checker's errors and warnings, on each open file.
-- Hover: on a reference, the target's description and inputs. On a std name, its doc. On a parameter name, its type and doc comment.
-- Go to definition: on a reference, the target file.
-- Completion: after `@./` or `@../`, the project functions relative to the current file. Each item replaces the whole reference token. Elsewhere, the parameter names, the std names, and keywords.
+- References: on a reference, on a function's name, or anywhere else in a file, every `@./` reference to that function. On a parameter or a `name=` argument, its uses and `name=` in each call to its function. The declaration is included when the client asks for it.
+- Code lens: `N references` above each function. Its command, `rein.showReferences`, carries the file URI, the position, and the locations.
+- Go to definition: a reference goes to the name of its function. A parameter or `name=` goes to the parameter. A std template goes to its source, which the server writes to `rein-std/` in the temp directory. `request` is built in, so it has no source.
+- Call hierarchy: incoming calls are the functions that reference the function, outgoing calls are the functions it references. Each call has the spans of its references.
+- Hover: on a reference or a function's name, the description and the parameters. On a parameter or `name=`, its type and question. On a std name, its doc.
+- Rename: a parameter renames its declaration, its uses, and `name=` in each call. A function renames its file in the same folder, the last segment of each reference, and the name after `export default function` when it was the file name. A function rename needs a client that can rename files.
+- Document symbols: the function, with its parameters and `const` answers.
+- Workspace symbols: every function of every program under the workspace folders and of the open files. A function's name is its project path. Its container is the program folder.
+- Completion: after `@./` or `@../`, the project functions relative to the current file. Each item replaces the whole reference token. Inside call parentheses, where an argument name goes, the parameters not given yet, as `name=`. After `x === "` or `case "`, the members of the union, each replacing the whole literal. Elsewhere, the parameter names, the std names, and keywords.
+- Signature help: inside call parentheses, the callee's parameters, with the current one active.
+- Quick fixes: add a doc comment to a function or a parameter that has none, and add `name=` to a positional argument.
 
 ## 11. Stepping (agent interface)
 
