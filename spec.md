@@ -336,6 +336,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A reference to a template is returned without a call |
 | A call or a hand-off has the wrong number of arguments (`` `@./tpl` takes 2 arguments, got 1 ``) |
 | A call or a hand-off gives arguments to a function with no `string` parameter (`` `@./x` takes no arguments; return it without a call ``) |
+| A `request` value calls a function that is not a template (`only templates can be called; return the function to hand off`) |
 | A std name is unknown, or a call names a std item that is not a template |
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
 | A template parameter is not used |
