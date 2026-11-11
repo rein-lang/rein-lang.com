@@ -14,8 +14,8 @@ const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
   'docs/decisions.md': '/reference/decisions',
 }
-// Flows live in examples/.rein/<flow>/. A link to one flow folder opens its example page.
-const flowFolder = /^examples\/\.rein\/([\w-]+)\/?$/
+// Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
+const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 
 export default withMermaid(
   defineConfig({
@@ -69,6 +69,7 @@ export default withMermaid(
             { text: 'merge-pr', link: '/examples/merge-pr' },
             { text: 'incident-triage', link: '/examples/incident-triage' },
             { text: 'support-ticket', link: '/examples/support-ticket' },
+            { text: 'pr-handling', link: '/examples/pr-handling' },
           ],
         },
         {

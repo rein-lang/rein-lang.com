@@ -19,13 +19,13 @@ The VS Code extension adds highlighting, diagnostics, and navigation. It uses th
 
 ## Make a first project
 
-A flow is a folder with a `main.rein` entry point. Flows live in a `.rein/` folder, one subfolder per flow. The project needs no `rein.toml`. Create a folder named `hello` with one flow named `ticket`:
+A flow is a folder with a `main.rein` entry point. Flows live in a visible `rein/` folder, one subfolder per flow. The project needs no `rein.toml`. Create a folder named `hello` with one flow named `ticket`:
 
 ```sh
-mkdir -p hello/.rein/ticket
+mkdir -p hello/rein/ticket
 ```
 
-`main.rein` is the agent's entry point. This one asks one question and returns one of two instructions. Save it as `hello/.rein/ticket/main.rein`:
+`main.rein` is the agent's entry point. This one asks one question and returns one of two instructions. Save it as `hello/rein/ticket/main.rein`:
 
 ```rein
 /**
@@ -49,7 +49,7 @@ For the folder rules, see [spec section 1a](docs/spec.md#1a-flows-and-scopes).
 Check the flow for errors. A clean flow prints `0 errors, 0 warnings`:
 
 ```sh
-rein check hello/.rein/ticket
+rein check hello/rein/ticket
 ```
 
 ## Connect the agent
@@ -68,7 +68,7 @@ For what the hook does, see [spec section 12](docs/spec.md#12-agent-integration)
 From the project folder, list the flows the CLI can see:
 
 ```sh
-rein flows
+rein list
 ```
 
 The output shows `ticket`, its scope, its path, and its description.

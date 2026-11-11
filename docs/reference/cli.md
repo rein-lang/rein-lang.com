@@ -7,10 +7,13 @@ This document contains the help content for the `rein` command-line program.
 * [`rein`↴](#rein)
 * [`rein check`↴](#rein-check)
 * [`rein run`↴](#rein-run)
+* [`rein eval`↴](#rein-eval)
 * [`rein step`↴](#rein-step)
 * [`rein describe`↴](#rein-describe)
 * [`rein graph`↴](#rein-graph)
-* [`rein flows`↴](#rein-flows)
+* [`rein list`↴](#rein-list)
+* [`rein show`↴](#rein-show)
+* [`rein serve`↴](#rein-serve)
 * [`rein agent-context`↴](#rein-agent-context)
 * [`rein hook`↴](#rein-hook)
 * [`rein install`↴](#rein-install)
@@ -25,14 +28,17 @@ A small language for agent decision flows
 ###### **Subcommands:**
 
 * `check` — Check a project directory, or one .rein file, and print diagnostics
-* `run` — Evaluate one function. Agents should use `rein step`; `run` is the single-function debug command
+* `run` — Run a flow as a live process. Writes one step per line, reads one answer per line on stdin
+* `eval` — Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 * `step` — Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
 * `describe` — Print a function's schema as JSON
 * `graph` — Print the reference graph as a Mermaid flowchart
-* `flows` — List the flows visible from here, by scope, with shadowed ones marked
+* `list` — List the programs visible from here: name, scope, path, description, and first question
+* `show` — Print a program's source: its manifest and every .rein file
+* `serve` — Serve the agent interface. Holds live runs in memory
 * `agent-context` — Print the block an agent needs to use the visible flows
 * `hook` — The agent hook entry point. Reads one event on stdin. Run by the agent, not by hand
-* `install` — Write a tool's hook config so it runs `rein hook`. Only `claude-code` is supported
+* `install` — Register a program folder in the user programs folder, or write a tool's hook config (`claude-code`)
 * `lsp` — Run the language server on stdio
 
 
@@ -53,9 +59,27 @@ Check a project directory, or one .rein file, and print diagnostics
 
 ## `rein run`
 
-Evaluate one function. Agents should use `rein step`; `run` is the single-function debug command
+Run a flow as a live process. Writes one step per line, reads one answer per line on stdin
 
-**Usage:** `rein run [OPTIONS] [FUNCTION]`
+**Usage:** `rein run [OPTIONS] [FLOW]`
+
+###### **Arguments:**
+
+* `<FLOW>` — Program to run, by name (see `rein list`)
+
+###### **Options:**
+
+* `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
+* `--entry <ENTRY>` — Function to start from, as its path under the root without `.rein`. Default: `main`
+* `--json` — Speak JSON Lines: one step object out, one `{"key","value"}` answer in, per line
+
+
+
+## `rein eval`
+
+Evaluate one function, for debugging. Agents use `rein run` or `rein step`
+
+**Usage:** `rein eval [OPTIONS] [FUNCTION]`
 
 ###### **Arguments:**
 
@@ -81,7 +105,7 @@ Step the whole flow from `main`. This is the agent-facing interface: answer one 
 
 * `--entry <ENTRY>` — Function to start from, as its path under the root without `.rein`. Default: `main`
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
-* `--flow <FLOW>` — Flow to step, by name, from the scoped `.rein/` folders (see `rein flows`)
+* `--flow <FLOW>` — Flow to step, by name, from the scoped `rein/` folders (see `rein list`)
 * `--answer <KEY=VALUE>` — Answer as key=value, such as `merge_pr.ci=green`. Repeat for each answer
 * `--input <NAME=VALUE>` — Value of a `string` parameter of the entry function, as name=value. Repeat for each input
 * `--stdin` — Read the whole request as JSON from stdin. Output is always JSON
@@ -119,15 +143,39 @@ Print the reference graph as a Mermaid flowchart
 
 
 
-## `rein flows`
+## `rein list`
 
-List the flows visible from here, by scope, with shadowed ones marked
+List the programs visible from here: name, scope, path, description, and first question
 
-**Usage:** `rein flows [OPTIONS]`
+**Usage:** `rein list [OPTIONS]`
 
 ###### **Options:**
 
 * `--json` — Print the list as JSON
+
+
+
+## `rein show`
+
+Print a program's source: its manifest and every .rein file
+
+**Usage:** `rein show <NAME>`
+
+###### **Arguments:**
+
+* `<NAME>` — Program name (see `rein list`)
+
+
+
+## `rein serve`
+
+Serve the agent interface. Holds live runs in memory
+
+**Usage:** `rein serve [OPTIONS]`
+
+###### **Options:**
+
+* `--mcp` — Speak MCP on stdio. The only transport today
 
 
 
@@ -162,13 +210,13 @@ The agent hook entry point. Reads one event on stdin. Run by the agent, not by h
 
 ## `rein install`
 
-Write a tool's hook config so it runs `rein hook`. Only `claude-code` is supported
+Register a program folder in the user programs folder, or write a tool's hook config (`claude-code`)
 
 **Usage:** `rein install [OPTIONS] <TOOL>`
 
 ###### **Arguments:**
 
-* `<TOOL>` — The agent tool, such as `claude-code`
+* `<TOOL>` — A program folder to register, or the agent tool, such as `claude-code`
 
 ###### **Options:**
 

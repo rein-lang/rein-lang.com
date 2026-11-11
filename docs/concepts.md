@@ -13,7 +13,7 @@ flowchart TD
 
 ## The agent drives the flow
 
-Rein does not run the agent. The agent calls `rein run` and reads the result. Each run evaluates one function and stops. The agent then decides whether to follow the next step. The agent keeps control of every step. See [Evaluation](/reference/spec#_9-evaluation) for what a run returns.
+Rein does not run the agent. The agent starts a program with the `rein_start` MCP tool, or with `rein run`, and answers it one step at a time. The program holds its state while it runs. The agent does each step it is given. See [Evaluation](/reference/spec#_9-evaluation) for what a run returns.
 
 ## Functions are files
 
