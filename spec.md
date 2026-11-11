@@ -104,7 +104,7 @@ Helpful errors from the parser:
 ### Functions
 
 - `export default function NAME(params) block` is the whole function. The file holds exactly one. `export default async function` is an async function (section 4, Async requests).
-- The function doc comment sits right before `export default function`. It gives the function description. It is required, and it must not be empty.
+- The function doc comment sits right before `export default function`. It gives the function description. It is required, and it must not be empty. There is no flag to skip this rule. `rein check`, `rein eval`, `rein step`, `rein run` and the MCP tools all refuse a function without one.
 - The parameter list may end with a comma.
 - The body is a block. It must return on every path (section 5).
 - An empty body is an error: `function must return something`.
@@ -251,6 +251,7 @@ export default function merge(
 A function can ask the agent for a step and wait for an answer. The answer is a typed `const`:
 
 ```ts
+/** Answer a FAQ ticket with a help article, or escalate it. */
 export default async function answerFaq(
   /** Did you find a help article that answers the question? */
   articleFound: boolean,
@@ -312,8 +313,8 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | Rule |
 | --- |
 | A function file name has a `/` part that is not an identifier, or is a keyword or reserved word (`invalid function file name`) |
-| The file has no function doc comment (`missing doc comment; put /** description */ right before `export default function``) |
-| The function description is empty |
+| The file has no function doc comment (`missing doc comment on `NAME`; put /** description */ right before `export default function``). A `//` line comment does not count. |
+| The function description is empty (`empty description on `NAME`; write the function description in the doc comment`). A doc block with only `@` tags is empty. |
 | A parameter has no doc comment or an empty one |
 | A doc comment has `@param` |
 | The function body is empty (`function must return something`) |

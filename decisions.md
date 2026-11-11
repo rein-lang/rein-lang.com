@@ -46,6 +46,7 @@ Each choice can change. The reason is one line.
 - Inputs are parameters of the exported function: `boolean`, a union of strings such as `"green" | "red"`, or `string`. Why: a TypeScript signature the agent can read, and the checker can test values.
 - A `string` parameter is an input: the caller passes it. A `boolean` or a union is a question. Why: the type decides, so no new keyword is needed.
 - Each parameter has its own doc comment right before it. The function has its own doc comment before `export default function`. Why: each component holds its own docs, so an edit to one parameter never touches another.
+- A function with no doc comment, or an empty one, is a compile error. No flag turns it off. Why: the description is what the agent and the reader see, so a function without one cannot run.
 - An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
 - `rein eval` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
 - Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing reference.
