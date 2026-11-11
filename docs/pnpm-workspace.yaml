@@ -1,9 +1,4 @@
-allowBuilds:
-  esbuild: true
-# vitepress-plugin-mermaid puts these in vite optimizeDeps.include; pnpm must hoist them to resolve.
-publicHoistPattern:
-  - '@braintree/sanitize-url'
-  - dayjs
-  - debug
-  - cytoscape
-  - cytoscape-cose-bilkent
+# vitepress-plugin-mermaid pre-bundles mermaid's own deps by bare name (vite optimizeDeps.include).
+# pnpm's isolated layout hides them, so mermaid's CJS deps reach the browser raw and the page crashes.
+nodeLinker: hoisted
+dangerouslyAllowAllBuilds: true

@@ -90,6 +90,8 @@ const config = withMermaid(
 
 // vitepress-plugin-mermaid pre-bundles `debug`, but mermaid 11 does not install it.
 const optimizeDeps = config.vite!.optimizeDeps!
-optimizeDeps.include = optimizeDeps.include!.filter((dep) => dep !== 'debug')
+// Pre-bundle mermaid itself. The plugin lists only some of its deps, and newer mermaid
+// imports CommonJS ones (fastdom) that crash in the browser unless Vite bundles them.
+optimizeDeps.include = [...optimizeDeps.include!.filter((dep) => dep !== 'debug'), 'mermaid']
 
 export default config
