@@ -27,6 +27,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 20. A program holds its state, like a computer app. The agent does not enter every answer again.
 21. A program takes inputs, such as a pull request link.
 22. No global scope. A function gets a value only from its parameters. The caller passes it.
+23. Templates are permanent, and user templates (`templates/*.rein`) stay, not only the std `delegate` and `askUser`. A template call is a value, not a step: it nests as an argument and adds no hop to the `rein step` trace. Template arguments are always checked: the count equals the parameter count, every parameter is used in the template literal, and every parameter has its own doc comment. (2026-11-12)
 
 ## PoC choices (revisable)
 

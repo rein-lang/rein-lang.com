@@ -81,7 +81,7 @@ unary       := "!" unary | atom
 atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 ```
 
-A call argument is a STRING, a TEMPLATE, or a bare name of a `string` parameter of the caller. A call cannot be an argument of a call. `value` is an argument of `request` only, so it can be a template call.
+A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller, or a template call. A hand-off cannot be an argument of a call.
 
 Helpful errors from the parser:
 
@@ -184,7 +184,8 @@ A template is a file whose function meets every rule below. It is like a Rust ma
 - The body is exactly one `return` of a template literal. There is no `if`, no `switch`, no import, and no other statement.
 - Every parameter is used in the template literal: `` template parameter `x` is not used; add ${x} to the template ``.
 - A template is called from a function, by a std name (`delegate(...)`) or a reference (`@./templates/reply(...)`).
-- Call arguments are strings, template literals, or bare names of a `string` parameter of the caller. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
+- A template call is a value, not a step. It adds no hop to the `rein step` trace.
+- Call arguments are strings, template literals, bare names of a `string` parameter of the caller, or template calls. A template literal argument may interpolate a union parameter or a union answer of the caller. A boolean cannot be interpolated.
 - The number of arguments must equal the number of parameters: `` `@./tpl` takes 2 arguments, got 1 ``.
 - A template is never run by itself: `rein eval <template>` is an error, `templates are called from functions, not run`.
 
