@@ -5,10 +5,10 @@ Static site for Rein, built with Astro 7 and Tailwind 4. Every page is pre-rende
 ## Commands
 
 ```sh
-npm install
-npm run dev       # local dev server
-npm run build     # writes dist/: one index.html per route, sitemap.xml, robots.txt
-npm run preview   # serves dist/ locally
+pnpm install
+pnpm run dev       # local dev server
+pnpm run build     # writes dist/: one index.html per route, sitemap.xml, robots.txt
+pnpm run preview   # serves dist/ locally
 ```
 
 ## Where the constants live

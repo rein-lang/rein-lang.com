@@ -18,7 +18,7 @@ const siteLinks: Record<string, string> = {
 // Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
 const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 
-export default withMermaid(
+const config = withMermaid(
   defineConfig({
     title: 'Rein',
     description: 'A strict TypeScript-like language for agent decision flows.',
@@ -37,7 +37,7 @@ export default withMermaid(
                 child.attrSet('href', siteLinks[href])
               } else if (flow) {
                 child.attrSet('href', `/examples/${flow[1]}`)
-              } else if (/^(docs|examples|editors|crates)\//.test(href)) {
+              } else if (/^((docs|examples|editors|crates)\/|LICENSE$)/.test(href)) {
                 child.attrSet('href', repoBlob + href)
               }
             }
@@ -87,3 +87,9 @@ export default withMermaid(
     },
   }),
 )
+
+// vitepress-plugin-mermaid pre-bundles `debug`, but mermaid 11 does not install it.
+const optimizeDeps = config.vite!.optimizeDeps!
+optimizeDeps.include = optimizeDeps.include!.filter((dep) => dep !== 'debug')
+
+export default config

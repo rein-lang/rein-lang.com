@@ -1,0 +1,9 @@
+allowBuilds:
+  esbuild: true
+# vitepress-plugin-mermaid puts these in vite optimizeDeps.include; pnpm must hoist them to resolve.
+publicHoistPattern:
+  - '@braintree/sanitize-url'
+  - dayjs
+  - debug
+  - cytoscape
+  - cytoscape-cose-bilkent
