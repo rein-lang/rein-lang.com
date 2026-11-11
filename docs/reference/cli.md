@@ -83,6 +83,7 @@ Step the whole flow from `main`. This is the agent-facing interface: answer one 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 * `--flow <FLOW>` — Flow to step, by name, from the scoped `.rein/` folders (see `rein flows`)
 * `--answer <KEY=VALUE>` — Answer as key=value, such as `merge_pr.ci=green`. Repeat for each answer
+* `--input <NAME=VALUE>` — Value of a `string` parameter of the entry function, as name=value. Repeat for each input
 * `--stdin` — Read the whole request as JSON from stdin. Output is always JSON
 * `--json` — Print the response as JSON
 
