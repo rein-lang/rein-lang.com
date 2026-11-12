@@ -55,9 +55,8 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 - Keywords: `import`, `from`, `export`, `default`, `function`, `if`, `else`, `switch`, `case`, `return`, `boolean`. A keyword cannot be a name.
 - Reserved words: `for`, `while`, `do`, `const`, `let`, `var`. They are not Rein. Using one gives a helpful error (section 3). A file name segment cannot be one either. `const` is allowed only for an answer (section 4, Async requests).
 - `string`, `async` and `interface` are names with a role in a type, a function header, or a struct. `await` and `request` are names with a role in an answer.
-- Operators: `===`, `!==`, `&&`, `||`, `!`, `|`, `(`, `)`, `{`, `}`, `,`, `:`, `;`, `=`.
-  - `==` is an error: `use `===` instead of `==``.
-  - `!=` is an error: `use `!==` instead of `!=``.
+- Operators: `===`, `==`, `!==`, `!=`, `&&`, `||`, `!`, `|`, `(`, `)`, `{`, `}`, `,`, `:`, `;`, `=`.
+  - `==` is the same as `===`, and `!=` the same as `!==`. The messages and the graph show `===` and `!==`.
 - Any other character, such as `#`, is an error: `unexpected character`.
 - A UTF-8 byte order mark at the start of a file is whitespace.
 
@@ -85,7 +84,7 @@ value       := STRING | TEMPLATE | IDENT | IDENT "(" args ")" | REF "(" args ")"
 expr        := and ("||" and)*
 and         := unary ("&&" unary)*
 unary       := "!" unary | atom
-atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
+atom        := "(" expr ")" | IDENT (("===" | "==" | "!==" | "!=") STRING)?
 ```
 
 A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller (or a `string` field of a struct answer, `pick.pr`), or a template call. A hand-off cannot be an argument of a call. Wherever a name is read (a condition, a switch subject, a call argument, `${}`), it may be `answer.field`: one `.` and one level. A declaration never has a `.`.

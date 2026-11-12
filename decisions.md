@@ -56,6 +56,7 @@ Each choice can change. The reason is one line.
 - Evaluation is lazy. The runtime asks only for the parameters the taken path needs. Why: the agent does not answer questions that do not change the result.
 - `if` is a guard with no `else`. Why: each branch returns, so a function is a list of checks, and the reader sees each case in order.
 - Conditions allow `&&`, `||`, `!`, and `===` / `!==` on union parameters. Why: enough logic for branching, with no arithmetic or loops.
+- `==` is the same as `===`, and `!=` the same as `!==`. Why: Rein has no type coercion, so the strict/loose difference of JavaScript does not exist; `===` stays so TypeScript developers can write what they are used to.
 - Switch has no `default`. Every union member needs a case. Why: a new member is a compile error, not a silent fallback.
 - A function must return on every path. Why: an agent must always get a next step.
 - A function has at most 40 lines, from `export default` to `}`, and every line counts, blank and comment lines too. `rein.json` sets `maxFunctionLines` for a longer one. Why: one plain count with no skip rule to learn, so the limit is easy to check by eye; the rule matches the common `max-lines-per-function` lint with no skips.
