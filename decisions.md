@@ -52,7 +52,7 @@ Each choice can change. The reason is one line.
 - A function with no doc comment, or an empty one, is a compile error. No flag turns it off. Why: the description is what the agent and the reader see, so a function without one cannot run.
 - An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
 - `rein eval` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
-- Functions not reachable from `main` give a warning. Why: an unused function is usually a mistake, such as a missing reference.
+- Functions not reachable from the entry (`main`, or `entry` in `rein.json`) give a warning. Why: an unused function is usually a mistake, such as a missing reference.
 - Evaluation is lazy. The runtime asks only for the parameters the taken path needs. Why: the agent does not answer questions that do not change the result.
 - `if` is a guard with no `else`. Why: each branch returns, so a function is a list of checks, and the reader sees each case in order.
 - Conditions allow `&&`, `||`, `!`, and `===` / `!==` on union parameters. Why: enough logic for branching, with no arithmetic or loops.
@@ -82,9 +82,12 @@ Each choice can change. The reason is one line.
 - A function that exactly one other function calls lives in a folder named after that caller, next to the caller's file (`merge.rein` calls `merge/fix_ci.rein`). Why: the folder structure then represents the program, so a reader sees who calls what from the tree.
 - A function that only the entry calls stays at the root. Why: the root already is the entry's folder, so a `main/` folder only adds a level.
 - A function with two or more callers stays where it is. Why: it has no single owner. A later rule can put it at the nearest common folder of its callers.
-- Std items, `.struct.rein` files, functions with no caller and other programs are not covered. Why: std items and other programs have no file in the project, a struct is not a function, and the reachability warning covers a function with no caller.
+- Std items, `.struct.rein` files, functions with no caller or not reachable from the entry, and other programs are not covered. Why: std items and other programs have no file in the project, a struct is not a function, and the reachability warning covers the rest. Unreachable functions that call each other would each be told to move into the other's folder.
+- A target path that another file has gives no warning, and two functions with one target name each other with no quick fix. Why: a warning must be one the author can follow.
 - A misplaced function is a warning that names the target path, and the language server has a quick fix that moves the file. Why: existing programs keep working while they move. The warning can become an error later, as a ratchet, when programs follow the rule.
 - A function keeps its file name when it moves. Why: the folder already names the caller, and the quick fix stays one step.
+- The quick fix moves the folder of the function's nested callees with it. Why: they stay in their caller's folder, so the move does not bring their warnings back.
+- The warning says that a move changes the answer keys and breaks `@program/...` references from other programs. Why: an installed program can be referenced by path, and the author should know before moving.
 
 ## Cross-program references
 
