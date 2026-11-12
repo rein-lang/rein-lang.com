@@ -70,11 +70,11 @@ This is real output. A small Python client spoke JSON-RPC to `rein serve --mcp` 
 >> tools/call rein_answer {"run_id": "run-1", "value": "no"}
 << {"answers":{"main.vip":"no"},"description":"What category best fits the ticket?","function":"main","key":"main.category","kind":"question","name":"category","options":["billing","account","how_to"],"run":"run-1","trace":["main"],"type":"union","version":1}
 >> tools/call rein_answer {"run_id": "run-1", "value": "how_to"}
-<< {"answers":{"main.category":"how_to","main.vip":"no"},"description":"Did you find a help article that answers the question?","function":"answer/faq","key":"answer/faq.articleFound","kind":"question",...,"run":"run-1","trace":["main","answer/faq"],...}
+<< {"answers":{"main.category":"how_to","main.vip":"no"},"description":"Did you find a help article that answers the question?","function":"faq","key":"faq.articleFound","kind":"question",...,"run":"run-1","trace":["main","faq"],...}
 >> tools/call rein_answer {"run_id": "run-1", "value": "yes"}
-<< {...,"instruction":"Reply with the help article link and ask the customer if it solved the problem.","key":"answer/faq.solved","kind":"request",...,"run":"run-1",...}
+<< {...,"instruction":"Reply with the help article link and ask the customer if it solved the problem.","key":"faq.solved","kind":"request",...,"run":"run-1",...}
 >> tools/call rein_answer {"run_id": "run-1", "value": "yes"}
-<< {"answers":{"answer/faq.articleFound":"yes","answer/faq.solved":"yes","main.category":"how_to","main.vip":"no"},"instruction":"Close the ticket as solved.","kind":"done","run":"run-1","trace":["main","answer/faq"],"version":1}
+<< {"answers":{"faq.articleFound":"yes","faq.solved":"yes","main.category":"how_to","main.vip":"no"},"instruction":"Close the ticket as solved.","kind":"done","run":"run-1","trace":["main","faq"],"version":1}
 >> tools/call rein_stop {"run_id": "run-1"}
 << {"run":"run-1","stopped":true}
 ```
@@ -107,11 +107,11 @@ project  0.1.0  support-ticket   .../examples/rein/support-ticket   Decide how t
 $ printf 'no\nhow_to\nyes\nyes\n' | rein run support-ticket
 question: main.vip: boolean - Is the customer on the VIP plan?
 > question: main.category: "billing" | "account" | "how_to" - What category best fits the ticket?
-> question: answer/faq.articleFound: boolean - Did you find a help article that answers the question?
+> question: faq.articleFound: boolean - Did you find a help article that answers the question?
 > request: Reply with the help article link and ask the customer if it solved the problem.
-then answer: answer/faq.solved: boolean - Did the customer confirm the article solved the problem?
+then answer: faq.solved: boolean - Did the customer confirm the article solved the problem?
 > Close the ticket as solved.
-trace: main -> answer/faq
+trace: main -> faq
 # exit 0
 ```
 

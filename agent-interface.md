@@ -37,11 +37,11 @@ Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build
    ```text
    $ rein step --root <merge-pr example> --json \
        --answer main.task=merge --answer merge_pr.docsOnly=no \
-       --answer merge_pr.ci=red --answer ci/fix.fixPushed=yes
+       --answer merge_pr.ci=red --answer merge_pr/fix.fixPushed=yes
    {"kind":"error", ... "message":"flow did not finish in 64 steps (reference cycle?)", ...}
    ```
 
-   That run failed on that commit. The `merge-pr` example now ends the retry with a text, so `ci/fix` no longer references `merge_pr`.
+   That run failed on that commit. The `merge-pr` example now ends the retry with a text, so `merge_pr/fix` no longer references `merge_pr`.
 2. On the CLI, a question exits with code 2 and a request exits with code 3. In Claude Code, the shell tool reports a non-zero exit code as an error. A normal result looks like a failure.
 3. Nothing checks that the agent started a program or finished it. The hook gives advice only.
 4. With `rein step`, the agent can change an earlier answer between two calls. The runtime cannot see the change, because it keeps nothing.
@@ -174,7 +174,7 @@ The path is a code change with green CI. Today the agent makes five `rein step` 
 | `main.task` | The agent answers `merge`. | No question. The guarded action is the merge, so the gate starts the run at `merge_pr`. |
 | `merge_pr.docsOnly` | The agent answers. | The agent answers. |
 | `merge_pr.ci` | The agent reads the CI status and answers. | A probe runs `gh pr checks 42`. The agent gets no question. |
-| `review_code.securitySensitive` | The agent answers. | The agent answers. |
+| `merge_pr/review_code.securitySensitive` | The agent answers. | The agent answers. |
 | End | `done` with free text: delegate a code review. | A request: the program waits for the review result, then returns a status. |
 
 Today the agent answers four questions on this path. With the contracts it answers two.
@@ -186,7 +186,7 @@ Each end of the program gets a status:
 | `"approved"` | Allow. The gate opens for one merge call. |
 | `"wait for CI, then run merge_pr again"` | Block. The gate stays closed. |
 | Delegate a code review | The program cannot end here. A gate needs a verdict, so the review becomes a request. |
-| `ci/fix` with a pushed fix | Finding 1 today. The result depends on the cycle choice in contract 2. |
+| `merge_pr/fix` with a pushed fix | Finding 1 today. The result depends on the cycle choice in contract 2. |
 
 Notes:
 
@@ -205,7 +205,7 @@ The path is a sev2 alert with no customer impact and a known runbook. Today the 
 | `main.severity` | The agent answers. | A probe reads the severity from the alert. |
 | `main.knownRunbook` | The agent answers. | A probe looks for the runbook file. |
 | Approval | None. | A `user` question: "May I run the runbook steps?" The example has no such question today. |
-| `runbook/follow.fixed` | The agent runs the steps, then answers. | The agent runs the steps. A probe reads the alert status. |
+| `follow.fixed` | The agent runs the steps, then answers. | The agent runs the steps. A probe reads the alert status. |
 | End | `done` with free text: close the alert. | Allow, for a gate on the close action. |
 
 Today the agent answers three questions and one request on this path. With the contracts it answers one question and does one request.

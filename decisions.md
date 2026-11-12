@@ -79,6 +79,12 @@ Each choice can change. The reason is one line.
 - A struct doc comment is required only on a shared struct. Why: an inline struct is described by its function.
 - The std template `delegate` takes an inline struct. Why: std follows the one-parameter rule; its calls do not change.
 - Text uses backticks and a tag uses quotes. Text is a return value, a call argument or a `request` argument; a tag is a union member, an `===` operand or a `case` label. The wrong kind is a compile error with the fix. Why: text needs line breaks and `${name}`, and a tag reads as a TypeScript literal type, so each kind shows its role.
+- A function that exactly one other function calls lives in a folder named after that caller, next to the caller's file (`merge.rein` calls `merge/fix_ci.rein`). Why: the folder structure then represents the program, so a reader sees who calls what from the tree.
+- A function that only the entry calls stays at the root. Why: the root already is the entry's folder, so a `main/` folder only adds a level.
+- A function with two or more callers stays where it is. Why: it has no single owner. A later rule can put it at the nearest common folder of its callers.
+- Std items, `.struct.rein` files, functions with no caller and other programs are not covered. Why: std items and other programs have no file in the project, a struct is not a function, and the reachability warning covers a function with no caller.
+- A misplaced function is a warning that names the target path, and the language server has a quick fix that moves the file. Why: existing programs keep working while they move. The warning can become an error later, as a ratchet, when programs follow the rule.
+- A function keeps its file name when it moves. Why: the folder already names the caller, and the quick fix stays one step.
 
 ## Cross-program references
 
