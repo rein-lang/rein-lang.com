@@ -155,7 +155,7 @@ export default function handleTicket({ category, vip }: Ticket) {
 Parsing rules, for each doc block:
 
 - For each line, strip the leading whitespace, then one leading `*`, then one following space if present.
-- The text before the first line that starts with `@` is the description. It is trimmed. Line breaks are kept. Three or more line breaks in a row become one paragraph break.
+- The text before the first line that starts with `@` is the description. It is trimmed. The lines of one paragraph are joined with one space, so a doc comment over several lines is one line of text. A blank line starts a new paragraph; a run of blank lines is one paragraph break. Example: `/** Does the pull request wait for another pull request or change that is` + newline + `* not merged yet? */` is the description `Does the pull request wait for another pull request or change that is not merged yet?`.
 - Text after an `@` line is not part of the description.
 - A `@` tag is an error when it is `@param`: `describe each parameter in its own doc comment, right before it`. Any other tag gives a warning: `unknown tag`.
 - An empty function description is an error. An empty parameter doc comment is an error: `parameter `x` needs a doc comment: /** question */ x: ...`. A field gives `field `x` needs a doc comment: /** question */ x: ...`.
