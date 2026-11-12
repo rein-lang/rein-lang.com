@@ -10,54 +10,54 @@ The decision flow, from `rein graph support-ticket`:
 
 ```mermaid
 flowchart TD
-    subgraph s0 ["answer/faq.rein"]
-        f0[["answer/faq"]]
-        f0_0{"Did you find a help article that answers the question?<br/>articleFound: boolean"}
-        f0_1[/"request: #96;Reply with the help article link and ask the customer if it solved the<br/>problem.#96;"/]
-        f0_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
-        f0_3("@../templates/close_ticket(opening=#96;Glad the help article solved the problem.#96;, nextStep=#96;Reply to this ticket if it comes back.#96;)")
+    subgraph s0 ["escalate.rein"]
+        f0[["escalate"]]
+        f0_0("Assign the ticket to the tier 2 queue. Tell the customer a person<br/>will reply within one business day. Do not promise a refund or a fix.")
     end
-    subgraph s1 ["billing/refund.rein"]
-        f1[["billing/refund"]]
-        f1_0{"Is the requested refund above the agent's limit?<br/>refundOverLimit: boolean"}
-        f1_1("@../templates/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#96;Then tell the customer the refund takes 5 business days.#96;)")
+    subgraph s1 ["faq.rein"]
+        f1[["faq"]]
+        f1_0{"Did you find a help article that answers the question?<br/>articleFound: boolean"}
+        f1_1[/"request: #96;Reply with the help article link and ask the customer if it solved the<br/>problem.#96;"/]
+        f1_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
+        f1_3("@./faq/close_ticket(opening=#96;Glad the help article solved the problem.#96;, nextStep=#96;Reply to this ticket if it comes back.#96;)")
     end
-    subgraph s2 ["escalate.rein"]
-        f2[["escalate"]]
-        f2_0("Assign the ticket to the tier 2 queue. Tell the customer a person<br/>will reply within one business day. Do not promise a refund or a fix.")
+    subgraph s2 ["faq/close_ticket.rein"]
+        f2[["faq/close_ticket(opening, nextStep)"]]
+        f2_0("Tell the customer: ${opening} ${nextStep} Then close the ticket as<br/>solved.")
     end
     subgraph s3 ["main.rein"]
         f3(["main"])
         f3_0{"Is the customer on the VIP plan?<br/>vip: boolean"}
         f3_1{"What category best fits the ticket?<br/>category: #quot;billing#quot; | #quot;account#quot; | #quot;how_to#quot;"}
     end
-    subgraph s4 ["templates/close_ticket.rein"]
-        f4[["templates/close_ticket(opening, nextStep)"]]
-        f4_0("Tell the customer: ${opening} ${nextStep} Then close the ticket as<br/>solved.")
+    subgraph s4 ["refund.rein"]
+        f4[["refund"]]
+        f4_0{"Is the requested refund above the agent's limit?<br/>refundOverLimit: boolean"}
+        f4_1("@./refund/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#96;Then tell the customer the refund takes 5 business days.#96;)")
     end
-    subgraph s5 ["templates/tell_customer.rein"]
-        f5[["templates/tell_customer(opening, nextStep)"]]
+    subgraph s5 ["refund/tell_customer.rein"]
+        f5[["refund/tell_customer(opening, nextStep)"]]
         f5_0("${opening} ${nextStep}")
     end
     f0 --> f0_0
-    f0_0 -->|"no"| f2
-    f0_0 -->|"yes"| f0_1
-    f0_1 --> f0_2
-    f0_2 -->|"yes"| f0_3
-    f0_3 -.-> f4
-    f0_2 -->|"no"| f2
     f1 --> f1_0
-    f1_0 -->|"yes"| f2
-    f1_0 -->|"no"| f1_1
-    f1_1 -.-> f5
+    f1_0 -->|"no"| f0
+    f1_0 -->|"yes"| f1_1
+    f1_1 --> f1_2
+    f1_2 -->|"yes"| f1_3
+    f1_3 -.-> f2
+    f1_2 -->|"no"| f0
     f2 --> f2_0
     f3 --> f3_0
-    f3_0 -->|"yes"| f2
+    f3_0 -->|"yes"| f0
     f3_0 -->|"no"| f3_1
-    f3_1 -->|"billing"| f1
-    f3_1 -->|"account"| f2
-    f3_1 -->|"how_to"| f0
+    f3_1 -->|"billing"| f4
+    f3_1 -->|"account"| f0
+    f3_1 -->|"how_to"| f1
     f4 --> f4_0
+    f4_0 -->|"yes"| f0
+    f4_0 -->|"no"| f4_1
+    f4_1 -.-> f5
     f5 --> f5_0
 ```
 
@@ -75,26 +75,26 @@ flowchart TD
 
 <<< ../../../examples/rein/support-ticket/main.rein{rein}
 
-### `answer/faq.rein`
-
-<<< ../../../examples/rein/support-ticket/answer/faq.rein{rein}
-
-### `billing/refund.rein`
-
-<<< ../../../examples/rein/support-ticket/billing/refund.rein{rein}
-
 ### `escalate.rein`
 
 <<< ../../../examples/rein/support-ticket/escalate.rein{rein}
 
-### `templates/close_ticket.rein`
+### `faq.rein`
 
-<<< ../../../examples/rein/support-ticket/templates/close_ticket.rein{rein}
+<<< ../../../examples/rein/support-ticket/faq.rein{rein}
 
-### `templates/message.struct.rein`
+### `faq/close_ticket.rein`
 
-<<< ../../../examples/rein/support-ticket/templates/message.struct.rein{rein}
+<<< ../../../examples/rein/support-ticket/faq/close_ticket.rein{rein}
 
-### `templates/tell_customer.rein`
+### `message.struct.rein`
 
-<<< ../../../examples/rein/support-ticket/templates/tell_customer.rein{rein}
+<<< ../../../examples/rein/support-ticket/message.struct.rein{rein}
+
+### `refund.rein`
+
+<<< ../../../examples/rein/support-ticket/refund.rein{rein}
+
+### `refund/tell_customer.rein`
+
+<<< ../../../examples/rein/support-ticket/refund/tell_customer.rein{rein}

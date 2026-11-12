@@ -10,47 +10,47 @@ The decision flow, from `rein graph merge-pr`:
 
 ```mermaid
 flowchart TD
-    subgraph s0 ["ci/fix.rein"]
-        f0[["ci/fix"]]
-        f0_0{"Did you push a fix for the failing job?<br/>fixPushed: boolean"}
-        f0_1("Wait for CI to finish. Then start this program again with the task<br/>merge.")
-        f0_2("Read the CI log. Fix the failing test or code. Push the fix. Then run<br/>ci/fix again.")
+    subgraph s0 ["main.rein"]
+        f0(["main"])
+        f0_0{"Which task does the agent do?<br/>task: #quot;merge#quot; | #quot;security review#quot;"}
     end
-    subgraph s1 ["main.rein"]
-        f1(["main"])
-        f1_0{"Which task does the agent do?<br/>task: #quot;merge#quot; | #quot;security review#quot;"}
+    subgraph s1 ["merge_pr.rein"]
+        f1[["merge_pr"]]
+        f1_0{"Does the PR change only documentation files?<br/>docsOnly: boolean"}
+        f1_1("approved")
+        f1_2{"What is the CI status of the PR?<br/>ci: #quot;green#quot; | #quot;red#quot; | #quot;pending#quot;"}
+        f1_3("wait for CI, then run merge_pr again")
     end
-    subgraph s2 ["merge_pr.rein"]
-        f2[["merge_pr"]]
-        f2_0{"Does the PR change only documentation files?<br/>docsOnly: boolean"}
-        f2_1("approved")
-        f2_2{"What is the CI status of the PR?<br/>ci: #quot;green#quot; | #quot;red#quot; | #quot;pending#quot;"}
-        f2_3("wait for CI, then run merge_pr again")
+    subgraph s2 ["merge_pr/fix.rein"]
+        f2[["merge_pr/fix"]]
+        f2_0{"Did you push a fix for the failing job?<br/>fixPushed: boolean"}
+        f2_1("Wait for CI to finish. Then start this program again with the task<br/>merge.")
+        f2_2("Read the CI log. Fix the failing test or code. Push the fix. Then run<br/>merge_pr/fix again.")
     end
-    subgraph s3 ["review_code.rein"]
-        f3[["review_code"]]
+    subgraph s3 ["merge_pr/review_code.rein"]
+        f3[["merge_pr/review_code"]]
         f3_0{"Does the PR change authentication, payments, or permissions code?<br/>securitySensitive: boolean"}
         f3_1>"delegate(model=#96;use opus model#96;, task=#96;code review the pr with a security focus#96;)"]
         f3_2>"delegate(model=#96;use haiku model#96;, task=#96;code review the pr#96;)"]
     end
-    subgraph s4 ["security/review.rein"]
-        f4[["security/review"]]
+    subgraph s4 ["review.rein"]
+        f4[["review"]]
         f4_0{"Does the PR add or change a secret, token, or key?<br/>secretsAdded: boolean"}
         f4_1("Stop. Remove the secret from the diff. Rotate the secret. Then run<br/>merge_pr again.")
         f4_2("Check the auth and permission changes. Ask the security owner to<br/>approve. Then run merge_pr again.")
     end
     f0 --> f0_0
-    f0_0 -->|"yes"| f0_1
-    f0_0 -->|"no"| f0_2
+    f0_0 -->|"merge"| f1
+    f0_0 -->|"security review"| f4
     f1 --> f1_0
-    f1_0 -->|"merge"| f2
-    f1_0 -->|"security review"| f4
+    f1_0 -->|"yes"| f1_1
+    f1_0 -->|"no"| f1_2
+    f1_2 -->|"green"| f3
+    f1_2 -->|"red"| f2
+    f1_2 -->|"pending"| f1_3
     f2 --> f2_0
     f2_0 -->|"yes"| f2_1
     f2_0 -->|"no"| f2_2
-    f2_2 -->|"green"| f3
-    f2_2 -->|"red"| f0
-    f2_2 -->|"pending"| f2_3
     f3 --> f3_0
     f3_0 -->|"yes"| f3_1
     f3_0 -->|"no"| f3_2
@@ -73,18 +73,18 @@ flowchart TD
 
 <<< ../../../examples/rein/merge-pr/main.rein{rein}
 
-### `ci/fix.rein`
-
-<<< ../../../examples/rein/merge-pr/ci/fix.rein{rein}
-
 ### `merge_pr.rein`
 
 <<< ../../../examples/rein/merge-pr/merge_pr.rein{rein}
 
-### `review_code.rein`
+### `merge_pr/fix.rein`
 
-<<< ../../../examples/rein/merge-pr/review_code.rein{rein}
+<<< ../../../examples/rein/merge-pr/merge_pr/fix.rein{rein}
 
-### `security/review.rein`
+### `merge_pr/review_code.rein`
 
-<<< ../../../examples/rein/merge-pr/security/review.rein{rein}
+<<< ../../../examples/rein/merge-pr/merge_pr/review_code.rein{rein}
+
+### `review.rein`
+
+<<< ../../../examples/rein/merge-pr/review.rein{rein}
