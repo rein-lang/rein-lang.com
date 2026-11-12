@@ -3,12 +3,13 @@
 Status: proof of concept. Private. Rules here drive the checker and the evaluator.
 Design reasons and open questions live in [decisions.md](decisions.md).
 
-Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no global scope, and no `default` or `else`. A function gets its values only from its parameters and its answers.
+Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no global scope, and no `default` or `else`. A function gets its values only from its parameter and its answers.
 
 ## 1. Project layout
 
 - A flow root is a directory that contains a `main.rein` file. A flow is a flow root found through scopes (section 1a), or a directory passed to a command. A program can also be one `.rein` file: its folder is the flow root and its name is the entry (section 1a).
 - Each function is one file with the `.rein` extension.
+- A shared struct is one file named `<name>.struct.rein` (section 4, Structs). It is not a function. `rein graph`, the reachability warning, and workspace symbols as functions leave it out. `rein show` prints it.
 - Every flow root has a `main.rein`. It is the agent's entry point. The checker reports a flow root without it. A program run from its own entry file needs none (section 1a).
 - A function name is the file path relative to the flow root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
 - The name of the `export default function` inside a file is a TypeScript identifier. It need not match the file name.
@@ -40,7 +41,7 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 - An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`.
 - Keywords: `import`, `from`, `export`, `default`, `function`, `if`, `else`, `switch`, `case`, `return`, `boolean`. A keyword cannot be a name.
 - Reserved words: `for`, `while`, `do`, `const`, `let`, `var`. They are not Rein. Using one gives a helpful error (section 3). A file name segment cannot be one either. `const` is allowed only for an answer (section 4, Async requests).
-- `string` and `async` are names with a role in a type or a function header. `await` and `request` are names with a role in an answer.
+- `string`, `async` and `interface` are names with a role in a type, a function header, or a struct. `await` and `request` are names with a role in an answer.
 - Operators: `===`, `!==`, `&&`, `||`, `!`, `|`, `(`, `)`, `{`, `}`, `,`, `:`, `;`, `=`.
   - `==` is an error: `use `===` instead of `==``.
   - `!=` is an error: `use `!==` instead of `!=``.
@@ -50,9 +51,13 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 ## 3. Grammar
 
 ```
-file        := DOC? "export" "default" "async"? "function" IDENT "(" params? ")" block
-params      := param ("," param)* ","?
-param       := DOC IDENT ":" type            // DOC is required; the checker reports a missing one
+file        := item*                         // one function, or one struct in a `.struct.rein` file
+item        := DOC? ("export" "default"?)? "interface" IDENT "{" field* "}"    // a struct (section 4, Structs)
+             | DOC? "export" "default" "async"? "function" IDENT "(" params? ")" block
+params      := param ("," param)* ","?       // more than one param is a checker error
+param       := DOC IDENT ":" type            // a scalar parameter. DOC is required; the checker reports a missing one
+             | "{" IDENT ("," IDENT)* ","? "}" ":" (IDENT | REF)   // a struct parameter, destructured
+field       := DOC IDENT ":" type (";" | ",")?   // DOC is required; the checker reports a missing one
 type        := "boolean" | "string" | "|"? STRING ("|" STRING)*
 block       := "{" stmt* "}"
 stmt        := if | switch | return | answer
@@ -72,7 +77,7 @@ atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 
 A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller, or a template call. A hand-off cannot be an argument of a call.
 
-Every argument has a name, as in Python: `name=value`. The name is a parameter of the callee. The order of the arguments does not matter. A positional argument is a checker error, and no flag allows it. A parameter is given once.
+Every argument has a name, as in Python: `name=value`. The name is a parameter of the callee: its scalar parameter, or a field of its struct parameter. The order of the arguments does not matter. A positional argument is a checker error, and no flag allows it. A parameter is given once.
 
 Helpful errors from the parser:
 
@@ -85,7 +90,9 @@ Helpful errors from the parser:
 | `else` | `Rein has no `else`: end the `if` block with a return, and handle the other case after it` |
 | `return;` with no value | `` `return` needs a value: a string, a template, or `@./function` `` |
 | `true` or `false` in a condition or comparison | `use the boolean parameter directly` |
-| a doc comment in any other place | `the doc comment must go right before `export default function`, a parameter, or a const answer` |
+| a doc comment in any other place | `the doc comment must go right before `export default function`, an `interface`, a parameter, a field, or a const answer` |
+| `x: Name` or `x: @./name` as a parameter | `` a struct parameter is destructured: write `{ field, ... }: Name` `` |
+| a doc comment before a struct parameter | `` a struct parameter has no doc comment; document each field in its `interface` `` |
 | `await` of a name other than `request` | `only `request` can be awaited` |
 | a bare name as a return value | `expected a string, a template literal, or a reference like `@./path`` |
 | a second `export default function` | `expected end of file ...; a file holds one `export default function`` |
@@ -94,33 +101,36 @@ Helpful errors from the parser:
 
 ### Functions
 
-- `export default function NAME(params) block` is the whole function. The file holds exactly one. `export default async function` is an async function (section 4, Async requests).
+- `export default function NAME(param) block` is the whole function. The file holds exactly one. `export default async function` is an async function (section 4, Async requests).
 - The function doc comment sits right before `export default function`. It gives the function description. It is required, and it must not be empty. There is no flag to skip this rule. `rein check`, `rein eval`, `rein step`, `rein run` and the MCP tools all refuse a function without one.
-- The parameter list may end with a comma.
+- The function has zero parameters or one (section 4, Parameters). The parameter may end with a comma.
 - The body is a block. It must return on every path (section 5).
 - An empty body is an error: `function must return something`.
 
 ### Doc comments
 
-Rein has two kinds of doc comment. Each one holds only its own text.
+Rein has four kinds of doc comment. Each one holds only its own text.
 
 - The function doc comment. It sits right before `export default function`.
 - A parameter doc comment. It sits right before the parameter, inside the parameter list. It gives the question the agent must answer for that parameter.
+- A field doc comment. It sits right before the field, inside the `interface`. It gives the question for that field, or the text the caller passes. A shared struct also has a struct doc comment, right before `export default interface`.
 - An answer doc comment. It sits right before the `const` of an async request (section 4, Async requests).
 
 ```ts
-/**
- * Route a new support ticket to the right handling.
- */
-export default function handleTicket(
+interface Ticket {
   /** What kind of ticket is it? */
-  category: "billing" | "bug" | "question",
+  category: "billing" | "bug" | "question";
   /**
    * Is the customer a VIP?
    * Check the account tier in the CRM.
    */
-  vip: boolean,
-) {
+  vip: boolean;
+}
+
+/**
+ * Route a new support ticket to the right handling.
+ */
+export default function handleTicket({ category, vip }: Ticket) {
   if (vip) {
     return @./escalate;
   }
@@ -134,14 +144,61 @@ Parsing rules, for each doc block:
 - The text before the first line that starts with `@` is the description. It is trimmed. Line breaks are kept. Three or more line breaks in a row become one paragraph break.
 - Text after an `@` line is not part of the description.
 - A `@` tag is an error when it is `@param`: `describe each parameter in its own doc comment, right before it`. Any other tag gives a warning: `unknown tag`.
-- An empty function description is an error. An empty parameter doc comment is an error: `parameter `x` needs a doc comment: /** question */ x: ...`.
+- An empty function description is an error. An empty parameter doc comment is an error: `parameter `x` needs a doc comment: /** question */ x: ...`. A field gives `field `x` needs a doc comment: /** question */ x: ...`.
 
 ### Parameters
 
-- A parameter is `name: type`. The type is `boolean`, a union of strings, or `string`.
+- A function has zero parameters or one. Two or more is an error: `` a function takes one parameter; put `a` and `b` in a struct ``.
+- The parameter is a scalar or a struct.
+- A scalar parameter is `name: type`. The type is `boolean`, a union of strings, or `string`.
 - `boolean` is true or false. A union is one of its string members. It needs at least 2 unique, non-empty members. A leading `|` is allowed.
 - `string` is text. It is an input: the caller passes its value, and the agent is never asked for it (section 4, Inputs).
-- Parameter names are unique within a function.
+- A struct parameter is destructured: `{ a, b }: Name`. The braces name every field of the struct, each one once. The body reads each field by its name, as it reads a scalar parameter.
+- Errors on the braces: `` `z` is not a field of `Name`; fields are a, b ``, `` destructure every field of `Name`; missing: `b` ``, and `` `a` is destructured twice ``.
+- In the rest of this reference, a parameter is the scalar parameter or a field of the struct parameter. Its name is unique within the function. Answer keys, `--set`, `--input`, `rein describe` and the graph use the field names.
+
+### Structs
+
+A struct is a TypeScript `interface`: a list of fields. A field is like a scalar parameter: a doc comment, a name and a type (`boolean`, `string`, or a union). A field ends with `;`, `,`, or nothing. A field cannot be a struct. Rein has one struct form, `interface`. It has no `type X = { ... }`.
+
+A struct is inline or shared.
+
+- An inline struct is an `interface` in the file of the function. It is the input of that function only. No other file can name it.
+- An inline struct cannot be exported. Error: `` input struct `Input` cannot be exported; to share it, move it to its own `.struct.rein` file ``.
+- The function names its inline struct: `({ a, b }: Input)`. A missing one is an error: `` cannot find struct `Input`; declare `interface Input { ... }` in this file ``.
+- An inline struct that the function does not take gives a warning: `` unused struct `X`; an inline struct is the input of the function in its file ``.
+- A shared struct is a file `<name>.struct.rein`. It holds one `export default interface` and nothing else. Error: ``a `.struct.rein` file holds one `export default interface` and nothing else``.
+- A shared struct needs a doc comment: `` missing doc comment on struct `Name`; put /** description */ right before `export default interface` ``.
+- A function names a shared struct with a reference: `({ a, b }: @./message)` names the struct of `message.struct.rein` in the same folder. The reference rules apply (section 4, References): the path is relative, has no extension, and stays inside the root. A missing file is an error: `` cannot find struct `@./message`; a shared struct is a `message.struct.rein` file ``.
+- When two functions take the same struct, use a shared struct. An inline struct belongs to one function.
+- A function reference, such as `return @./message;`, never names a `.struct.rein` file.
+
+Example: `templates/message.struct.rein`, a shared struct that two templates take.
+
+```ts
+/**
+ * One sentence for the customer: what happened, then what comes next.
+ */
+export default interface Message {
+  /** The first part of the sentence, such as the action taken. */
+  opening: string;
+  /** The next step the customer can expect. */
+  nextStep: string;
+}
+```
+
+`templates/tell_customer.rein` takes it. `templates/close_ticket.rein` takes it the same way.
+
+```ts
+/**
+ * Tell the customer what happens next, in one sentence.
+ */
+export default function tellCustomer({ opening, nextStep }: @./message) {
+  return `${opening} ${nextStep}`;
+}
+```
+
+A caller gives each field by name: `@../templates/tell_customer(opening="...", nextStep="...")`.
 
 ### References
 
@@ -161,7 +218,7 @@ The std library needs no import. Its names are always available: `delegate`, `as
 
 | Name | Kind | Signature | Text |
 | --- | --- | --- | --- |
-| `delegate` | template | `delegate(model: string, task: string)` | "Delegate this task to a subagent.\nModel: ${model}\nTask: ${task}". Doc: "Hand a task to a subagent, with the model to use." Params: `model`, the model the subagent runs on; `task`, what the subagent does. |
+| `delegate` | template | `delegate({ model, task }: Input)` | "Delegate this task to a subagent.\nModel: ${model}\nTask: ${task}". Doc: "Hand a task to a subagent, with the model to use." Its input is an inline struct. Fields: `model`, the model the subagent runs on; `task`, what the subagent does. A call is `delegate(model="...", task="...")`. |
 | `askUser` | template | `askUser(question: string)` | "Ask the user: ${question}". Doc: "Ask the user a question and wait for the answer." Param: `question`, the question in the user's language. |
 | `request` | built in | `await request(value)` | Asks the agent to do a step, then wait for its answer (section 4, Async requests). It is not a template. |
 
@@ -169,9 +226,9 @@ An unknown std name is an error that lists the std names: `` `x` is not in std; 
 
 ### Templates
 
-A template is a file whose function meets every rule below. It is like a Rust macro: it expands to a string. Any other function is a normal function. A normal function may mix `string` parameters with boolean and union parameters.
+A template is a file whose function meets every rule below. It is like a Rust macro: it expands to a string. Any other function is a normal function. A normal function may mix `string` fields with boolean and union fields in its struct.
 
-- It has at least one parameter. Every parameter is `string`, with its own doc comment.
+- It has a parameter. The parameter is a `string`, or a struct whose fields are all `string`. Each one has its own doc comment.
 - The body is exactly one `return` of a template literal. There is no `if`, no `switch`, no import, and no other statement.
 - Every parameter is used in the template literal: `` template parameter `x` is not used; add ${x} to the template ``.
 - A template is called from a function, by a std name (`delegate(...)`) or a reference (`@./templates/reply(...)`).
@@ -180,21 +237,7 @@ A template is a file whose function meets every rule below. It is like a Rust ma
 - Every parameter is given once, by name: `` missing argument `b` in call to `@./tpl`; write `b=value` ``.
 - A template is never run by itself: `rein eval <template>` is an error, `templates are called from functions, not run`.
 
-Example, `templates/tell_customer.rein`:
-
-```ts
-/**
- * Tell the customer what happens next, in one sentence.
- */
-export default function tellCustomer(
-  /** The first part of the sentence, such as the action taken. */
-  opening: string,
-  /** The next step the customer can expect. */
-  nextStep: string,
-) {
-  return `${opening} ${nextStep}`;
-}
-```
+Section 4, Structs, shows a template, `templates/tell_customer.rein`, that takes a shared struct.
 
 ### Inputs
 
@@ -222,15 +265,17 @@ export default function main(
 ```
 
 ```ts
+interface Input {
+  /** The pull request link. */
+  pr: string;
+  /** What is the CI status of the PR? */
+  ci: "green" | "red" | "pending";
+}
+
 /**
  * Merge the pull request when CI is green.
  */
-export default function merge(
-  /** The pull request link. */
-  pr: string,
-  /** What is the CI status of the PR? */
-  ci: "green" | "red" | "pending",
-) {
+export default function merge({ pr, ci }: Input) {
   if (ci === "green") {
     return `Merge ${pr}. Then delete its branch.`;
   }
@@ -311,6 +356,14 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A doc comment has `@param` |
 | The function body is empty (`function must return something`) |
 | Two parameters share a name |
+| A function has two or more parameters (`` a function takes one parameter; put `a` and `b` in a struct ``) |
+| A struct parameter names a field that its struct does not have, leaves a field out, or names a field twice |
+| A struct parameter names an inline struct that the file does not declare, or a shared struct that does not resolve |
+| An inline struct is exported |
+| A field has no doc comment (`` field `x` needs a doc comment: /** question */ x: ... ``), two fields share a name, or a field union is not valid |
+| A `.struct.rein` file holds a function, a second struct, or a struct that is not `export default` |
+| A shared struct has no doc comment, or an empty one |
+| A `.struct.rein` file name has a `/` part that is not an identifier (`invalid struct file name`) |
 | A union has fewer than 2 members |
 | A union has a duplicate or an empty member |
 | A condition uses a union parameter bare |
@@ -351,6 +404,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | Rule |
 | --- |
 | A parameter is declared but never used |
+| An inline struct is not the parameter of the function in its file (`unused struct`) |
 | An `async` function has no `await` |
 | A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return of a reference that lies on the cycle |
 | A doc tag other than `@param` (`unknown tag `@x``) |
@@ -453,16 +507,16 @@ Each run prints one of these objects:
 The code is in `crates/rein/src/lsp/`, one module per feature. It reads the tree from `rein_core`'s parser and resolves references with `rein_core::project`. A reference cannot leave its program, so every feature below stays in one program, except workspace symbols.
 
 - Diagnostics: the checker's errors and warnings, on each open file.
-- References: on a reference, on a function's name, or anywhere else in a file, every `@./` reference to that function. On a parameter or a `name=` argument, its uses and `name=` in each call to its function. The declaration is included when the client asks for it.
-- Code lens: `N references` above each function. Its command, `rein.showReferences`, carries the file URI, the position, and the locations.
-- Go to definition: a reference goes to the name of its function. A parameter or `name=` goes to the parameter. A std template goes to its source, which the server writes to `rein-std/` in the temp directory. `request` is built in, so it has no source.
+- References: on a reference, on a function's name, or anywhere else in a file, every `@./` reference to that function. On a parameter or a `name=` argument, its uses and `name=` in each call to its function. On a struct type or a struct name, every parameter type that names the struct. On a field, its place in `{ }` and its uses in each function that takes the struct, and `name=` in each call to those functions. The declaration is included when the client asks for it.
+- Code lens: `N references` above each function, and above a shared struct the count of parameter types that name it. Its command, `rein.showReferences`, carries the file URI, the position, and the locations.
+- Go to definition: a reference goes to the name of its function. A parameter or `name=` goes to the parameter. A struct type goes to its `interface`, in the same file or in its `.struct.rein` file. A field in `{ }`, in the body, or as `name=` goes to the field in its `interface`. A std template goes to its source, which the server writes to `rein-std/` in the temp directory. `request` is built in, so it has no source.
 - Call hierarchy: incoming calls are the functions that reference the function, outgoing calls are the functions it references. Each call has the spans of its references.
-- Hover: on a reference or a function's name, the description and the parameters. On a parameter or `name=`, its type and question. On a std name, its doc.
-- Rename: a parameter renames its declaration, its uses, and `name=` in each call. A function renames its file in the same folder, the last segment of each reference, and the name after `export default function` when it was the file name. A function rename needs a client that can rename files.
-- Document symbols: the function, with its parameters and `const` answers.
-- Workspace symbols: every function of every program under the workspace folders and of the open files. A function's name is its project path. Its container is the program folder.
-- Completion: after `@./` or `@../`, the project functions relative to the current file. Each item replaces the whole reference token. Inside call parentheses, where an argument name goes, the parameters not given yet, as `name=`. After `x === "` or `case "`, the members of the union, each replacing the whole literal. Elsewhere, the parameter names, the std names, and keywords.
-- Signature help: inside call parentheses, the callee's parameters, with the current one active.
+- Hover: on a reference or a function's name, the description and the parameters. On a parameter, a field or `name=`, its type and question. On a struct type or a struct name, its doc and its fields. On a std name, its doc.
+- Rename: a parameter renames its declaration, its uses, and `name=` in each call. A field renames it in its `interface`, in `{ }` and the body of each function that takes the struct, and `name=` in each call. A function renames its file in the same folder, the last segment of each reference, and the name after `export default function` when it was the file name. An inline struct renames its `interface` and the parameter type. A shared struct renames its file to `<new>.struct.rein`, the last segment of each `@./` type, and its `interface` name when it was the file name. A function or shared struct rename needs a client that can rename files.
+- Document symbols: the function, with its parameters and `const` answers, then each struct with its fields.
+- Workspace symbols: every function of every program under the workspace folders and of the open files. A function's name is its project path. A shared struct is a struct symbol, named by its path without `.struct`. Its container is the program folder.
+- Completion: after `@./` or `@../`, the project functions relative to the current file, or after `}: ` the shared structs. Each item replaces the whole reference token. Inside call parentheses, where an argument name goes, the parameters (the fields of a struct parameter) not given yet, as `name=`. After `x === "` or `case "`, the members of the union, each replacing the whole literal. Elsewhere, the parameter names, the std names, and keywords.
+- Signature help: inside call parentheses, the callee's parameters (the fields of a struct parameter), with the current one active.
 - Quick fixes: add a doc comment to a function or a parameter that has none, and add `name=` to a positional argument.
 
 ## 11. Stepping (agent interface)

@@ -30,6 +30,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 23. Templates are permanent, and user templates (`templates/*.rein`) stay, not only the std `delegate` and `askUser`. A template call is a value, not a step: it nests as an argument and adds no hop to the `rein step` trace. Template arguments are always checked: the count equals the parameter count, every parameter is used in the template literal, and every parameter has its own doc comment. (2026-11-12)
 24. Call arguments are named, as in Python: `f(name=value, other=value)`. A positional argument is a compile error, and no flag allows it. Order does not matter. Each name is a parameter, given once. A name says what a value is, and it still works when a parameter moves. (2026-11-12)
 25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see Planned). (2026-11-12)
+26. A function takes one parameter at most. The parameter is a scalar or a struct. An inline struct lives in the function's file, is that function's input, and cannot be exported. A struct that more than one function needs is a standalone `<name>.struct.rein` file that exports only that struct. (2026-11-12)
 
 ## PoC choices (revisable)
 
@@ -65,6 +66,14 @@ Each choice can change. The reason is one line.
 - Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
 - Programs live in a visible `rein/` folder with a `rein.json` manifest, and `rein install` registers them. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
 - Programs are npm packages installed with pnpm into `<user programs>/npm`. Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
+- A struct is an `interface`. There is no `type X = { ... }` form. Why: one form keeps the grammar small, and an `interface` reads as a named record in TypeScript.
+- A struct parameter is destructured: `({ a, b }: Input)`. Why: the body reads each field by its bare name, as before, so conditions, templates, answer keys and the step protocol do not change. It is valid TypeScript.
+- The braces name every field of the struct. Why: Rein is strict, and a field the function cannot read is a mistake.
+- A shared struct is named with a reference in the type position: `@./message` is `message.struct.rein`. Why: Rein has no imports (fact 16), and the reference form and its root rules already exist.
+- A call names the fields: `f(a=..., b=...)`. Why: existing calls keep working, and fact 24 stays true.
+- A `.struct.rein` file is not a function. It has no graph node and no reachability warning. Why: it holds no decision and cannot be run.
+- A struct doc comment is required only on a shared struct. Why: an inline struct is described by its function.
+- The std template `delegate` takes an inline struct. Why: std follows the one-parameter rule; its calls do not change.
 
 ## Planned (not built)
 
