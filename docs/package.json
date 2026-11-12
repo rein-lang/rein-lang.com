@@ -4,8 +4,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
+    "docs:dev": "sh scripts/generate-cli.sh && vitepress dev",
+    "docs:build": "sh scripts/generate-cli.sh && vitepress build",
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
