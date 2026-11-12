@@ -75,6 +75,16 @@ Each choice can change. The reason is one line.
 - A struct doc comment is required only on a shared struct. Why: an inline struct is described by its function.
 - The std template `delegate` takes an inline struct. Why: std follows the one-parameter rule; its calls do not change.
 
+## Cross-program references
+
+- A program hands off to another installed program with `@program/function`, such as `@pr-handling/main(pr=pr)`. A bare `@program` means its entry. Why: the first name is the program, and `@./` and `@../` stay local, so no old file changes meaning. A program name never starts with a dot.
+- A program name may hold `-`, such as `pr-handling`. Why: `rein list` shows names with `-`. The function path keeps the old name rule.
+- A bare `@name` is no longer an error. Why: it now names a program. A typo gives `cannot find program`, which names the program.
+- Only a hand-off in `return`, with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
+- The programs are found by name through the scopes when a command loads the project. Why: the same lookup as `rein list` and `rein step NAME`; the core crate reads no environment.
+- One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
+- Not built: a `rein.lock` with the content hash of each called program, so a changed program is seen before the run. Why: it needs `rein install` changes and its own review. A program reference inside a called program is not followed.
+
 ## Planned (not built)
 
 - Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
@@ -87,5 +97,4 @@ Each choice can change. The reason is one line.
 - Free-text answers. A free-text answer from the agent is still not possible. Each question is a `boolean` or a union.
 - Loops and retries. Today a retry is a reference cycle.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
-- References across projects. Today references stay inside one project.
 - Who answers inputs: agent judgment, or deterministic tools.

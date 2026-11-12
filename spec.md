@@ -14,7 +14,7 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 - A function name is the file path relative to the flow root, without `.rein`, using `/` as separator. `ci/fix.rein` defines `ci/fix`. The root `main.rein` defines `main`.
 - The name of the `export default function` inside a file is a TypeScript identifier. It need not match the file name.
 - Subdirectories are allowed.
-- A reference resolves only inside the same flow root (section 4, References).
+- A relative reference (`@./`, `@../`) resolves only inside the same flow root. A program reference (`@program/function`) hands off to another installed program (section 4, References).
 - The directory walk skips hidden directories (names starting with `.`), `target/` and `node_modules/`.
 - A subdirectory with its own `main.rein` is another flow. The walk does not enter it.
 - The walk follows symlinks. A symlink loop does not repeat a directory.
@@ -27,7 +27,7 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 
 - `rein check <dir>`, `rein eval --root <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
 - A program is also one `.rein` file, the file form. `rein step <file.rein>`, `rein run <file.rein>` and `rein check <file.rein>` take it: the file's folder is the flow root, and the file name without `.rein` is the entry. No folder, manifest or scope is needed. Scopes and `rein list` only find programs by name.
-- Imports do not exist. References (`@./`, `@../`) stay inside the flow root.
+- Imports do not exist. Relative references (`@./`, `@../`) stay inside the flow root. A program reference names another installed program.
 
 ## 2. Lexical rules
 
@@ -37,7 +37,7 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 - An unterminated doc comment is an error: `unterminated doc comment; add */`.
 - A STRING is text in double quotes or single quotes. Escapes: `\"`, `\'`, `\\`, `\n`. A raw newline is not allowed inside a STRING.
 - A TEMPLATE is text in backticks. It may hold newlines. It can interpolate a name with `${name}`. Only a bare name is allowed inside `${}`. Escapes: `` \` ``, `\\`, `\$`, `\n`.
-- A REF is `@` followed by `./` or `../`, then path names made of letters, digits and `_`, separated by `/`. It has no extension. Examples: `@./ci/fix`, `@../escalate`. A bare `@name` is an error: `references are relative: write `@./name``.
+- A REF is `@` followed by `./` or `../`, then path names made of letters, digits and `_`, separated by `/`. It has no extension. Examples: `@./ci/fix`, `@../escalate`. A REF that does not start with `./` or `../` names another program: `@program` or `@program/function`. The program name is as `rein list` shows it, and may hold `-`. The function path holds names of letters, digits and `_`. Examples: `@pr-handling`, `@pr-handling/main`. A malformed one is an error: `a reference is `@./path`, `@../path`, or `@program/function` for another program`.
 - An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`.
 - Keywords: `import`, `from`, `export`, `default`, `function`, `if`, `else`, `switch`, `case`, `return`, `boolean`. A keyword cannot be a name.
 - Reserved words: `for`, `while`, `do`, `const`, `let`, `var`. They are not Rein. Using one gives a helpful error (section 3). A file name segment cannot be one either. `const` is allowed only for an answer (section 4, Async requests).
@@ -204,7 +204,7 @@ A caller gives each field by name: `@../templates/tell_customer(opening="...", n
 
 ### References
 
-A reference names another function of the project. The path is relative to the file that holds it, and it has no extension.
+A relative reference names another function of the project. The path is relative to the file that holds it, and it has no extension.
 
 - `@./name` is a function in the same folder. `@./ci/fix` is `ci/fix` in the same folder. `@../escalate` is `escalate` one folder up.
 - The reference resolves to `<dir of current file>/<path>.rein`. The target must stay inside the project root. `@../../outside` in `ci/fix.rein` is an error: `` `@../../outside` leaves the project root ``.
@@ -212,6 +212,10 @@ A reference names another function of the project. The path is relative to the f
 - Function identity is the root-relative name (`ci/fix`). The CLI, JSON, graph, cycles, and reachability from `main` use it.
 - `return @./path;` hands the agent to the function (section 9). The function must have no `string` parameter.
 - `return @./path(name=value);` calls a template (section 4, Templates). It hands the agent to a normal function with values (section 4, Inputs).
+- `@program/function` hands off to a function of another installed program. The program is found by name through the scopes, as `rein list` and `rein step NAME` find it. A bare `@program` means the entry of that program. It is allowed only as a hand-off in a `return`, with the same argument rules as a hand-off to a local function: only `string` parameters are passed, by name. The other inputs of the target are asked by the target as normal questions.
+- A program that is not installed is an error on the reference: `` cannot find program `x`; run `rein list` to list programs ``. A function that the program does not have is an error: `` cannot find function `f` in program `x` ``.
+- `rein step` follows the hand-off into the other program in the same run. The functions of that program have the name `@program/function`, so its answer keys are `@pr-handling/main.task`, and a local file `pr-handling/main.rein` cannot collide with them. The trace shows the same names. A program reference inside the other program is not followed.
+- `rein graph` draws a `program` node labelled `@program/function`, and a hand-off edge to it. It does not draw the other program.
 - A reference to a template without a call is an error: `` `@./tpl` is a template; call it with arguments, like `@./tpl(...)` ``.
 
 ### Std
@@ -384,6 +388,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A path through the function ends without a return (`every path must return something`) |
 | A statement follows a terminating statement (`unreachable statement`) |
 | A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
+| A program reference names a program that is not installed (`` cannot find program `x`; run `rein list` to list programs ``), or a function the program does not have (`` cannot find function `f` in program `x` ``) |
 | A reference to a template is returned without a call |
 | A call or a hand-off has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call or a hand-off names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
@@ -436,7 +441,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein eval [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. `--set` also gives a value to a `string` parameter. A name given twice with `--set` is an error. |
 | `rein run [NAME] [--root DIR] [--entry FN] [--json]` | Run a program as a live process. Writes one step per line, reads one answer per line on stdin. See [interface.md](interface.md). |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
-| `rein graph [NAME \| --root DIR] [--refs] [--format mermaid\|dot\|json] [-o FILE]` | Print the program graph. `NAME` is a program name (section 1a) or a `.rein` file. The default is the project around the current directory. The default view is the decision flow: one node per function, per question (its text, then `name: type`), per request, and per outcome (`done` text or `delegate`). An edge from a question has the answer as its label: `yes`, `no`, or union members. A hand-off edge has its named arguments. A dashed edge goes to a template that a call uses. `--refs` draws only one node per function and one edge per reference. Node ids are `f0`, `f1`, ... for the functions in name order, and `f<i>_<j>` for the steps of function `i` in source order, so the output is stable. The entry is drawn as a stadium shape. `--format` is `mermaid` (default), `dot` (Graphviz), or `json`. `-o FILE` writes to FILE. A `.svg` or `.png` FILE is rendered from DOT by Graphviz `dot`; when `dot` is not on PATH, the command fails and names it. JSON: `{version, view, entry, nodes: [{id, kind, function, label, entry?, name?, type?}], edges: [{from, to, kind, label?, args?: [{name, value}]}]}`. Node kinds: `function`, `question`, `condition`, `request`, `done`, `delegate`, `unresolved`. Edge kinds: `flow`, `handoff`, `template`. |
+| `rein graph [NAME \| --root DIR] [--refs] [--format mermaid\|dot\|json] [-o FILE]` | Print the program graph. `NAME` is a program name (section 1a) or a `.rein` file. The default is the project around the current directory. The default view is the decision flow: one node per function, per question (its text, then `name: type`), per request, and per outcome (`done` text or `delegate`). An edge from a question has the answer as its label: `yes`, `no`, or union members. A hand-off edge has its named arguments. A dashed edge goes to a template that a call uses. `--refs` draws only one node per function and one edge per reference. Node ids are `f0`, `f1`, ... for the functions in name order, and `f<i>_<j>` for the steps of function `i` in source order, so the output is stable. The entry is drawn as a stadium shape. `--format` is `mermaid` (default), `dot` (Graphviz), or `json`. `-o FILE` writes to FILE. A `.svg` or `.png` FILE is rendered from DOT by Graphviz `dot`; when `dot` is not on PATH, the command fails and names it. JSON: `{version, view, entry, nodes: [{id, kind, function, label, entry?, name?, type?}], edges: [{from, to, kind, label?, args?: [{name, value}]}]}`. Node kinds: `function`, `question`, `condition`, `request`, `done`, `delegate`, `program` (a function of another program), `unresolved`. Edge kinds: `flow`, `handoff`, `template`. |
 | `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--input name=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. `--input` gives a value to a `string` parameter of the entry function. The agent-facing interface (section 11). |
 | `rein list [-l] [-1] [-a] [-r] [-t] [--json] [PATTERN...]` | List the programs visible from here, as `ls` lists files. Names by default; `-l` for scope, version, path and description; `-a` for shadowed programs; PATTERN is a name glob. `rein flows` is an alias. |
 | `rein show <NAME>` | Print a program's manifest and every `.rein` file, entry first. |
@@ -549,7 +554,7 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 - `flow`: optional. The name of a visible flow (section 1a). The CLI resolves it to a flow root and steps that root. Give `flow` or a root, not both.
 - `entry`: the function to start from, by its path. Default `main`.
 - `inputs`: optional. An object. Each key is the name of a `string` parameter of the entry function, and each value is its text. Default `{}`.
-- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
+- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. A function of another program has the path `@program/function`, such as `@pr-handling/main.task`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
 
 ### Response
 
