@@ -15,6 +15,7 @@ This document contains the help content for the `rein` command-line program.
 * [`rein graph`↴](#rein-graph)
 * [`rein list`↴](#rein-list)
 * [`rein show`↴](#rein-show)
+* [`rein lock`↴](#rein-lock)
 * [`rein serve`↴](#rein-serve)
 * [`rein agent-context`↴](#rein-agent-context)
 * [`rein hook`↴](#rein-hook)
@@ -39,6 +40,7 @@ A small language for agent decision flows
 * `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs
 * `list` — List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 * `show` — Print a program's source: its manifest and every .rein file
+* `lock` — Pin the programs this program hands off to: writes `rein.lock` with the content hash of each
 * `serve` — Serve the agent interface. Holds live runs in memory
 * `agent-context` — Print the block an agent needs to use the visible flows
 * `hook` — The agent hook entry point. Reads one event on stdin. Run by the agent, not by hand
@@ -195,6 +197,22 @@ Print a program's source: its manifest and every .rein file
 ###### **Arguments:**
 
 * `<NAME>` — Program name (see `rein list`)
+
+
+
+## `rein lock`
+
+Pin the programs this program hands off to: writes `rein.lock` with the content hash of each
+
+**Usage:** `rein lock [OPTIONS] [PROGRAM]`
+
+###### **Arguments:**
+
+* `<PROGRAM>` — Program to lock: a `.rein` file, or a name (see `rein list`). Default: the project around the current directory
+
+###### **Options:**
+
+* `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 
 
 
