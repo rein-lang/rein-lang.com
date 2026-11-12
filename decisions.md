@@ -59,6 +59,7 @@ Each choice can change. The reason is one line.
 - Conditions allow `&&`, `||`, `!`, and `===` / `!==` on union parameters. Why: enough logic for branching, with no arithmetic or loops.
 - Switch has no `default`. Every union member needs a case. Why: a new member is a compile error, not a silent fallback.
 - A function must return on every path. Why: an agent must always get a next step.
+- A function has at most 40 lines, from `export default` to `}`, and every line counts, blank and comment lines too. `rein.json` sets `maxFunctionLines` for a longer one. Why: one plain count with no skip rule to learn, so the limit is easy to check by eye; the rule matches the common `max-lines-per-function` lint with no skips.
 - Reference cycles are allowed, but the checker warns. Why: a cycle acts like a loop, and Rein has no loops yet. A retry flow needs one.
 - One step per eval. `rein eval` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.

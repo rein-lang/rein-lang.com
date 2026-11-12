@@ -106,6 +106,8 @@ Helpful errors from the parser:
 - The function has zero parameters or one (section 4, Parameters). The parameter may end with a comma.
 - The body is a block. It must return on every path (section 5).
 - An empty body is an error: `function must return something`.
+- A function has at most 40 lines. Its lines run from the `export default` line to its closing `}`, both included. Every line counts, blank and comment lines too. The doc comment above the function and any `interface` outside those lines do not count.
+- A program sets another limit with `maxFunctionLines` in its `rein.json`: a positive integer, such as `"maxFunctionLines": 60`. A `.struct.rein` file is not a function, so the limit does not apply to it.
 
 ### Doc comments
 
@@ -355,6 +357,8 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A parameter has no doc comment or an empty one |
 | A doc comment has `@param` |
 | The function body is empty (`function must return something`) |
+| A function has more lines than the limit (`` function `NAME` has N lines; the limit is M. Move part of it into its own function and call it with `@./name` ``). It points at the header, `export default function NAME` |
+| `rein.json` sets `maxFunctionLines` to a value that is not a positive integer (`` `maxFunctionLines` in rein.json must be a positive integer, such as 40; found VALUE ``). It points at `rein.json`, and the limit stays 40 |
 | Two parameters share a name |
 | A function has two or more parameters (`` a function takes one parameter; put `a` and `b` in a struct ``) |
 | A struct parameter names a field that its struct does not have, leaves a field out, or names a field twice |
