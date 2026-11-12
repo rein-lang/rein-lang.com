@@ -13,8 +13,8 @@ flowchart TD
     subgraph s0 ["ci/fix.rein"]
         f0[["ci/fix"]]
         f0_0{"Did you push a fix for the failing job?<br/>fixPushed: boolean"}
-        f0_1("Wait for CI to finish. Then start this program again with the task merge.")
-        f0_2("Read the CI log. Fix the failing test or code. Push the fix. Then run ci/fix again.")
+        f0_1("Wait for CI to finish. Then start this program again with the task<br/>merge.")
+        f0_2("Read the CI log. Fix the failing test or code. Push the fix. Then run<br/>ci/fix again.")
     end
     subgraph s1 ["main.rein"]
         f1(["main"])
@@ -36,8 +36,8 @@ flowchart TD
     subgraph s4 ["security/review.rein"]
         f4[["security/review"]]
         f4_0{"Does the PR add or change a secret, token, or key?<br/>secretsAdded: boolean"}
-        f4_1("Stop. Remove the secret from the diff. Rotate the secret. Then run merge_pr again.")
-        f4_2("Check the auth and permission changes. Ask the security owner to approve. Then run merge_pr again.")
+        f4_1("Stop. Remove the secret from the diff. Rotate the secret. Then run<br/>merge_pr again.")
+        f4_2("Check the auth and permission changes. Ask the security owner to<br/>approve. Then run merge_pr again.")
     end
     f0 --> f0_0
     f0_0 -->|"yes"| f0_1

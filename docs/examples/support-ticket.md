@@ -13,18 +13,18 @@ flowchart TD
     subgraph s0 ["answer/faq.rein"]
         f0[["answer/faq"]]
         f0_0{"Did you find a help article that answers the question?<br/>articleFound: boolean"}
-        f0_1[/"request: #quot;Reply with the help article link and ask the customer if it solved the problem.#quot;"/]
+        f0_1[/"request: #96;Reply with the help article link and ask the customer if it solved the<br/>problem.#96;"/]
         f0_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
         f0_3("@../templates/close_ticket(opening=#quot;Glad the help article solved the problem.#quot;, nextStep=#quot;Reply to this ticket if it comes back.#quot;)")
     end
     subgraph s1 ["billing/refund.rein"]
         f1[["billing/refund"]]
         f1_0{"Is the requested refund above the agent's limit?<br/>refundOverLimit: boolean"}
-        f1_1("@../templates/tell_customer(opening=#quot;Refund the amount the customer asked for and confirm it in the ticket.#quot;, nextStep=#quot;Then tell the customer the refund takes 5 business days.#quot;)")
+        f1_1("@../templates/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#quot;Then tell the customer the refund takes 5 business days.#quot;)")
     end
     subgraph s2 ["escalate.rein"]
         f2[["escalate"]]
-        f2_0("Assign the ticket to the tier 2 queue. Tell the customer a person will reply within one business day. Do not promise a refund or a fix.")
+        f2_0("Assign the ticket to the tier 2 queue. Tell the customer a person<br/>will reply within one business day. Do not promise a refund or a fix.")
     end
     subgraph s3 ["main.rein"]
         f3(["main"])
@@ -33,7 +33,7 @@ flowchart TD
     end
     subgraph s4 ["templates/close_ticket.rein"]
         f4[["templates/close_ticket(opening, nextStep)"]]
-        f4_0("Tell the customer: ${opening} ${nextStep} Then close the ticket as solved.")
+        f4_0("Tell the customer: ${opening} ${nextStep} Then close the ticket as<br/>solved.")
     end
     subgraph s5 ["templates/tell_customer.rein"]
         f5[["templates/tell_customer(opening, nextStep)"]]

@@ -18,11 +18,11 @@ flowchart TD
     end
     subgraph s1 ["page_human.rein"]
         f1[["page_human"]]
-        f1_0("Page the on-call engineer now. Post the alert summary in the incident channel. Wait for an acknowledgement before you take any other step.")
+        f1_0("Page the on-call engineer now. Post the alert summary in the incident<br/>channel. Wait for an acknowledgement before you take any other step.")
     end
     subgraph s2 ["runbook/follow.rein"]
         f2[["runbook/follow"]]
-        f2_0[/"request: #quot;Run the runbook steps for this alert. Then check the alert status and report whether it cleared.#quot;"/]
+        f2_0[/"request: #96;Run the runbook steps for this alert. Then check the alert status and<br/>report whether it cleared.#96;"/]
         f2_1{"Did the runbook steps clear the alert?<br/>fixed: boolean"}
         f2_2("Close the alert. Write a one-line note with the steps you ran.")
     end
@@ -30,7 +30,7 @@ flowchart TD
         f3[["ticket/open"]]
         f3_0{"Is there already an open ticket for this alert?<br/>ticketExists: boolean"}
         f3_1("Add the alert details as a comment on the open ticket.")
-        f3_2("Create a ticket with the alert name, severity, and first graph link. Assign it to the owning team.")
+        f3_2("Create a ticket with the alert name, severity, and first graph link.<br/>Assign it to the owning team.")
     end
     f0 --> f0_0
     f0_0 -->|"yes"| f1
