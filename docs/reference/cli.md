@@ -37,7 +37,7 @@ A small language for agent decision flows
 * `step` — Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
 * `describe` — Print a function's schema as JSON
 * `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs
-* `list` — List the programs visible from here: name, scope, path, description, and first question
+* `list` — List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 * `show` — Print a program's source: its manifest and every .rein file
 * `serve` — Serve the agent interface. Holds live runs in memory
 * `agent-context` — Print the block an agent needs to use the visible flows
@@ -167,13 +167,22 @@ Print the program graph: functions, questions, branches, outcomes, and hand-offs
 
 ## `rein list`
 
-List the programs visible from here: name, scope, path, description, and first question
+List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 
-**Usage:** `rein list [OPTIONS]`
+**Usage:** `rein list [OPTIONS] [PATTERNS]...`
+
+###### **Arguments:**
+
+* `<PATTERNS>` — Show only the programs that these names match. Shell-style globs such as `pr-*`. Default: every program
 
 ###### **Options:**
 
-* `--json` — Print the list as JSON
+* `--json` — Print the full records as JSON. Honors the operands, -a, -r and -t. -l and -1 do not apply
+* `-l` — Long format: one program per line, with scope, version, name, path and description
+* `-1` — One name per line, even on a terminal
+* `-a`, `--all` — Also show shadowed programs, marked with the scope that wins the name
+* `-r`, `--reverse` — Reverse the order
+* `-t` — Sort by the modification time of each program's entry file, newest first. Default: by name
 
 
 
