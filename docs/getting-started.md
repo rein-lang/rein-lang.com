@@ -36,9 +36,9 @@ export default function main(
   urgent: boolean,
 ) {
   if (urgent) {
-    return "Escalate the ticket to on-call now.";
+    return `Escalate the ticket to on-call now.`;
   }
-  return "Answer the ticket from the queue.";
+  return `Answer the ticket from the queue.`;
 }
 ```
 

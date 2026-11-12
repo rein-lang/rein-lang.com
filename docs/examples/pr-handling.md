@@ -49,15 +49,15 @@ flowchart TD
         f4_0{"Did you write this pull request yourself?<br/>ownPr: boolean"}
         f4_1("askUser(question=#96;This is my own pull request ${pr}. Who reviews it?#96;)")
         f4_2{"Does the PR change authentication, payments, or permissions code?<br/>securitySensitive: boolean"}
-        f4_3[/"request: delegate(model=#quot;use opus model#quot;, task=#96;review the pull request ${pr}<br/>with a security focus and list each problem with file and line#96;)"/]
+        f4_3[/"request: delegate(model=#96;use opus model#96;, task=#96;review the pull request ${pr}<br/>with a security focus and list each problem with file and line#96;)"/]
         f4_4{"Did the security review find a problem that must be fixed?<br/>securityProblem: boolean"}
-        f4_5("@./templates/post_review(kind=#quot;request changes#quot;, body=#quot;each security problem, with its file and line#quot;, pr=pr)")
-        f4_6("@./templates/post_review(kind=#quot;approve#quot;, body=#quot;the security checks you made#quot;, pr=pr)")
-        f4_7[/"request: delegate(model=#quot;use haiku model#quot;, task=#96;review the pull request ${pr}<br/>and list each problem with file and line#96;)"/]
+        f4_5("@./templates/post_review(kind=#96;request changes#96;, body=#96;each security problem, with its file and line#96;, pr=pr)")
+        f4_6("@./templates/post_review(kind=#96;approve#96;, body=#96;the security checks you made#96;, pr=pr)")
+        f4_7[/"request: delegate(model=#96;use haiku model#96;, task=#96;review the pull request ${pr}<br/>and list each problem with file and line#96;)"/]
         f4_8{"What is the result of the code review?<br/>verdict: #quot;clean#quot; | #quot;small problems#quot; | #quot;blocking problems#quot;"}
-        f4_9("@./templates/post_review(kind=#quot;approve#quot;, body=#quot;one line on what you checked#quot;, pr=pr)")
-        f4_10("@./templates/post_review(kind=#quot;comment#quot;, body=#quot;each small problem, with its file and line#quot;, pr=pr)")
-        f4_11("@./templates/post_review(kind=#quot;request changes#quot;, body=#quot;each blocking problem, with its file and line#quot;, pr=pr)")
+        f4_9("@./templates/post_review(kind=#96;approve#96;, body=#96;one line on what you checked#96;, pr=pr)")
+        f4_10("@./templates/post_review(kind=#96;comment#96;, body=#96;each small problem, with its file and line#96;, pr=pr)")
+        f4_11("@./templates/post_review(kind=#96;request changes#96;, body=#96;each blocking problem, with its file and line#96;, pr=pr)")
     end
     subgraph s5 ["templates/post_review.rein"]
         f5[["templates/post_review(kind, body, pr)"]]

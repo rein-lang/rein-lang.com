@@ -15,12 +15,12 @@ flowchart TD
         f0_0{"Did you find a help article that answers the question?<br/>articleFound: boolean"}
         f0_1[/"request: #96;Reply with the help article link and ask the customer if it solved the<br/>problem.#96;"/]
         f0_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
-        f0_3("@../templates/close_ticket(opening=#quot;Glad the help article solved the problem.#quot;, nextStep=#quot;Reply to this ticket if it comes back.#quot;)")
+        f0_3("@../templates/close_ticket(opening=#96;Glad the help article solved the problem.#96;, nextStep=#96;Reply to this ticket if it comes back.#96;)")
     end
     subgraph s1 ["billing/refund.rein"]
         f1[["billing/refund"]]
         f1_0{"Is the requested refund above the agent's limit?<br/>refundOverLimit: boolean"}
-        f1_1("@../templates/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#quot;Then tell the customer the refund takes 5 business days.#quot;)")
+        f1_1("@../templates/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#96;Then tell the customer the refund takes 5 business days.#96;)")
     end
     subgraph s2 ["escalate.rein"]
         f2[["escalate"]]
