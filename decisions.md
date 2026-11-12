@@ -59,6 +59,9 @@ Each choice can change. The reason is one line.
 - Switch has no `default`. Every union member needs a case. Why: a new member is a compile error, not a silent fallback.
 - A function must return on every path. Why: an agent must always get a next step.
 - A function has at most 40 lines, from `export default` to `}`, and every line counts, blank and comment lines too. `rein.json` sets `maxFunctionLines` for a longer one. Why: one plain count with no skip rule to learn, so the limit is easy to check by eye; the rule matches the common `max-lines-per-function` lint with no skips.
+- A line has at most 80 characters, and `rein.json` sets `maxLineLength` for another limit. Why: 80 is Prettier's default `printWidth`, and Prettier recommends against more than 80 for readability (https://prettier.io/docs/options#print-width). Rein makes it an error, not a guideline, so long lines never land.
+- The line length counts characters, not bytes, and a tab is one character. Why: a reader sees characters; bytes would punish non-English text.
+- A template that spans lines drops the indent shared by its lines after the first, so the agent text has no code indentation. Why: a long instruction is written indented inside the code, and the indent is not part of the instruction. This departs from TypeScript on purpose: a TypeScript template keeps the indent.
 - Reference cycles are allowed, but the checker warns. Why: a cycle acts like a loop, and Rein has no loops yet. A retry flow needs one.
 - One step per eval. `rein eval` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
