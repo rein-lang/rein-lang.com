@@ -151,5 +151,4 @@ This part is not built.
 - A step from `rein_start`, `rein_answer` and `rein_status` has a `run` field. A `rein step` response does not. MCP steps list their keys in alphabetical order.
 - In `rein step`, a bad answer is an error with exit code 1. In a live run, a bad answer is an error step, and the run goes on.
 - Sections 9 and 10 named the single-function command `rein run`. It is now `rein eval`. `rein run` starts a live run.
-- Section 12 uses `rein install <tool>` for the hook config.
 - The manifest `entry` can name a file other than `main.rein`. The checker still asks for a `main.rein` in each program.

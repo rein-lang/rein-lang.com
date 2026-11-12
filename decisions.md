@@ -22,7 +22,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 15. Every function returns something on every path: a string, a template, or a reference to another function.
 16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
-18. A program is its entry file (fact 25). Scoped folders are only a catalog: project (`rein/`), user (the user programs folder, filled by `rein install`), system; the closest scope wins. `rein list` shows the catalog. The agent finds a program there by name, not by navigating a dot-folder. (Amended 2026-11-12.)
+18. A program is its entry file (fact 25). Scoped folders are only a catalog: project (`rein/`), user (the user programs folder, filled by `rein install -g`), system; the closest scope wins. `rein list` shows the catalog. The agent finds a program there by name, not by navigating a dot-folder. (Amended 2026-11-12.)
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
 20. A program holds its state, like a computer app. The agent does not enter every answer again.
 21. A program takes inputs, such as a pull request link.
@@ -41,7 +41,6 @@ Each choice can change. The reason is one line.
 - A flow root is a directory that holds `main.rein`, or the folder of a program's entry file (fact 25). The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
 - Scopes: project (`rein/` up the tree), user (`~/.config/rein/programs/`), system (`/etc/rein/`). Why: visible folders an agent can read and write with its normal tools.
 - The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
-- `install` writes only `claude-code`. Why: polyhook's `tools.toml` gives docs links for the other tools, but no config file location.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
 - Functions are used through references: `return @./ci/fix;`. Why: no import statement; a reference is a path from the current file, so a file is moved with its folder.
 - A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.
@@ -65,8 +64,8 @@ Each choice can change. The reason is one line.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
 - Agents consume flows through `rein step` (protocol v1, see [spec.md section 11](spec.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same flow. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
 - Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
-- Programs live in a visible `rein/` folder with a `rein.json` manifest, and `rein install` registers them. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
-- Programs are npm packages installed with pnpm into `<user programs>/npm`. Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
+- Programs live in a visible `rein/` folder with a `rein.json` manifest, and packages come from `rein install`. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
+- Programs are npm packages installed with pnpm into `<user programs>/npm` (with `-g`) or the repo's `rein/npm` (without). Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
 - A struct is an `interface`. There is no `type X = { ... }` form. Why: one form keeps the grammar small, and an `interface` reads as a named record in TypeScript.
 - A struct parameter is destructured: `({ a, b }: Input)`. Why: the body reads each field by its bare name, as before, so conditions, templates, answer keys and the step protocol do not change. It is valid TypeScript.
 - The braces name every field of the struct. Why: Rein is strict, and a field the function cannot read is a mistake.
@@ -79,6 +78,7 @@ Each choice can change. The reason is one line.
 ## Planned (not built)
 
 - Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
+- Research an agent-agnostic tool that installs agent hooks. Why: each agent keeps its hook config in its own format and place, so Rein should not own a per-agent installer.
 
 ## Open questions
 

@@ -443,7 +443,9 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein serve --mcp` | The MCP host. Holds live runs in memory. Tools: `rein_programs`, `rein_show`, `rein_start`, `rein_answer`, `rein_status`, `rein_stop`, `rein_list`. See [interface.md](interface.md). |
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
-| `rein install <tool> [--project \| --user] [--dry-run]` | Write a tool's hook config so it runs `rein hook` (section 12). Only `claude-code`. |
+| `rein install [-g] <args>...` | Run `pnpm add --ignore-scripts <args>` in the npm folder: the repo's `rein/npm/`, or the user's with `-g`. See [Install a program](install-programs.md). |
+| `rein uninstall [-g] <args>...` | Run `pnpm remove <args>` in the same folder rules. |
+| `rein update [-g] [<args>...]` | Run `pnpm update --ignore-scripts <args>` in the same folder rules. |
 | `rein lsp` | Run the language server over stdio. See [Language server](#language-server) for its features. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.
@@ -591,14 +593,13 @@ The program is a `.rein` path or a `rein list` name, and it may be given as the 
 
 ## 12. Agent integration
 
-Rein puts itself into an agent session with a hook. The hook is built on polyhook, so the same hook code works across agents.
+`rein hook` is the runtime side of an agent hook. The hook is built on polyhook, so the same hook code works across agents. Rein does not write the agent's hook config. There is no installer for it.
 
-- `rein install claude-code --project` writes `.claude/settings.json`. `--user` writes `~/.claude/settings.json`. The merge keeps every other key and every other hook. A second run adds nothing. `--dry-run` prints the file and writes nothing.
 - The hook runs `rein hook --caller claude-code` on two events: `SessionStart` and `UserPromptSubmit`.
 - `SessionStart` marks the session as pending. It writes nothing to the agent.
 - The first `UserPromptSubmit` of a pending session gets the agent context (`rein agent-context`) as `additionalContext`. Later prompts of that session get nothing. A `SessionStart` from a resume, clear or compact makes the next prompt pending again.
 - Every other event is a no-op: no output, exit 0. Errors are a no-op too, with the reason on stderr. The hook never blocks the agent.
-- Other tools are not supported yet. Their config file location is not in polyhook's `tools.toml`.
+- Other tools have no hook yet.
 
 The context block says what flows are, lists the visible flows with their descriptions, and shows the stepping rule from section 11.
 
