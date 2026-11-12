@@ -51,6 +51,10 @@ flowchart TD
 
 ## Source
 
+### `package.json`
+
+<<< ../../../examples/rein/incident-triage/package.json{json}
+
 ### `rein.json`
 
 <<< ../../../examples/rein/incident-triage/rein.json{json}

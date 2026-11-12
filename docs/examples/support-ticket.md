@@ -63,6 +63,10 @@ flowchart TD
 
 ## Source
 
+### `package.json`
+
+<<< ../../../examples/rein/support-ticket/package.json{json}
+
 ### `rein.json`
 
 <<< ../../../examples/rein/support-ticket/rein.json{json}

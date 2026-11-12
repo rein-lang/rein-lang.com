@@ -52,17 +52,6 @@ Check the flow for errors. A clean flow prints `0 errors, 0 warnings`:
 rein check hello/rein/ticket
 ```
 
-## Connect the agent
-
-Run the install command in the project folder. It writes the agent hook to `.claude/settings.json`:
-
-```sh
-cd hello
-rein install claude-code --project
-```
-
-For what the hook does, see [spec section 12](docs/spec.md#12-agent-integration).
-
 ## List the flows
 
 From the project folder, list the flows the CLI can see:

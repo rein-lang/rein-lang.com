@@ -1,4 +1,4 @@
-// Generate website/docs/examples/*.md from the programs in examples/rein/<name>/ (each has a rein.json).
+// Generate website/docs/examples/*.md from the programs in examples/rein/<name>/ (each has a package.json and a rein.json).
 // Run `node website/docs/scripts/generate-examples.mjs`. Pass `--check` to fail, without writing,
 // when a page, the overview, or the sidebar in .vitepress/config.mts differs from the examples.
 // Each page embeds the program graph from `rein graph`, so the script needs `cargo`.
@@ -13,12 +13,14 @@ const outDir = join(docs, 'examples')
 const configPath = join(docs, '.vitepress/config.mts')
 const check = process.argv.includes('--check')
 
-const examples = readdirSync(programs).filter((n) => existsSync(join(programs, n, 'rein.json'))).sort()
+const examples = readdirSync(programs).filter((n) => existsSync(join(programs, n, 'package.json'))).sort()
 
+// name and description come from package.json; entry comes from rein.json, the Rein-only manifest.
 function manifest(name) {
-  const m = JSON.parse(readFileSync(join(programs, name, 'rein.json'), 'utf8'))
-  if (m.name !== name) throw new Error(`${name}/rein.json names "${m.name}"; the folder and name must match`)
-  return m
+  const pkg = JSON.parse(readFileSync(join(programs, name, 'package.json'), 'utf8'))
+  if (pkg.name !== name) throw new Error(`${name}/package.json names "${pkg.name}"; the folder and name must match`)
+  const rein = JSON.parse(readFileSync(join(programs, name, 'rein.json'), 'utf8'))
+  return { name, description: pkg.description, entry: rein.entry ?? 'main.rein' }
 }
 
 function reinFiles(name) {
@@ -46,7 +48,7 @@ function examplePage(name) {
   let out = `---\ndescription: ${JSON.stringify(m.description)}\n---\n\n`
   out += `<!--@include: ${base}/README.md-->\n\n`
   out += `## Graph\n\nThe decision flow, from \`rein graph ${name}\`:\n\n\`\`\`mermaid\n${graph(name)}\`\`\`\n\n## Source\n\n`
-  out += `### \`rein.json\`\n\n<<< ${base}/rein.json{json}\n`
+  out += `### \`package.json\`\n\n<<< ${base}/package.json{json}\n\n### \`rein.json\`\n\n<<< ${base}/rein.json{json}\n`
   // The entry file comes first, then the rest in path order.
   for (const f of [m.entry, ...files.filter((f) => f !== m.entry)]) {
     out += `\n### \`${f}\`\n\n<<< ${base}/${f}{rein}\n`
@@ -56,7 +58,7 @@ function examplePage(name) {
 
 function overviewPage() {
   let out = '# Examples\n\n'
-  out += 'Each example is a flow under `examples/rein/<flow>/`, with a `rein.json` manifest. Open one to read its files and run it.\n\n'
+  out += 'Each example is a flow under `examples/rein/<flow>/`, with a `package.json` manifest. Open one to read its files and run it.\n\n'
   for (const n of examples) out += `- [${n}](/examples/${n}): ${manifest(n).description}\n`
   out += '\nRun `rein list` from the `examples` folder to list them. Then run one by name. See [Install a program](docs/install-programs.md):\n\n'
   out += '```sh\ncd examples\nrein list\nrein run support-ticket\n```\n'

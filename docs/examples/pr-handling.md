@@ -114,6 +114,10 @@ flowchart TD
 
 ## Source
 
+### `package.json`
+
+<<< ../../../examples/rein/pr-handling/package.json{json}
+
 ### `rein.json`
 
 <<< ../../../examples/rein/pr-handling/rein.json{json}

@@ -61,6 +61,10 @@ flowchart TD
 
 ## Source
 
+### `package.json`
+
+<<< ../../../examples/rein/merge-pr/package.json{json}
+
 ### `rein.json`
 
 <<< ../../../examples/rein/merge-pr/rein.json{json}

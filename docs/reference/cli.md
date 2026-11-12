@@ -17,6 +17,8 @@ This document contains the help content for the `rein` command-line program.
 * [`rein agent-context`↴](#rein-agent-context)
 * [`rein hook`↴](#rein-hook)
 * [`rein install`↴](#rein-install)
+* [`rein uninstall`↴](#rein-uninstall)
+* [`rein update`↴](#rein-update)
 * [`rein lsp`↴](#rein-lsp)
 
 ## `rein`
@@ -38,7 +40,9 @@ A small language for agent decision flows
 * `serve` — Serve the agent interface. Holds live runs in memory
 * `agent-context` — Print the block an agent needs to use the visible flows
 * `hook` — The agent hook entry point. Reads one event on stdin. Run by the agent, not by hand
-* `install` — Register a program folder in the user programs folder, or write a tool's hook config (`claude-code`)
+* `install` — Install a program package: runs `pnpm add` with these arguments
+* `uninstall` — Remove an installed program package: runs `pnpm remove` with these arguments. `-g` picks the user folder
+* `update` — Update installed program packages: runs `pnpm update --ignore-scripts` with these arguments. `-g` picks the user folder
 * `lsp` — Run the language server on stdio
 
 
@@ -226,19 +230,39 @@ The agent hook entry point. Reads one event on stdin. Run by the agent, not by h
 
 ## `rein install`
 
-Register a program folder in the user programs folder, or write a tool's hook config (`claude-code`)
+Install a program package: runs `pnpm add` with these arguments.
 
-**Usage:** `rein install [OPTIONS] <TOOL>`
+The arguments go to pnpm unchanged, so any pnpm flag works. `-g` or `--global` installs for the user: it runs in `<user programs folder>/npm/`, and rein does not pass it on. Without `-g`, it runs in the repo's `rein/npm/`. Outside a repository, use `-g`. `--ignore-scripts` is added first, unless the arguments set it.
+
+**Usage:** `rein install <ARGS>...`
 
 ###### **Arguments:**
 
-* `<TOOL>` — A program folder to register, or the agent tool, such as `claude-code`
+* `<ARGS>` — Arguments for `pnpm add`, such as `pr-handling@^1`, `file:../pr-handling` or `--save-exact`
 
-###### **Options:**
 
-* `--project` — Write to the project's settings (`.claude/settings.json`). Default
-* `--user` — Write to the user's settings (`~/.claude/settings.json`)
-* `--dry-run` — Print the resulting file and write nothing
+
+## `rein uninstall`
+
+Remove an installed program package: runs `pnpm remove` with these arguments. `-g` picks the user folder
+
+**Usage:** `rein uninstall <ARGS>...`
+
+###### **Arguments:**
+
+* `<ARGS>` — Arguments for `pnpm remove`, such as a package name. `-g` picks the user folder
+
+
+
+## `rein update`
+
+Update installed program packages: runs `pnpm update --ignore-scripts` with these arguments. `-g` picks the user folder
+
+**Usage:** `rein update [ARGS]...`
+
+###### **Arguments:**
+
+* `<ARGS>` — Arguments for `pnpm update`, such as a package name or `--latest`. `-g` picks the user folder
 
 
 
