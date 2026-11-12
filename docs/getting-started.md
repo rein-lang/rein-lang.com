@@ -86,6 +86,16 @@ rein step --flow ticket --answer main.urgent=yes --json
 
 For the full protocol, see [spec section 11](docs/spec.md#11-stepping-agent-interface).
 
+## Debug a program
+
+Open the flow in the debugger. It serves a page on `127.0.0.1` and opens it in the browser:
+
+```sh
+rein debug ticket
+```
+
+Set inputs and answers on the left, or answer the current question at the top. On each change the page walks the flow again. It marks the path taken, and shows the next question, the request, or the final instruction. **Back** removes the last answer. **Reset** removes all answers. To save a static view, run `rein graph ticket --answer main.urgent=yes -o ticket.html`.
+
 ## Next steps
 
 - Read the [Concepts](/concepts) page for the model.
