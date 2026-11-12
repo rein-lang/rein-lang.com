@@ -87,7 +87,7 @@ The bad answer `maybe` did not end the run. The next answer went to the same key
 
 - It writes one step per line to stdout. The step shape is the same as `rein step`.
 - It reads one answer per line on stdin.
-- With `--json`, an answer line is `{"key": "main.vip", "value": "no"}`. `key` is optional. The default is the key the run waits on.
+- With `--json`, an answer line is `{"key": "main.vip", "value": "no"}`. `key` is optional. The default is the key the run waits on. For a struct answer, `value` is the JSON object.
 - Without `--json`, it prints text and a `> ` prompt. A person types the value.
 - A bad answer prints an error step. The run then asks the same step again.
 - The run ends on `done` with exit code 0. A program that cannot start ends with exit code 1.
@@ -114,6 +114,25 @@ then answer: answer/faq.solved: boolean - Did the customer confirm the article s
 trace: main -> answer/faq
 # exit 0
 ```
+
+A request for a struct answer lists each field under the `then answer:` line, as `rein step` does: name, type, union options, description. The answer line is the JSON object. The same checks as `rein step` apply (missing or extra field, union member, empty string, bad JSON). A bad object prints the error and asks the same step again.
+
+```text
+$ printf '{"pr":"u/1"}\n{"pr":"u/1","task":"merge"}\n' | rein run picker
+request: Pick the next pull request notification.
+then answer: main.pick: struct - The pull request of the next notification.
+  pr: string - The link of the pull request.
+  task: "review" | "merge" - Which task runs.
+> error: the answer `pick` is missing field `task`
+request: Pick the next pull request notification.
+then answer: main.pick: struct - The pull request of the next notification.
+  pr: string - The link of the pull request.
+  task: "review" | "merge" - Which task runs.
+> Do merge on u/1.
+trace: main
+```
+
+The test `crates/rein/tests/run_struct.rs` runs this walk.
 
 With `--json`, the same run prints one JSON step per line. The test `run_json_lines_walks_to_done_and_survives_a_bad_answer` in `crates/rein/tests/step.rs` checks it.
 
