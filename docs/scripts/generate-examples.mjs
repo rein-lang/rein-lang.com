@@ -58,7 +58,7 @@ function overviewPage() {
   let out = '# Examples\n\n'
   out += 'Each example is a flow under `examples/rein/<flow>/`, with a `rein.json` manifest. Open one to read its files and run it.\n\n'
   for (const n of examples) out += `- [${n}](/examples/${n}): ${manifest(n).description}\n`
-  out += '\nRun `rein list` from the `examples` folder to list them. Then run one by name. See [flows and scopes](docs/spec.md#1a-flows-and-scopes):\n\n'
+  out += '\nRun `rein list` from the `examples` folder to list them. Then run one by name. See [Install a program](docs/install-programs.md):\n\n'
   out += '```sh\ncd examples\nrein list\nrein run support-ticket\n```\n'
   return out
 }

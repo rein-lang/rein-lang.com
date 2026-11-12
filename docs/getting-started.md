@@ -42,7 +42,7 @@ export default function main(
 }
 ```
 
-For the folder rules, see [spec section 1a](docs/spec.md#1a-flows-and-scopes).
+To install a program outside this project, see [Install a program](/install-programs).
 
 ## Check the flow
 

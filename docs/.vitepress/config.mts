@@ -14,6 +14,7 @@ const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
   'docs/decisions.md': '/reference/decisions',
   'docs/interface.md': '/reference/interface',
+  'docs/install-programs.md': '/install-programs',
 }
 // Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
 const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
@@ -59,6 +60,7 @@ const config = withMermaid(
           items: [
             { text: 'Introduction', link: '/' },
             { text: 'Getting started', link: '/getting-started' },
+            { text: 'Install a program', link: '/install-programs' },
             { text: 'Concepts', link: '/concepts' },
             { text: 'Editor', link: '/editor' },
           ],
