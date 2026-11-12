@@ -22,6 +22,7 @@ This document contains the help content for the `rein` command-line program.
 * [`rein uninstall`↴](#rein-uninstall)
 * [`rein update`↴](#rein-update)
 * [`rein lsp`↴](#rein-lsp)
+* [`rein dap`↴](#rein-dap)
 
 ## `rein`
 
@@ -46,6 +47,7 @@ A small language for agent decision flows
 * `uninstall` — Remove an installed program package: runs `pnpm remove` with these arguments. `-g` picks the user folder
 * `update` — Update installed program packages: runs `pnpm update --ignore-scripts` with these arguments. `-g` picks the user folder
 * `lsp` — Run the language server on stdio
+* `dap` — Run the debug adapter on stdio (Debug Adapter Protocol). The VS Code extension starts it
 
 
 
@@ -282,6 +284,14 @@ Update installed program packages: runs `pnpm update --ignore-scripts` with thes
 Run the language server on stdio
 
 **Usage:** `rein lsp`
+
+
+
+## `rein dap`
+
+Run the debug adapter on stdio (Debug Adapter Protocol). The VS Code extension starts it
+
+**Usage:** `rein dap`
 
 
 
