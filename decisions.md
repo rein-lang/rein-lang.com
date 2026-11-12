@@ -85,6 +85,10 @@ Each choice can change. The reason is one line.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
 - Not built: a `rein.lock` with the content hash of each called program, so a changed program is seen before the run. Why: it needs `rein install` changes and its own review. A program reference inside a called program is not followed.
 
+## Free-text answers
+
+- Only a `request` may answer `string`. Why: the agent never invents a value without doing work. A request gives it a task, and the text it writes (such as a PR link) is the result. A `string` answer is passed on like a `string` parameter and cannot decide a branch.
+
 ## Planned (not built)
 
 - Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
@@ -94,7 +98,6 @@ Each choice can change. The reason is one line.
 
 - The one-file format. How several functions live in one file, and how references resolve inside it.
 
-- Free-text answers. A free-text answer from the agent is still not possible. Each question is a `boolean` or a union.
 - Loops and retries. Today a retry is a reference cycle.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
 - Who answers inputs: agent judgment, or deterministic tools.

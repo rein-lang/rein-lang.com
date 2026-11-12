@@ -313,10 +313,11 @@ export default async function answerFaq(
 }
 ```
 
-- The `const` must have a doc comment, a type (`boolean` or a union of strings; not `string`), `= await request(value)`, and an optional `;`.
+- The `const` must have a doc comment, a type (`boolean`, a union of strings, or `string`), `= await request(value)`, and an optional `;`.
 - `value` is a string, a template literal, or a template call. `await request(delegate(model="use opus model", task="code review the pr"))` is valid.
 - The `const` is the only `const` in Rein. It is an answer, not a variable. Its name is a parameter for the rest of its block. A name clash with a parameter or another answer is an error: `duplicate name`. Using the name before its declaration is an error: `` `x` is used before it is declared ``.
 - `await` needs `export default async function`. An `async` function with no `await` is a warning: `` `async` function has no `await`; drop `async` ``.
+- A `string` answer is free text the agent writes after it does the work of the request, such as a link it found. It is the only way the agent gives free text, so a `string` answer always has a `request`. It is used where a `string` parameter is used: a hand-off or template argument (`@./merge(pr=pr)`, `@program(pr=pr)`) and `${pr}` in a template literal. It cannot decide a branch: a condition or a `switch` on it is an error (`` `pr` is a string input; a condition cannot read it ``).
 - The answer is stateless. When the run reaches the `await`, and no value is given for the answer, the run stops with a request (section 9).
 
 ## 5. Statements
@@ -403,7 +404,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | An import statement is in the file (`Rein has no imports`) |
 | `await` without `export default async function` |
 | `await` of a name other than `request` |
-| An answer is a `string`, or has no doc comment |
+| An answer has no doc comment |
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
 | The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
@@ -554,7 +555,7 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 - `flow`: optional. The name of a visible flow (section 1a). The CLI resolves it to a flow root and steps that root. Give `flow` or a root, not both.
 - `entry`: the function to start from, by its path. Default `main`.
 - `inputs`: optional. An object. Each key is the name of a `string` parameter of the entry function, and each value is its text. Default `{}`.
-- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. A function of another program has the path `@program/function`, such as `@pr-handling/main.task`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. Default `{}`.
+- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. A function of another program has the path `@program/function`, such as `@pr-handling/main.task`. Each value is as `--answer` takes it: `yes`, `no`, a union member, or any non-empty text for a `string` answer. Default `{}`.
 
 ### Response
 
@@ -562,8 +563,8 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 
 | `kind` | Fields | Meaning | Exit code |
 | --- | --- | --- | --- |
-| `question` | `key`, `function`, `name`, `type` (`boolean` or `union`), `options` (union members, else `null`), `description` | Answer `key`, then step again. | 2 |
-| `request` | `key`, `function`, `instruction`, `response` (`name`, `type`, `options`, `description`) | Do `instruction`, then answer `key`, then step again. | 3 |
+| `question` | `key`, `function`, `name`, `type` (`boolean`, `union`, or `string` for a request answer), `options` (union members, else `null`), `description` | Answer `key`, then step again. | 2 |
+| `request` | `key`, `function`, `instruction`, `response` (`name`, `type` (`boolean`, `union` or `string`), `options`, `description`) | Do `instruction`, then answer `key`, then step again. | 3 |
 | `done` | `instruction` | The flow ended. Do `instruction`. | 0 |
 | `error` | `message`, `key` (or `null`), `diagnostics` (`file`, `line`, `column`, `message`) | The request is not valid. Fix it and step again. | 1 |
 
