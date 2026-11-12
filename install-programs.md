@@ -102,7 +102,7 @@ A program package uses `package.json`, as a VS Code extension does. It has these
 ```
 
 - Rein reads `name`, `version`, `description` and `engines.rein`. Other fields are npm's.
-- Rein reads `^x.y.z` and `x.y.z` ranges in `engines.rein`. It warns in `rein list` when the running rein does not hold one. Other range forms are not checked yet.
+- Rein reads `^x.y.z` and `x.y.z` ranges in `engines.rein`. `rein list -l` warns about a program when the running rein does not hold one. Other range forms are not checked yet.
 - Rein checks `engines.rein` at install. (Proposed)
 - Rein-specific fields do not go in `package.json`. A separate Rein file holds them. That file is defined later. (Proposed)
 
@@ -118,7 +118,7 @@ Rein finds programs in three scopes:
 
 - On a name clash, the higher scope wins.
 - Inside the project scope, the nearest `rein/` folder wins.
-- A program that loses a clash is shadowed. `rein list` marks it `(shadowed by <scope>)`. The name runs the winning program.
+- A program that loses a clash is shadowed. `rein list` hides it. `rein list -a` shows it marked `(shadowed by <scope>)`. The name runs the winning program.
 - `REIN_SYSTEM_DIRS` replaces the system folders. It is a colon-separated list.
 - `rein list` also lists the packages in each `npm/node_modules/` folder of the project and user scopes. Each top-level link is one program, named by its link name, including an alias. A scope folder such as `@scope/` holds `@scope/name` programs. Dot entries such as `.pnpm` are skipped. A package without a Rein entry is not a program.
 - `npm` is reserved in every `rein/` folder. It is the package project, so it is never a program.
@@ -132,7 +132,7 @@ rein list
 rein show <name>
 ```
 
-- `rein list` shows each visible program: name, scope, path, description, and first question. Add `--json` for JSON output.
+- `rein list` prints each visible program's name, one per line. `rein list -l` adds scope, version, path and description. `rein list 'pr-*'` filters by name. `rein list -h` lists the other `ls`-style flags. Add `--json` for full records.
 - `rein show <name>` prints the manifest and every `.rein` file. The entry file comes first.
 - A package installed with `-g` has the scope `user`. A repo-bound package has the scope `project`.
 - User programs appear from any directory. Project programs appear only under their project.

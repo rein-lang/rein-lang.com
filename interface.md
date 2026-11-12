@@ -98,10 +98,11 @@ The bad answer `maybe` did not end the run. The next answer went to the same key
 Real output, from `examples/`:
 
 ```text
-$ rein list
-incident-triage	project	.../examples/rein/incident-triage	Decide how the on-call agent handles a new production alert.	first: Are customers seeing errors or downtime right now?
-merge-pr	project	.../examples/rein/merge-pr	Decide the next step for a pull request task.	first: Which task does the agent do?
-support-ticket	project	.../examples/rein/support-ticket	Decide how the support agent handles a customer ticket.	first: Is the customer on the VIP plan?
+$ rein list -l
+project  0.1.0  incident-triage  .../examples/rein/incident-triage  Decide how the on-call agent handles a new production alert.
+project  0.1.0  merge-pr         .../examples/rein/merge-pr         Decide the next step for a pull request task.
+project  0.1.0  pr-handling      .../examples/rein/pr-handling      Decide the next step for a pull request: review it, fix it, or merge it.
+project  0.1.0  support-ticket   .../examples/rein/support-ticket   Decide how the support agent handles a customer ticket.
 
 $ printf 'no\nhow_to\nyes\nyes\n' | rein run support-ticket
 question: main.vip: boolean - Is the customer on the VIP plan?
