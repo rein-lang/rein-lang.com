@@ -22,21 +22,8 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 
 ### 1a. Flows and scopes
 
-Programs (flows) live in scoped folders. One subfolder per program:
+Programs (flows) live in scopes: project, user, and system. The folders, the manifest, precedence, and shadowing are in [Install a program](docs/install-programs.md).
 
-```text
-repo/rein/merge-pr/rein.json                       project scope (a visible `rein/` in the working directory or any ancestor)
-~/.config/rein/programs/my-pr-review/rein.json     user scope (`$XDG_CONFIG_HOME/rein/programs/` when set)
-/etc/rein/deploy-gate/main.rein                    system scope (macOS also /Library/Application Support/Rein/)
-```
-
-- A program is a folder directly under a scope folder that holds a `rein.json` manifest or a `main.rein`. Any other folder is not listed.
-- The manifest is `{"name": "...", "description": "...", "entry": "main.rein"}`. Each field is optional. The defaults are the folder name, the first paragraph of the entry doc comment, and `main.rein`.
-- The project scope walks up from the working directory and uses every `rein/` it finds. The user scope is not also a project scope when it is an ancestor of the working directory.
-- Precedence on a name clash: project, then user, then system. Inside the project scope, the nearest folder up the tree wins.
-- A program that loses a clash is shadowed. `rein list` lists it and marks it.
-- `rein install <path>` links a program folder into the user scope under its name.
-- `REIN_HOME` replaces the user scope folder. `REIN_SYSTEM_DIRS` replaces the system folders, as a colon-separated list. Both exist for tests and daemons.
 - `rein check <dir>`, `rein eval --root <dir>` and `rein run --root <dir>` still work on any flow root passed explicitly.
 - A program is also one `.rein` file, the file form. `rein step <file.rein>`, `rein run <file.rein>` and `rein check <file.rein>` take it: the file's folder is the flow root, and the file name without `.rein` is the entry. No folder, manifest or scope is needed. Scopes and `rein list` only find programs by name.
 - Imports do not exist. References (`@./`, `@../`) stay inside the flow root.
@@ -398,7 +385,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein serve --mcp` | The MCP host. Holds live runs in memory. Tools: `rein_programs`, `rein_show`, `rein_start`, `rein_answer`, `rein_status`, `rein_stop`, `rein_list`. See [interface.md](interface.md). |
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
-| `rein install <tool \| path> [--project \| --user] [--dry-run]` | A program folder: link it into the user scope (section 1a). A tool: write its hook config so it runs `rein hook` (section 12). Only `claude-code`. |
+| `rein install <tool> [--project \| --user] [--dry-run]` | Write a tool's hook config so it runs `rein hook` (section 12). Only `claude-code`. |
 | `rein lsp` | Run the language server over stdio. See [Language server](#language-server) for its features. |
 
 Exit codes: 0 for a text or reference result, 1 for an error, 2 for a parameter needed, 3 for a request.

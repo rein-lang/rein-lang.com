@@ -1,6 +1,6 @@
 # Agent interface
 
-Status: proof of concept. The MCP host, `rein run`, `rein list`, `rein show` and `rein install <path>` are built. Harness enforcement is a proposal.
+Status: proof of concept. The MCP host, `rein run`, `rein list` and `rein show` are built. Harness enforcement is a proposal.
 
 A Rein program is a running app. The agent finds it by name, starts it, and answers it step by step. The program keeps its state while it runs. The agent does not resend earlier answers.
 
@@ -14,40 +14,17 @@ A Rein program is a running app. The agent finds it by name, starts it, and answ
 
 ## Programs are named apps
 
-A program is a visible folder with an entry file and a manifest, `rein.json`:
+Programs are named apps. To install, list, and remove them, see [Install a program](docs/install-programs.md).
 
-```json
-{
-  "name": "support-ticket",
-  "description": "Decide how the support agent handles a customer ticket.",
-  "entry": "main.rein"
-}
-```
-
-- Every manifest field is optional. The defaults are the folder name, the doc comment of the entry, and `main.rein`.
-- The manifest is JSON because the repo already parses JSON.
-- A folder with only a `main.rein` is still a program.
-
-Programs live in scopes. The closest scope wins a name clash.
-
-| Scope | Folder |
-| --- | --- |
-| Project | a visible `rein/` folder in the working directory or any ancestor |
-| User | `~/.config/rein/programs/` (or `$XDG_CONFIG_HOME/rein/programs/`) |
-| System | `/etc/rein/` (macOS also `/Library/Application Support/Rein/`) |
-
-- `rein install <path>` registers a program. It links the folder into the user folder under its name. It refuses a program that cannot start, such as one with checker errors.
-- `rein list` shows each program: name, scope, path, description, and the first question.
-- `rein show <name>` prints the manifest and every `.rein` file, entry first.
 - `rein run <name>` starts the program from any directory.
 
 ## Agents can author programs
 
 An agent can write a program, then use it:
 
-1. The agent writes a folder with a `rein.json` and a `main.rein`.
+1. The agent writes a program folder with a `main.rein` and a manifest. The [install page](docs/install-programs.md) describes the manifest.
 2. The agent runs `rein check <folder>`.
-3. The agent runs `rein install <folder>`.
+3. The agent installs the folder as described in [Install a program](docs/install-programs.md).
 4. The agent, or another agent, starts it with `rein_start` or `rein run <name>`.
 
 This is why programs are visible files. An agent reads and writes visible files with its normal tools. It does not need to know about a dot-folder. `rein show` gives an agent the source of any installed program, so it can read a program before it changes or copies it.
@@ -139,7 +116,7 @@ trace: main -> answer/faq
 
 With `--json`, the same run prints one JSON step per line. The test `run_json_lines_walks_to_done_and_survives_a_bad_answer` in `crates/rein/tests/step.rs` checks it.
 
-After `rein install examples/rein/support-ticket`, the same program starts by name from any directory:
+After you install `support-ticket` ([Install a program](docs/install-programs.md)), it starts by name from any directory:
 
 ```text
 $ cd /some/other/dir
@@ -174,5 +151,5 @@ This part is not built.
 - A step from `rein_start`, `rein_answer` and `rein_status` has a `run` field. A `rein step` response does not. MCP steps list their keys in alphabetical order.
 - In `rein step`, a bad answer is an error with exit code 1. In a live run, a bad answer is an error step, and the run goes on.
 - Sections 9 and 10 named the single-function command `rein run`. It is now `rein eval`. `rein run` starts a live run.
-- Section 12 uses `rein install <tool>` for the hook config. `rein install` now also takes a program folder. A path that is a folder installs a program. Any other value is a tool name.
+- Section 12 uses `rein install <tool>` for the hook config.
 - The manifest `entry` can name a file other than `main.rein`. The checker still asks for a `main.rein` in each program.

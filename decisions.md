@@ -64,6 +64,7 @@ Each choice can change. The reason is one line.
 - Agents consume flows through `rein step` (protocol v1, see [spec.md section 11](spec.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same flow. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
 - Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
 - Programs live in a visible `rein/` folder with a `rein.json` manifest, and `rein install` registers them. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
+- Programs are npm packages installed with pnpm into `<user programs>/npm`. Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
 
 ## Planned (not built)
 
