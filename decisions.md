@@ -88,9 +88,10 @@ Each choice can change. The reason is one line.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
 - Not built: a `rein.lock` with the content hash of each called program, so a changed program is seen before the run. Why: it needs `rein install` changes and its own review. A program reference inside a called program is not followed.
 
-## Free-text answers
+## Struct answers
 
-- Only a `request` may answer `string`. Why: the agent never invents a value without doing work. A request gives it a task, and the text it writes (such as a PR link) is the result. A `string` answer is passed on like a `string` parameter and cannot decide a branch.
+- An answer is a struct, never a free string. Only a `request` answer can be a struct, and its fields are `boolean`, a union, or `string`. Why: a struct names and documents every value, and the runtime validates it, so the agent cannot send loose text. A bare `string` answer is a checker error.
+- A field is read as `pick.pr`, one level, and works like the parameter of its type: a `string` field goes into a hand-off or a template, a `boolean` or union field decides a branch. `rein step` gives the struct as a `fields` list and takes a JSON object. Why: one rule for every value, and a bad value is rejected with the field name.
 
 ## Planned (not built)
 

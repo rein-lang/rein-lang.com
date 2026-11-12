@@ -65,7 +65,7 @@ stmt        := if | switch | return | answer
 if          := "if" "(" expr ")" block       // no else: see section 5
 switch      := "switch" "(" IDENT ")" "{" clause* "}"
 clause      := "case" STRING ":" (block | stmt*)   // a label with no body joins the next body
-answer      := DOC "const" IDENT ":" type "=" "await" "request" "(" value ")" ";"?
+answer      := DOC "const" IDENT ":" (type | IDENT | REF) "=" "await" "request" "(" value ")" ";"?   // IDENT or REF: a struct answer (section 4, Struct answers)
 return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?   // REF with args: a template call or a hand-off
 args        := arg ("," arg)* ","?           // the args of a call or a hand-off
 arg         := IDENT "=" value               // named, as in Python. A value with no name is a checker error
@@ -76,7 +76,7 @@ unary       := "!" unary | atom
 atom        := "(" expr ")" | IDENT (("===" | "!==") STRING)?
 ```
 
-A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller, or a template call. A hand-off cannot be an argument of a call.
+A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller (or a `string` field of a struct answer, `pick.pr`), or a template call. A hand-off cannot be an argument of a call. Wherever a name is read (a condition, a switch subject, a call argument, `${}`), it may be `answer.field`: one `.` and one level. A declaration never has a `.`.
 
 Every argument has a name, as in Python: `name=value`. The name is a parameter of the callee: its scalar parameter, or a field of its struct parameter. The order of the arguments does not matter. A positional argument is a checker error, and no flag allows it. A parameter is given once.
 
@@ -314,12 +314,39 @@ export default async function answerFaq(
 }
 ```
 
-- The `const` must have a doc comment, a type (`boolean`, a union of strings, or `string`), `= await request(value)`, and an optional `;`.
+- The `const` must have a doc comment, a type (`boolean`, a union of strings, or a struct; not `string`), `= await request(value)`, and an optional `;`. A bare `string` is an error: ``a `string` answer is not allowed; answer a struct with a `string` field``.
 - `value` is a string, a template literal, or a template call. `await request(delegate(model="use opus model", task="code review the pr"))` is valid.
 - The `const` is the only `const` in Rein. It is an answer, not a variable. Its name is a parameter for the rest of its block. A name clash with a parameter or another answer is an error: `duplicate name`. Using the name before its declaration is an error: `` `x` is used before it is declared ``.
 - `await` needs `export default async function`. An `async` function with no `await` is a warning: `` `async` function has no `await`; drop `async` ``.
-- A `string` answer is free text the agent writes after it does the work of the request, such as a link it found. It is the only way the agent gives free text, so a `string` answer always has a `request`. It is used where a `string` parameter is used: a hand-off or template argument (`@./merge(pr=pr)`, `@program(pr=pr)`) and `${pr}` in a template literal. It cannot decide a branch: a condition or a `switch` on it is an error (`` `pr` is a string input; a condition cannot read it ``).
+- An answer is never free text. To get a value such as a link, answer a struct with a `string` field (next section).
 - The answer is stateless. When the run reaches the `await`, and no value is given for the answer, the run stops with a request (section 9).
+
+### Struct answers
+
+An answer can be a struct. The struct is an inline `interface` in the file, or a shared `@./name` (`name.struct.rein`). Section 4, Structs, gives the struct rules.
+
+```ts
+interface Pick {
+  /** The link of the pull request. */
+  pr: string;
+  /** Which task pr-handling runs. */
+  task: "review" | "address comments" | "fix ci" | "merge";
+}
+
+/** Pick the next pull request notification and hand it off. */
+export default async function pullRequest() {
+  /** The pull request of the next notification. */
+  const pick: Pick = await request("Pick the next pull request notification.");
+  return @pr-handling(pr=pick.pr);
+}
+```
+
+- Only a `request` answer can be a struct. A parameter cannot.
+- Every field is `boolean`, a union, or `string`, and has a doc comment (the struct rules of section 4). A `string` field is allowed because the struct gives the value a name, a doc comment and a schema.
+- `pick.pr` reads one field. It is one level: `a.b.c` is an error. The field is in scope as long as the answer is.
+- A `string` field is used where a `string` parameter is used: a hand-off or template argument (`@./merge(pr=pick.pr)`) and `${pick.pr}` in a template literal. A `boolean` or union field is used like a boolean or union answer: in a condition or in a `switch` (`switch (pick.task)`).
+- Errors: `` `z` is not a field of `Pick`; fields are pr, task ``, `` `pick.pr` is a string input; a condition cannot read it ``, and `` `pick` is a struct answer; read one of its fields, like `pick.field` ``.
+- `rein step` asks for the struct as a JSON object (section 11).
 
 ## 5. Statements
 
@@ -339,7 +366,7 @@ export default async function answerFaq(
 
 - A boolean parameter or answer is used bare: `if (docsOnly)`, or negated: `if (!docsOnly)`.
 - A union parameter or answer is compared with `===` or `!==`: `if (ci === "green")`.
-- A `string` parameter cannot be read by a condition or a switch (section 4, Inputs).
+- A `string` parameter, or a `string` field of a struct answer, cannot be read by a condition or a switch (section 4, Inputs). A `boolean` or union field of a struct answer (`pick.task`) is used like a boolean or union answer.
 - `!`, `&&`, `||` combine conditions. `!` binds tightest, then `&&`, then `||`. Parentheses group.
 - Evaluation of `&&` and `||` stops early when the result is known.
 
@@ -408,6 +435,9 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `await` without `export default async function` |
 | `await` of a name other than `request` |
 | An answer has no doc comment |
+| An answer is a `string` (``a `string` answer is not allowed; answer a struct with a `string` field``) |
+| A struct answer names a struct that does not exist (`` cannot find struct `X` ``) |
+| A field of a struct answer is not in the struct (`` `z` is not a field of `Pick`; fields are pr, task ``), or the answer itself is read as a value (`` `pick` is a struct answer; read one of its fields, like `pick.field` ``) |
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
 | The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
@@ -558,7 +588,7 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 - `flow`: optional. The name of a visible flow (section 1a). The CLI resolves it to a flow root and steps that root. Give `flow` or a root, not both.
 - `entry`: the function to start from, by its path. Default `main`.
 - `inputs`: optional. An object. Each key is the name of a `string` parameter of the entry function, and each value is its text. Default `{}`.
-- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. A function of another program has the path `@program/function`, such as `@pr-handling/main.task`. Each value is as `--answer` takes it: `yes`, `no`, a union member, or any non-empty text for a `string` answer. Default `{}`.
+- `answers`: the answers so far. Each key is `<function path>.<name>`, where `name` is a parameter or a `const` answer, such as `merge_pr.ci` or `answer/faq.solved`. A function of another program has the path `@program/function`, such as `@pr-handling/main.task`. Each value is as `--answer` takes it: `yes`, `no`, or a union member. The value of a struct answer is a JSON object, such as `{"pr": "https://example.com/pr/1", "task": "review"}`: with `--stdin` it is a real JSON object, and with `--answer` it is the JSON text (`--answer main.pick='{"pr":"https://example.com/pr/1","task":"review"}'`). The runtime checks it: it is an object, every field is present, no other field is, a `string` field is non-empty text, a `boolean` field is `true` or `false`, and a union field is a member. An error names the field, such as `` field `pick.pr` is empty; give some text ``. Responses echo a struct answer as a JSON object. Default `{}`.
 
 ### Response
 
@@ -566,10 +596,27 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 
 | `kind` | Fields | Meaning | Exit code |
 | --- | --- | --- | --- |
-| `question` | `key`, `function`, `name`, `type` (`boolean`, `union`, or `string` for a request answer), `options` (union members, else `null`), `description` | Answer `key`, then step again. | 2 |
-| `request` | `key`, `function`, `instruction`, `response` (`name`, `type` (`boolean`, `union` or `string`), `options`, `description`) | Do `instruction`, then answer `key`, then step again. | 3 |
+| `question` | `key`, `function`, `name`, `type` (`boolean` or `union`), `options` (union members, else `null`), `description` | Answer `key`, then step again. | 2 |
+| `request` | `key`, `function`, `instruction`, `response` (`name`, `type` (`boolean`, `union` or `struct`), `options`, `description`, and for a struct `fields`) | Do `instruction`, then answer `key`, then step again. | 3 |
 | `done` | `instruction` | The flow ended. Do `instruction`. | 0 |
 | `error` | `message`, `key` (or `null`), `diagnostics` (`file`, `line`, `column`, `message`) | The request is not valid. Fix it and step again. | 1 |
+
+For a struct answer, `response.type` is `struct`, `options` is `null`, and `response.fields` lists the fields of the struct, in order. Each field is `{name, type, options, description}`: `type` is `boolean`, `union` or `string`, `options` lists the members of a union (else `null`), and `description` is the field doc comment. The answer is a JSON object with exactly these fields.
+
+```json
+{"kind": "request", "version": 1, "key": "main.pick", "function": "main", "instruction": "Pick the next pull request notification.",
+ "response": {"name": "pick", "type": "struct", "options": null, "description": "The pull request of the next notification.",
+  "fields": [
+   {"name": "pr", "type": "string", "options": null, "description": "The link of the pull request."},
+   {"name": "task", "type": "union", "options": ["review", "address comments", "fix ci", "merge"], "description": "Which task pr-handling runs."}]},
+ "answers": {}, "trace": ["main"]}
+```
+
+The answer for that request, in `answers`:
+
+```json
+{"main.pick": {"pr": "https://example.com/pr/1", "task": "review"}}
+```
 
 ### Stepping rules
 
