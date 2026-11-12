@@ -87,7 +87,10 @@ Each choice can change. The reason is one line.
 - Only a hand-off in `return`, with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
 - The programs are found by name through the scopes when a command loads the project. Why: the same lookup as `rein list` and `rein step NAME`; the core crate reads no environment.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
-- Not built: a `rein.lock` with the content hash of each called program, so a changed program is seen before the run. Why: it needs `rein install` changes and its own review. A program reference inside a called program is not followed.
+- A program that hands off to another program pins it in `rein.lock`, next to its `rein.json`. It holds the SHA-256 content hash of each called program (its `rein.json` and `.rein` files), and the `package.json` version as a label. `rein lock` writes it. Why: the hash catches every edit, and no author must remember a version bump. This is the version pinning that the closed proposal #4 recommended.
+- A changed called program is an error in `rein check`, `rein step` and `rein run`, before the first step. A missing `rein.lock` is only a warning, and an entry for a program that is no longer called is a warning. Why: a stale pin must stop a run, but programs written before the lock file keep working until the author runs `rein lock`.
+- The hash covers the files that Rein reads, not the whole package folder. Why: an edit to a README or `package.json` does not change what the program does. A rule in `rein.json` or any `.rein` file does.
+- Not built: version ranges, and two versions of one program in a lock. Why: the lock pins what is installed now. Two versions side by side already work as pnpm aliases (`pr-handling-v1`, `pr-handling-v2`), and each alias is a program name with its own entry. A program reference inside a called program is not followed or pinned.
 
 ## Struct answers
 

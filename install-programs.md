@@ -158,6 +158,8 @@ rein run <name>
 - A folder that starts with `.` is not a program. A folder with only `main.rein` is a program.
 - A folder copied by hand into the user programs folder still works. Remove it with `rm -r ~/.config/rein/programs/<name>`.
 
+- A program that hands off to another installed program keeps a `rein.lock` next to its `rein.json`, with the content hash of each called program. `rein lock` writes it, and `rein check` and `rein step` refuse a program whose called program changed. Run `rein lock` again after `rein update`. See [spec section 4](docs/spec.md#the-lock-file).
+
 The future of `rein.json` is an open question.
 
 ## Open questions
