@@ -227,30 +227,8 @@ A relative reference names another function of the project. The path is relative
 - `@program/function` hands off to a function of another installed program. The program is found by name through the scopes, as `rein list` and `rein step NAME` find it. A bare `@program` means the entry of that program. It is allowed only as a hand-off in a `return`, with the same argument rules as a hand-off to a local function: only `string` parameters are passed, by name. The other inputs of the target are asked by the target as normal questions.
 - A program that is not installed is an error on the reference: `` cannot find program `x`; run `rein list` to list programs ``. A function that the program does not have is an error: `` cannot find function `f` in program `x` ``.
 - `rein step` follows the hand-off into the other program in the same run. The functions of that program have the name `@program/function`, so its answer keys are `@pr-handling/main.task`, and a local file `pr-handling/main.rein` cannot collide with them. The trace shows the same names. A program reference inside the other program is not followed.
-- A program that hands off to another program pins it in `rein.lock` (see The lock file below). A changed program is an error before the first step.
 - `rein graph` draws a `program` node labelled `@program/function`, and a hand-off edge to it. It does not draw the other program.
 - A reference to a template without a call is an error: `` `@./tpl` is a template; call it with arguments, like `@./tpl(...)` ``.
-
-### The lock file
-
-A program that hands off to another program (`@program/function`) pins it in `rein.lock`, a JSON file next to its `rein.json`:
-
-```json
-{
-  "programs": {
-    "pr-handling": {
-      "hash": "sha256:9f2b0c4e7d1a35b8e6c0f4a2d9b7e1c35a8f60d2b4e7c91a3d5f8b0e2c4a6d81",
-      "version": "1.4.2"
-    }
-  }
-}
-```
-
-- `programs` has one entry per program the project calls, by the name in the reference, sorted by name. `hash` is required. `version` is the `version` of the program's `package.json`. It is written when that file has one. It is a label for people and is never checked.
-- The hash is SHA-256 over the files of the called program: `rein.json` (when it exists) and every `.rein` file that the project reader loads (section 1: hidden folders, `target/`, `node_modules/` and nested flows are skipped). The files are taken in byte order of their path relative to the program root, with `/` as separator. Each file adds its path, one NUL byte, its length as 8 big-endian bytes, and its bytes. The hash is written as `sha256:` and 64 lowercase hex digits. Other files, such as `package.json` or a README, do not count.
-- Only the programs this project calls itself are pinned. A program that a called program calls is not.
-- `rein lock` writes the file from the programs found now. It replaces the whole file. A project with no hand-off to a program gets no file: the command removes an old one.
-- `rein check`, `rein step`, `rein run` and `rein serve --mcp` read the file. A mismatch is an error before the first step (section 8). A project with a hand-off and no `rein.lock` only gets a warning, so a program from before the lock file keeps working.
 
 ### Std
 
@@ -476,9 +454,6 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
 | The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
-| A called program has another hash than `rein.lock` (`` program `NAME` changed: rein.lock has HASH, the installed program is HASH; run `rein lock` to accept it ``). It points at `rein.lock`. `rein step` and `rein run` refuse to start |
-| `rein.lock` exists and has no entry for a called program (`` program `NAME` is not in rein.lock; run `rein lock` to pin it ``) |
-| `rein.lock` is not valid JSON of the lock format (`` cannot read rein.lock: ERROR; run `rein lock` to write it again ``) |
 
 ### Warnings
 
@@ -490,8 +465,6 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return of a reference that lies on the cycle |
 | A doc tag other than `@param` (`unknown tag `@x``) |
 | A function cannot be reached from `main` through references (`x is not reachable from main`). This warning is not given when `main` is missing or has a syntax error |
-| The project hands off to another program and has no `rein.lock` (`` no rein.lock; run `rein lock` to pin the programs this one hands off to ``) |
-| `rein.lock` has an entry for a program the project does not call (`` rein.lock has `NAME`, which this program does not call; run `rein lock` to remove it ``) |
 
 ## 9. Evaluation
 
@@ -519,7 +492,6 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | `rein step [--root DIR \| --flow NAME] [--entry FN] [--answer key=value]... [--input name=value]... [--stdin] [--json]` | Step the whole flow from `main`. `--flow` picks a flow by name (section 1a); `--root` and `--flow` exclude each other. `--input` gives a value to a `string` parameter of the entry function. The agent-facing interface (section 11). |
 | `rein list [-l] [-1] [-a] [-r] [-t] [--json] [PATTERN...]` | List the programs visible from here, as `ls` lists files. Names by default; `-l` for scope, version, path and description; `-a` for shadowed programs; PATTERN is a name glob. `rein flows` is an alias. |
 | `rein show <NAME>` | Print a program's manifest and every `.rein` file, entry first. |
-| `rein lock [NAME \| --root DIR]` | Write `rein.lock` for a program: the content hash of each program it hands off to (section 4, The lock file). `NAME` is a program name or a `.rein` file. The default is the project around the current directory. Exit code 1 when a called program cannot be loaded. |
 | `rein serve --mcp` | The MCP host. Holds live runs in memory. Tools: `rein_programs`, `rein_show`, `rein_start`, `rein_answer`, `rein_status`, `rein_stop`, `rein_list`. See [interface.md](interface.md). |
 | `rein agent-context [--format text\|json]` | Print the block an agent needs to use the visible flows (section 12). Prints nothing when there are none. |
 | `rein hook [--caller NAME]` | The agent hook entry point (section 12). Reads one event on stdin. |
