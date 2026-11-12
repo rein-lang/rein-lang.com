@@ -11,7 +11,8 @@
   "devDependencies": {
     "mermaid": "11.17.2",
     "vitepress": "1.6.4",
-    "vitepress-plugin-mermaid": "2.0.17"
+    "vitepress-plugin-mermaid": "2.0.17",
+    "vscode-rein": "github:rein-lang/vscode-rein#e3c0bbe1102a3a75cb357ba70eb257a34b482761"
   },
   "packageManager": "pnpm@12.4.1"
 }

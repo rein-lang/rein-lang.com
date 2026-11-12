@@ -175,6 +175,9 @@ importers:
       vitepress-plugin-mermaid:
         specifier: 2.0.17
         version: 2.0.17(mermaid@11.17.2)(vitepress@1.6.4(@algolia/client-search@5.61.0)(postcss@8.5.32)(search-insights@2.17.3))
+      vscode-rein:
+        specifier: github:rein-lang/vscode-rein#e3c0bbe1102a3a75cb357ba70eb257a34b482761
+        version: rein@https://codeload.github.com/rein-lang/vscode-rein/tar.gz/e3c0bbe1102a3a75cb357ba70eb257a34b482761
 
 packages:
 
@@ -855,8 +858,14 @@ packages:
     resolution: {integrity: sha512-CFtHkGANnIAG6TY5g9s/h+yxZ0SN2/ICMjMY1EWj9gKGiS4LSGFrmMmTA/xxyxOH8AEazFD3YSfRZMh5vIEh2w==}
     engines: {node: '>= 14.0.0'}
 
+  balanced-match@1.0.2:
+    resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
   birpc@2.9.0:
     resolution: {integrity: sha512-KrayHS5pBi69Xi9JmvoqrIgYGDkD6mcSe/i6YKi3w5kekCLzrX4+nawcXqrj2tIp50Kw/mT/s3p+GVK0A0sKxw==}
+
+  brace-expansion@2.1.7:
+    resolution: {integrity: sha512-uZbew1NqdmPDTMJ8ah1y+b+9QEJrfkXFk3RcTQw3X0jW/xRUvFKsg1CfQdSYGdTbXZWExtU3J3ccxtnfw1Fi0g==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -1169,6 +1178,10 @@ packages:
   micromark-util-types@2.0.3:
     resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
 
+  minimatch@5.1.9:
+    resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
+    engines: {node: '>=10'}
+
   minisearch@7.2.0:
     resolution: {integrity: sha512-dqT2XBYUOZOiC5t2HRnwADjhNS2cecp9u+TJRiJ1Qp/f5qjkeT5APcGPjHw+bz89Ms8Jp+cG4AlE+QZ/QnDglg==}
 
@@ -1228,6 +1241,11 @@ packages:
   regex@6.1.0:
     resolution: {integrity: sha512-6VwtthbV4o/7+OaAF9I5L5V3llLEsoPyq9P1JVXkedTP33c7MfCG0/5NOPcSJn0TzXcG9YUrR0gQSWioew3LDg==}
 
+  rein@https://codeload.github.com/rein-lang/vscode-rein/tar.gz/e3c0bbe1102a3a75cb357ba70eb257a34b482761:
+    resolution: {gitHosted: true, integrity: sha512-jk6RhxPZThhmFJwzl4omda8gwWquv+PqJbbc9+RHHJxYTofDuNB1ZRLXJYdJgwJnGL6/OtLjOHJ0lkjU96KrBA==, tarball: https://codeload.github.com/rein-lang/vscode-rein/tar.gz/e3c0bbe1102a3a75cb357ba70eb257a34b482761}
+    version: 0.1.0
+    engines: {vscode: ^1.85.0}
+
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
@@ -1250,6 +1268,11 @@ packages:
 
   search-insights@2.17.3:
     resolution: {integrity: sha512-RQPdCYTa8A68uM2jwxoY842xDhvx3E5LFL1LxvxCNMev4o5mLuokczhzjAgGwUZBAmOKZknArSxLKmXtIi2AxQ==}
+
+  semver@7.8.6:
+    resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
+    engines: {node: '>=10'}
+    hasBin: true
 
   shiki@2.5.0:
     resolution: {integrity: sha512-mI//trrsaiCIPsja5CNfsyNOqgAZUb6VpJA+340toL42UpzQlXpwRV9nch69X6gaUxrr9kaOOa6e3y3uAkGFxQ==}
@@ -1365,6 +1388,20 @@ packages:
         optional: true
       postcss:
         optional: true
+
+  vscode-jsonrpc@8.2.0:
+    resolution: {integrity: sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA==}
+    engines: {node: '>=14.0.0'}
+
+  vscode-languageclient@9.0.1:
+    resolution: {integrity: sha512-JZiimVdvimEuHh5olxhxkht09m3JzUGwggb5eRUkzzJhZ2KjCN0nh55VfiED9oez9DyF8/fz1g1iBV3h+0Z2EA==}
+    engines: {vscode: ^1.82.0}
+
+  vscode-languageserver-protocol@3.17.5:
+    resolution: {integrity: sha512-mb1bvRJN8SVznADSGWM9u/b07H7Ecg0I3OgXDuLdn307rl/J3A9YD6/eYOssqhecL27hK1IPZAsaqh00i/Jljg==}
+
+  vscode-languageserver-types@3.17.5:
+    resolution: {integrity: sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==}
 
   vue@3.5.45:
     resolution: {integrity: sha512-3cvsib8m9c0vB24+MDKsgcW4+Da4xaBl9Z/5Tbm2pmSIsRPxcil4cdXjXlVsmJ2g64XJo5h+IRd7rsdGT9pZaw==}
@@ -2030,7 +2067,13 @@ snapshots:
       '@algolia/requester-fetch': 5.61.0
       '@algolia/requester-node-http': 5.61.0
 
+  balanced-match@1.0.2: {}
+
   birpc@2.9.0: {}
+
+  brace-expansion@2.1.7:
+    dependencies:
+      balanced-match: 1.0.2
 
   ccount@2.0.1: {}
 
@@ -2410,6 +2453,10 @@ snapshots:
 
   micromark-util-types@2.0.3: {}
 
+  minimatch@5.1.9:
+    dependencies:
+      brace-expansion: 2.1.7
+
   minisearch@7.2.0: {}
 
   mitt@3.0.1: {}
@@ -2460,6 +2507,10 @@ snapshots:
     dependencies:
       regex-utilities: 2.3.0
 
+  rein@https://codeload.github.com/rein-lang/vscode-rein/tar.gz/e3c0bbe1102a3a75cb357ba70eb257a34b482761:
+    dependencies:
+      vscode-languageclient: 9.0.1
+
   rfdc@1.4.1: {}
 
   robust-predicates@3.0.3: {}
@@ -2508,6 +2559,8 @@ snapshots:
   safer-buffer@2.1.2: {}
 
   search-insights@2.17.3: {}
+
+  semver@7.8.6: {}
 
   shiki@2.5.0:
     dependencies:
@@ -2646,6 +2699,21 @@ snapshots:
       - terser
       - typescript
       - universal-cookie
+
+  vscode-jsonrpc@8.2.0: {}
+
+  vscode-languageclient@9.0.1:
+    dependencies:
+      minimatch: 5.1.9
+      semver: 7.8.6
+      vscode-languageserver-protocol: 3.17.5
+
+  vscode-languageserver-protocol@3.17.5:
+    dependencies:
+      vscode-jsonrpc: 8.2.0
+      vscode-languageserver-types: 3.17.5
+
+  vscode-languageserver-types@3.17.5: {}
 
   vue@3.5.45:
     dependencies:

@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
-// The Rein grammar is the editor's grammar, so the site and VS Code highlight the same way.
+// The Rein grammar comes from the pinned vscode-rein dependency, so the site highlights like VS Code.
 const grammar = JSON.parse(
-  readFileSync(new URL('../../../editors/vscode/syntaxes/rein.tmLanguage.json', import.meta.url), 'utf8'),
+  readFileSync(new URL('../node_modules/vscode-rein/syntaxes/rein.tmLanguage.json', import.meta.url), 'utf8'),
 )
 const reinLanguage = { ...grammar, name: 'rein' }
 
@@ -38,7 +38,7 @@ const config = withMermaid(
                 child.attrSet('href', siteLinks[href])
               } else if (flow) {
                 child.attrSet('href', `/examples/${flow[1]}`)
-              } else if (/^((docs|examples|editors|crates)\/|LICENSE$)/.test(href)) {
+              } else if (/^((docs|examples|crates)\/|LICENSE$)/.test(href)) {
                 child.attrSet('href', repoBlob + href)
               }
             }
