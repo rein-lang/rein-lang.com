@@ -77,6 +77,7 @@ Each choice can change. The reason is one line.
 - A `.struct.rein` file is not a function. It has no graph node and no reachability warning. Why: it holds no decision and cannot be run.
 - A struct doc comment is required only on a shared struct. Why: an inline struct is described by its function.
 - The std template `delegate` takes an inline struct. Why: std follows the one-parameter rule; its calls do not change.
+- Text uses backticks and a tag uses quotes. Text is a return value, a call argument or a `request` argument; a tag is a union member, an `===` operand or a `case` label. The wrong kind is a compile error with the fix. Why: text needs line breaks and `${name}`, and a tag reads as a TypeScript literal type, so each kind shows its role.
 
 ## Cross-program references
 

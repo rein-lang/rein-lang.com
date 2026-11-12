@@ -37,6 +37,18 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
 - An unterminated doc comment is an error: `unterminated doc comment; add */`.
 - A STRING is text in double quotes or single quotes. Escapes: `\"`, `\'`, `\\`, `\n`. A raw newline is not allowed inside a STRING.
 - A TEMPLATE is text in backticks. It may span lines. Dedent: the least indent shared by its non-blank lines after the first is removed from each of those lines. Extra indent past it stays. This departs from TypeScript, which keeps the indent. Style: write each continued line at the indent of the line where the template starts. Example: a `return` at 2 spaces, with the template's second line also at 2 spaces, has the text `Tell the customer a person` + newline + `will reply.`, with no spaces after the newline. An escaped `\n` is not a line break and does not trigger the dedent. It can interpolate a name with `${name}`. Only a bare name is allowed inside `${}`. Escapes: `` \` ``, `\\`, `\$`, `\n`.
+- String kinds. Text uses backticks; a tag uses quotes. Text needs line breaks and `${name}`; a tag reads as a TypeScript literal type.
+
+  | Position | Form | Example |
+  | --- | --- | --- |
+  | Return value (an instruction or a final answer) | TEMPLATE | ``return `Merge the pull request.`;`` |
+  | Call argument value: std templates (`delegate`, `askUser`), project templates, and hand-offs with arguments | TEMPLATE, or a bare name of a `string` parameter | ``delegate(model=`use opus model`, task=`review ${pr}`)`` |
+  | `request(...)` argument | TEMPLATE, or a template call | ``await request(`Run the tests.`)`` |
+  | Union member in a parameter, field or answer type | STRING | `ci: "green" \| "red"` |
+  | `===` and `!==` operand | STRING | `ci === "green"` |
+  | `case` label | STRING | `case "green":` |
+
+  A tag may use double or single quotes. Why: both are TypeScript string literal types, and one quote style is a formatter's job, not the compiler's. `rein.json` is JSON, not Rein, so the rule does not apply to it.
 - A line holds at most 80 characters. This is the Prettier default `printWidth` (https://prettier.io/docs/options#print-width). The rule counts characters, not bytes, and a tab counts as one character. It applies to every line of every `.rein` file, `.struct.rein` files, doc comments and strings too. A program sets another limit with `maxLineLength` in its `rein.json`: a positive integer, such as `"maxLineLength": 120`.
 - A REF is `@` followed by `./` or `../`, then path names made of letters, digits and `_`, separated by `/`. It has no extension. Examples: `@./ci/fix`, `@../escalate`. A REF that does not start with `./` or `../` names another program: `@program` or `@program/function`. The program name is as `rein list` shows it, and may hold `-`. The function path holds names of letters, digits and `_`. Examples: `@pr-handling`, `@pr-handling/main`. A malformed one is an error: `a reference is `@./path`, `@../path`, or `@program/function` for another program`.
 - An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`.
@@ -137,7 +149,7 @@ export default function handleTicket({ category, vip }: Ticket) {
   if (vip) {
     return @./escalate;
   }
-  return "Answer the ticket.";
+  return `Answer the ticket.`;
 }
 ```
 
@@ -201,7 +213,7 @@ export default function tellCustomer({ opening, nextStep }: @./message) {
 }
 ```
 
-A caller gives each field by name: `@../templates/tell_customer(opening="...", nextStep="...")`.
+A caller gives each field by name: ``@../templates/tell_customer(opening=`...`, nextStep=`...`)``.
 
 ### References
 
@@ -286,7 +298,7 @@ export default function merge({ pr, ci }: Input) {
   if (ci === "green") {
     return `Merge ${pr}. Then delete its branch.`;
   }
-  return "Wait for CI, then start this program again.";
+  return `Wait for CI, then start this program again.`;
 }
 ```
 
@@ -305,17 +317,17 @@ export default async function answerFaq(
   }
   /** Did the customer confirm the article solved the problem? */
   const solved: boolean = await request(
-    "Reply with the help article link and ask the customer if it solved the problem.",
+    `Reply with the help article link and ask the customer if it solved the problem.`,
   );
   if (solved) {
-    return "Close the ticket as solved.";
+    return `Close the ticket as solved.`;
   }
   return @../escalate;
 }
 ```
 
 - The `const` must have a doc comment, a type (`boolean`, a union of strings, or a struct; not `string`), `= await request(value)`, and an optional `;`. A bare `string` is an error: ``a `string` answer is not allowed; answer a struct with a `string` field``.
-- `value` is a string, a template literal, or a template call. `await request(delegate(model="use opus model", task="code review the pr"))` is valid.
+- `value` is a string, a template literal, or a template call. ``await request(delegate(model=`use opus model`, task=`code review the pr`))`` is valid.
 - The `const` is the only `const` in Rein. It is an answer, not a variable. Its name is a parameter for the rest of its block. A name clash with a parameter or another answer is an error: `duplicate name`. Using the name before its declaration is an error: `` `x` is used before it is declared ``.
 - `await` needs `export default async function`. An `async` function with no `await` is a warning: `` `async` function has no `await`; drop `async` ``.
 - An answer is never free text. To get a value such as a link, answer a struct with a `string` field (next section).
@@ -336,7 +348,7 @@ interface Pick {
 /** Pick the next pull request notification and hand it off. */
 export default async function pullRequest() {
   /** The pull request of the next notification. */
-  const pick: Pick = await request("Pick the next pull request notification.");
+  const pick: Pick = await request(`Pick the next pull request notification.`);
   return @pr-handling(pr=pick.pr);
 }
 ```
@@ -357,7 +369,7 @@ export default async function pullRequest() {
   - There is no `default`.
   - Labels with no body join the next body: `case "a": case "b": return x;` is one group.
   - A clause body that has statements must end in a return. Otherwise the error is `case falls through; end it with return`.
-- `return "text";`, `return `text ${x}`;`, `return @./fn;`, or a call ends the function. The `;` is optional.
+- ``return `text`;``, `return `text ${x}`;`, `return @./fn;`, or a call ends the function. The `;` is optional.
 - A statement after a `return`, or after a `switch` that always returns, is an error: `unreachable statement`.
 - A function must return on every path. A body that can end without a return is an error: `every path must return something; end the function with a return`.
 - A function returns something on every path: a string, a template, or a reference to another function. `return;` with no value is an error.
@@ -384,6 +396,8 @@ When a file has a syntax error, only that error is reported for the file. It is 
 
 | Rule |
 | --- |
+| A quoted string in a text position (`` text uses backticks: write `...` instead of "..." ``). Text positions are listed in section 2, String kinds |
+| A template in a tag position (`` a tag uses quotes: write "green" instead of `green` ``). It is a syntax error. A template with `${}` or a newline shows `...` |
 | A function file name has a `/` part that is not an identifier, or is a keyword or reserved word (`invalid function file name`) |
 | The file has no function doc comment (`missing doc comment on `NAME`; put /** description */ right before `export default function``). A `//` line comment does not count. |
 | The function description is empty (`empty description on `NAME`; write the function description in the doc comment`). A doc block with only `@` tags is empty. |
