@@ -48,6 +48,7 @@ Claude Code and Codex call tools. They cannot keep a stdin open across tool call
 - A step has the same shape as a `rein step` response, plus `run`.
 - `rein_answer` answers the key the run waits on. The agent sends only the value.
 - An unknown run id is a tool error.
+- A program whose hand-offs reach a program that is not installed does not start. `rein_start`, and the `first_step` of `rein_programs`, give an error step. It names each missing program, the function that references it, and `rein install -g <name>`. The agent learns it before the first answer, not when the run reaches the hand-off.
 - Runs live until `rein_stop` or until the host exits. Saving runs to disk, to resume after a crash, is not built. It is optional, and it is not the main path.
 
 Register it in Claude Code:
@@ -90,7 +91,7 @@ The bad answer `maybe` did not end the run. The next answer went to the same key
 - With `--json`, an answer line is `{"key": "main.vip", "value": "no"}`. `key` is optional. The default is the key the run waits on. For a struct answer, `value` is the JSON object.
 - Without `--json`, it prints text and a `> ` prompt. A person types the value.
 - A bad answer prints an error step. The run then asks the same step again.
-- The run ends on `done` with exit code 0. A program that cannot start ends with exit code 1.
+- The run ends on `done` with exit code 0. A program that cannot start ends with exit code 1. A missing program that a hand-off can reach is one such case: the first step is an error step that names it.
 - When stdin closes first, the exit code says what the run waits on: 2 for a question, 3 for a request.
 
 ### Worked example over stdio

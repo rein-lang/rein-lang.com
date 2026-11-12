@@ -94,7 +94,10 @@ Each choice can change. The reason is one line.
 - Only a hand-off in `return`, with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
 - The programs are found by name through the scopes when a command loads the project. Why: the same lookup as `rein list` and `rein step NAME`; the core crate reads no environment.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
-- No `rein.lock`. pnpm pins each called program: `pnpm-lock.yaml` records its version and integrity hash, and `node_modules` holds the installed copy. Why: a second lock would repeat what pnpm already does. A program reference inside a called program is not followed.
+- No `rein.lock`. pnpm pins each called program: `pnpm-lock.yaml` records its version and integrity hash, and `node_modules` holds the installed copy. Why: a second lock would repeat what pnpm already does.
+- A program reference inside a called program is followed, so a chain of hand-offs can cross many programs. Each program is linked once, by name. Why: the user's ask was that a program with a missing dependency tells the agent at once, not when the run reaches that step. A chain that stopped at the second program hid that program's own dependencies.
+- Each program that a hand-off from the root can reach, through any number of programs, must be installed and have the named function before the first step. Otherwise `rein check`, `rein step`, `rein run` and the MCP start refuse to run, and name the missing program and how to install it. There is no flag. Why: an agent learns of a missing program before it does any work, and as strict as possible means one rule with no opt-out.
+- Programs reached through other programs are found through the root project's scopes, not through the called program's own installs. Why: one lookup for every program, the same as `rein list`. A program that pnpm installed only as a dependency of another package is not visible, so install it in a scope to call it.
 
 ## Struct answers
 
