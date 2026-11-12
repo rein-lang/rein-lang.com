@@ -569,7 +569,7 @@ Each run prints one of these objects:
 
 ### Language server
 
-The code is in `crates/rein/src/lsp/`, one module per feature. It reads the tree from `rein_core`'s parser and resolves references with `rein_core::project`. A reference cannot leave its program, so every feature below stays in one program, except workspace symbols.
+The code is in `crates/rein/src/lsp/`, one module per feature. It reads the tree from `rein_core`'s parser and resolves references with `rein_core::project`. A relative reference cannot leave its program, so every feature below stays in one program, except workspace symbols and program references.
 
 - Diagnostics: the checker's errors and warnings, on each open file.
 - References: on a reference, on a function's name, or anywhere else in a file, every `@./` reference to that function. On a parameter or a `name=` argument, its uses and `name=` in each call to its function. On a struct type or a struct name, every parameter type that names the struct. On a field, its place in `{ }` and its uses in each function that takes the struct, and `name=` in each call to those functions. The declaration is included when the client asks for it.
@@ -583,6 +583,7 @@ The code is in `crates/rein/src/lsp/`, one module per feature. It reads the tree
 - Completion: after `@./` or `@../`, the project functions relative to the current file, or after `}: ` the shared structs. Each item replaces the whole reference token. Inside call parentheses, where an argument name goes, the parameters (the fields of a struct parameter) not given yet, as `name=`. After `x === "` or `case "`, the members of the union, each replacing the whole literal. Elsewhere, the parameter names, the std names, and keywords.
 - Signature help: inside call parentheses, the callee's parameters (the fields of a struct parameter), with the current one active.
 - Quick fixes: add a doc comment to a function or a parameter that has none, and add `name=` to a positional argument.
+- Program references: `@program` and `@program/function` resolve through the scopes from the project root, as `rein check` run there resolves them. Go to definition opens the function in the installed program, or its entry for a bare `@program`. Hover adds the program name, version, scope and folder. Completion after `@` offers the visible programs, and after `@program/` the functions of that program. Signature help, `name=` completion and diagnostics read the target's parameters. References list the program references in the current program only; references from other programs are not searched. Rename refuses a symbol of another program.
 
 ### Debug adapter
 
