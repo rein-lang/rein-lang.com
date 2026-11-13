@@ -60,7 +60,7 @@ Programs (flows) live in scopes: project, user, and system. The folders, the man
   A tag may use double or single quotes. Why: both are TypeScript string literal types, and one quote style is a formatter's job, not the compiler's. `rein.json` is JSON, not Rein, so the rule does not apply to it.
 - A line holds at most 80 characters. This is the Prettier default `printWidth` (https://prettier.io/docs/options#print-width). The rule counts characters, not bytes, and a tab counts as one character. It applies to every line of every `.rein` file, `.struct.rein` files, doc comments and strings too. A program sets another limit with `maxLineLength` in its `rein.json`: a positive integer, such as `"maxLineLength": 120`.
 - A REF is `@` followed by `./` or `../`, then path names made of letters, digits and `_`, separated by `/`. It has no extension. Examples: `@./ci/fix`, `@../escalate`. A REF that does not start with `./` or `../` names another program: `@program` or `@program/function`. The program name is as `rein list` shows it, and may hold `-`. The function path holds names of letters, digits and `_`. Examples: `@pr-handling`, `@pr-handling/main`. A malformed one is an error: `a reference is `@./path`, `@../path`, or `@program/function` for another program`.
-- An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`.
+- An IDENT matches `[A-Za-z_][A-Za-z0-9_]*`. A declared name (a parameter, a struct field, an answer) is snake_case, as paths are: `is_draft`, `next_step`. A name with an uppercase letter is a warning that gives the snake_case name.
 - Keywords: `import`, `from`, `export`, `default`, `function`, `if`, `else`, `switch`, `case`, `return`, `boolean`. A keyword cannot be a name.
 - Reserved words: `for`, `while`, `do`, `const`, `let`, `var`. They are not Rein. Using one gives a helpful error (section 3). A file name segment cannot be one either. `const` is allowed only for an answer (section 4, Async requests).
 - `string`, `async` and `interface` are names with a role in a type, a function header, or a struct. `await` and `request` are names with a role in an answer.
@@ -206,7 +206,7 @@ export default interface Message {
   /** The first part of the sentence, such as the action taken. */
   opening: string;
   /** The next step the customer can expect. */
-  nextStep: string;
+  next_step: string;
 }
 ```
 
@@ -216,12 +216,12 @@ export default interface Message {
 /**
  * Tell the customer what happens next, in one sentence.
  */
-export default function tellCustomer({ opening, nextStep }: @../message) {
-  return `${opening} ${nextStep}`;
+export default function tellCustomer({ opening, next_step }: @../message) {
+  return `${opening} ${next_step}`;
 }
 ```
 
-A caller gives each field by name: ``@./refund/tell_customer(opening=`...`, nextStep=`...`)``.
+A caller gives each field by name: ``@./refund/tell_customer(opening=`...`, next_step=`...`)``.
 
 ### References
 
@@ -319,9 +319,9 @@ A function can ask the agent for a step and wait for an answer. The answer is a 
 /** Answer a FAQ ticket with a help article, or escalate it. */
 export default async function answerFaq(
   /** Did you find a help article that answers the question? */
-  articleFound: boolean,
+  article_found: boolean,
 ) {
-  if (!articleFound) {
+  if (!article_found) {
     return @../escalate;
   }
   /** Did the customer confirm the article solved the problem? */
@@ -385,7 +385,7 @@ export default async function pullRequest() {
 
 ## 6. Conditions
 
-- A boolean parameter or answer is used bare: `if (docsOnly)`, or negated: `if (!docsOnly)`.
+- A boolean parameter or answer is used bare: `if (docs_only)`, or negated: `if (!docs_only)`.
 - A union parameter or answer is compared with `===` or `!==`: `if (ci === "green")`.
 - A `string` parameter, or a `string` field of a struct answer, cannot be read by a condition or a switch (section 4, Inputs). A `boolean` or union field of a struct answer (`pick.task`) is used like a boolean or union answer.
 - `!`, `&&`, `||` combine conditions. `!` binds tightest, then `&&`, then `||`. Parentheses group.
@@ -477,6 +477,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A doc tag other than `@param` (`unknown tag `@x``) |
 | A function cannot be reached from the entry (`main`, or `entry` in `rein.json`) through references (`x is not reachable from main`). This warning is not given when the entry is missing or has a syntax error |
 | A function that exactly one other function calls is not in the folder named after that caller (`` `fix_ci` is only called by `merge`; move it to `merge/fix_ci.rein` so the folders show the flow. The move changes its answer keys and breaks `@<program>/fix_ci` references from other programs ``). A function that only the entry calls belongs at the root. It is not given when the entry is missing or has a syntax error, since reachability is unknown. Section 1 has the rule and its exceptions |
+| A parameter, struct field or answer name holds an uppercase letter (`` `isDraft` is camelCase; names are snake_case: write `is_draft` ``) |
 
 ## 9. Evaluation
 
@@ -568,7 +569,7 @@ Each run prints one of these objects:
   "name": "merge_pr",
   "description": "...",
   "inputs": [
-    {"name": "docsOnly", "type": "boolean", "description": "..."},
+    {"name": "docs_only", "type": "boolean", "description": "..."},
     {"name": "ci", "type": "union", "options": ["green", "red", "pending"], "description": "..."}
   ]
 }

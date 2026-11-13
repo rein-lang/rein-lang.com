@@ -36,8 +36,8 @@ Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build
 
    ```text
    $ rein step --root <merge-pr example> --json \
-       --answer main.task=merge --answer merge_pr.docsOnly=no \
-       --answer merge_pr.ci=red --answer merge_pr/fix.fixPushed=yes
+       --answer main.task=merge --answer merge_pr.docs_only=no \
+       --answer merge_pr.ci=red --answer merge_pr/fix.fix_pushed=yes
    {"kind":"error", ... "message":"flow did not finish in 64 steps (reference cycle?)", ...}
    ```
 
@@ -172,9 +172,9 @@ The path is a code change with green CI. Today the agent makes five `rein step` 
 | --- | --- | --- |
 | Start | The agent must recall that the program exists. | The agent calls `gh pr merge 42`. The gate denies the call and names `merge-pr`. |
 | `main.task` | The agent answers `merge`. | No question. The guarded action is the merge, so the gate starts the run at `merge_pr`. |
-| `merge_pr.docsOnly` | The agent answers. | The agent answers. |
+| `merge_pr.docs_only` | The agent answers. | The agent answers. |
 | `merge_pr.ci` | The agent reads the CI status and answers. | A probe runs `gh pr checks 42`. The agent gets no question. |
-| `merge_pr/review_code.securitySensitive` | The agent answers. | The agent answers. |
+| `merge_pr/review_code.security_sensitive` | The agent answers. | The agent answers. |
 | End | `done` with free text: delegate a code review. | A request: the program waits for the review result, then returns a status. |
 
 Today the agent answers four questions on this path. With the contracts it answers two.
@@ -190,7 +190,7 @@ Each end of the program gets a status:
 
 Notes:
 
-- A probe can also answer `docsOnly`, because a command can list the changed files.
+- A probe can also answer `docs_only`, because a command can list the changed files.
 - The example has no approval question. A program can add one with the `user` source, such as "May I merge?".
 - The probe needs the pull request number. The denied command holds it.
 
@@ -201,9 +201,9 @@ The path is a sev2 alert with no customer impact and a known runbook. Today the 
 | Step | Today | With the four contracts |
 | --- | --- | --- |
 | Start | The agent must recall that the program exists. | The alert starts the run. The first step is the prompt of the agent. |
-| `main.customerImpact` | The agent answers. | The agent answers. |
+| `main.customer_impact` | The agent answers. | The agent answers. |
 | `main.severity` | The agent answers. | A probe reads the severity from the alert. |
-| `main.knownRunbook` | The agent answers. | A probe looks for the runbook file. |
+| `main.known_runbook` | The agent answers. | A probe looks for the runbook file. |
 | Approval | None. | A `user` question: "May I run the runbook steps?" The example has no such question today. |
 | `follow.fixed` | The agent runs the steps, then answers. | The agent runs the steps. A probe reads the alert status. |
 | End | `done` with free text: close the alert. | Allow, for a gate on the close action. |

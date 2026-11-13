@@ -133,6 +133,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 ### Function and file names
 
 - A path segment is snake_case. A folder is a subject, and a leaf file is an imperative verb: `ci/fix`, `comments/address`, `check_approval`. Why: the path reads as a sentence, and one rule is easy to guess.
+- A parameter, a struct field and an answer name are snake_case too: `is_draft`, `next_step`. `rein check` warns on a name with an uppercase letter and gives the snake_case name. Why: one style for paths and names, so an answer key such as `ci/fix.next_step` has one style. A path never holds `.`, so the key still shows where the path ends. (Owner's choice, 2026-11-13.)
 - A template is a noun for the text it gives: `review_comment`. A struct is a singular noun: `message.struct.rein`.
 - Apart from `templates/` (fact 23), no folder groups files by kind. A file that several functions use sits at their shared level. Why: a folder is a subject, and the single-caller rule already places each file.
 - Keep paths shallow. Depth comes from the single-caller rule, so it is advice, not a limit.
@@ -160,6 +161,5 @@ Anyone can build and share a program, so two authors can pick the same name. The
 - Loops and retries. Today a retry is a reference cycle.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
 - Who answers inputs: agent judgment, or deterministic tools.
-- Field and parameter names: camelCase, as today (`productFitGood`), or snake_case, as paths are? camelCase marks where the path ends in `ci/fix.nextStep`; snake_case is one style fewer.
 - Once an index of programs exists, does a `rein-lang` program win a bare `rein install <name>`, or is `rein-lang` one owner like any other?
 - Is per-program binding (Naming, Identity and local names) worth the change to how programs reached through other programs are found?
