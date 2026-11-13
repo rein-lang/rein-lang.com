@@ -18,13 +18,13 @@ flowchart TD
     end
     subgraph s1 ["main.rein"]
         f1(["main"])
-        f1_0{"Are customers seeing errors or downtime right now?<br/>customerImpact: boolean"}
+        f1_0{"Are customers seeing errors or downtime right now?<br/>customer_impact: boolean"}
         f1_1{"How severe is the alert?<br/>severity: #quot;sev1#quot; | #quot;sev2#quot; | #quot;sev3#quot;"}
-        f1_2{"Does a runbook exist for this alert?<br/>knownRunbook: boolean"}
+        f1_2{"Does a runbook exist for this alert?<br/>known_runbook: boolean"}
     end
     subgraph s2 ["open.rein"]
         f2[["open"]]
-        f2_0{"Is there already an open ticket for this alert?<br/>ticketExists: boolean"}
+        f2_0{"Is there already an open ticket for this alert?<br/>ticket_exists: boolean"}
         f2_1("Add the alert details as a comment on the open ticket.")
         f2_2("Create a ticket with the alert name, severity, and first graph link.<br/>Assign it to the owning team.")
     end

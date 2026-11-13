@@ -16,14 +16,14 @@ flowchart TD
     end
     subgraph s1 ["faq.rein"]
         f1[["faq"]]
-        f1_0{"Did you find a help article that answers the question?<br/>articleFound: boolean"}
+        f1_0{"Did you find a help article that answers the question?<br/>article_found: boolean"}
         f1_1[/"request: #96;Reply with the help article link and ask the customer if it solved the<br/>problem.#96;"/]
         f1_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
-        f1_3("@./faq/close_ticket(opening=#96;Glad the help article solved the problem.#96;, nextStep=#96;Reply to this ticket if it comes back.#96;)")
+        f1_3("@./faq/close_ticket(opening=#96;Glad the help article solved the problem.#96;, next_step=#96;Reply to this ticket if it comes back.#96;)")
     end
     subgraph s2 ["faq/close_ticket.rein"]
-        f2[["faq/close_ticket(opening, nextStep)"]]
-        f2_0("Tell the customer: ${opening} ${nextStep} Then close the ticket as<br/>solved.")
+        f2[["faq/close_ticket(opening, next_step)"]]
+        f2_0("Tell the customer: ${opening} ${next_step} Then close the ticket as<br/>solved.")
     end
     subgraph s3 ["main.rein"]
         f3(["main"])
@@ -32,12 +32,12 @@ flowchart TD
     end
     subgraph s4 ["refund.rein"]
         f4[["refund"]]
-        f4_0{"Is the requested refund above the agent's limit?<br/>refundOverLimit: boolean"}
-        f4_1("@./refund/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, nextStep=#96;Then tell the customer the refund takes 5 business days.#96;)")
+        f4_0{"Is the requested refund above the agent's limit?<br/>refund_over_limit: boolean"}
+        f4_1("@./refund/tell_customer(opening=#96;Refund the amount the customer asked for and confirm it in the<br/>ticket.#96;, next_step=#96;Then tell the customer the refund takes 5 business days.#96;)")
     end
     subgraph s5 ["refund/tell_customer.rein"]
-        f5[["refund/tell_customer(opening, nextStep)"]]
-        f5_0("${opening} ${nextStep}")
+        f5[["refund/tell_customer(opening, next_step)"]]
+        f5_0("${opening} ${next_step}")
     end
     f0 --> f0_0
     f1 --> f1_0

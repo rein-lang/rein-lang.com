@@ -16,16 +16,16 @@ flowchart TD
         f0_1("Run the failed job of ${pr} again, one time. If it fails again,<br/>start this program again for ${pr} with the cause test or code.")
         f0_2("askUser(question=#96;CI fails on ${pr} for a reason outside this pull request.<br/>Do I wait, or do I fix it in a new pull request?#96;)")
         f0_3[/"request: #96;Read the CI log of ${pr}. Find the first failing step. Fix the test<br/>or the code. Push one commit.#96;"/]
-        f0_4{"Did you push a fix for the failing job?<br/>fixPushed: boolean"}
+        f0_4{"Did you push a fix for the failing job?<br/>fix_pushed: boolean"}
         f0_5("Wait for CI to finish on ${pr}. Then start this program again<br/>with the task merge.")
         f0_6("askUser(question=#96;I cannot fix the failing CI job of ${pr}. What do you want<br/>me to try?#96;)")
     end
     subgraph s1 ["comments/address.rein"]
         f1[["comments/address(pr)"]]
-        f1_0{"Does the pull request have a review comment with no answer?<br/>openComments: boolean"}
+        f1_0{"Does the pull request have a review comment with no answer?<br/>open_comments: boolean"}
         f1_1("No comment is open on ${pr}. Ask the reviewer for a new review.<br/>Then stop.")
         f1_2[/"request: #96;For each open comment on ${pr}: fix the code or reply with the reason<br/>you do not. Push one commit. Resolve each thread you fixed.#96;"/]
-        f1_3{"Did you answer every open comment with a fix or a reply?<br/>allAnswered: boolean"}
+        f1_3{"Did you answer every open comment with a fix or a reply?<br/>all_answered: boolean"}
         f1_4("Ask the reviewer for a new review of ${pr}. Then stop.")
         f1_5("askUser(question=#96;I cannot answer one or more review comments on ${pr}. Which<br/>change do you want?#96;)")
     end
@@ -46,11 +46,11 @@ flowchart TD
     end
     subgraph s4 ["review.rein"]
         f4[["review(pr)"]]
-        f4_0{"Did you write this pull request yourself?<br/>ownPr: boolean"}
+        f4_0{"Did you write this pull request yourself?<br/>own_pr: boolean"}
         f4_1("askUser(question=#96;This is my own pull request ${pr}. Who reviews it?#96;)")
-        f4_2{"Does the PR change authentication, payments, or permissions code?<br/>securitySensitive: boolean"}
+        f4_2{"Does the PR change authentication, payments, or permissions code?<br/>security_sensitive: boolean"}
         f4_3[/"request: delegate(model=#96;use opus model#96;, task=#96;review the pull request ${pr}<br/>with a security focus and list each problem with file and line#96;)"/]
-        f4_4{"Did the security review find a problem that must be fixed?<br/>securityProblem: boolean"}
+        f4_4{"Did the security review find a problem that must be fixed?<br/>security_problem: boolean"}
         f4_5("@./review/post_review(kind=#96;request changes#96;, body=#96;each security problem, with its file and line#96;, pr=pr)")
         f4_6("@./review/post_review(kind=#96;approve#96;, body=#96;the security checks you made#96;, pr=pr)")
         f4_7[/"request: delegate(model=#96;use haiku model#96;, task=#96;review the pull request ${pr}<br/>and list each problem with file and line#96;)"/]
