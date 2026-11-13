@@ -147,6 +147,29 @@ question: main.vip: boolean - Is the customer on the VIP plan?
 trace: main -> escalate
 ```
 
+## Run log
+
+Each rein process that steps a flow appends JSON Lines to a shared folder. `rein watch` reads the folder to show the agents that use rein now.
+
+- The folder is `$REIN_RUNS_DIR`, else `$XDG_STATE_HOME/rein/runs`, else `~/.local/state/rein/runs`. Set `REIN_RUNS_DIR` to an empty string to turn logging off.
+- Each process appends to its own file. Lines are never rewritten.
+  - `mcp-<pid>-<start_ms>.jsonl`: `rein serve --mcp`. One file per server, made at server start, so an idle server still shows.
+  - `run-<pid>-<start_ms>.jsonl`: `rein run`. Its run id is `run-1`.
+  - `step-<session>.jsonl`: `rein step`, one file per `CLAUDE_CODE_SESSION_ID`, or `nosession` when unset. The name keeps only `[A-Za-z0-9_-]`.
+- Each line is one JSON object with `ts` (unix milliseconds) and `event`. The first line of a file is `agent`. The events are:
+
+| `event` | Fields |
+| --- | --- |
+| `agent` | `transport` (`mcp`, `run` or `step`), `pid` (null for `step`), `cwd`, `session` (`CLAUDE_CODE_SESSION_ID`, or null) |
+| `start` | `run`, `program`, `entry`, `step` |
+| `answer` | `run`, `key`, `value`, `step` (error steps too) |
+| `stop` | `run` |
+| `step` | `program`, `request`, `step` (`rein step` only) |
+
+`program` is the program name, the root path, or null. `step` and `request` are the `StepResponse` and `StepRequest` JSON. A failed start has `run` null, because no run exists.
+
+Logging never changes the output or the exit code of a command. Write errors are ignored. The folder has no rotation yet.
+
 ## `rein step` stays for replay
 
 Stateless `rein step` does not change. It is for replay, debugging, and tests. The same answers always give the same step. The old single-function `rein run FUNCTION --set ...` is now `rein eval`.
