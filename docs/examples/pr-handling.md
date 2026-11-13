@@ -49,19 +49,22 @@ flowchart TD
         f4_0{"Did you write this pull request yourself?<br/>own_pr: boolean"}
         f4_1("askUser(question=ˋThis is my own pull request ${pr}. Who reviews it?ˋ)")
         f4_2{"Does the PR change authentication, payments, or permissions code?<br/>security_sensitive: boolean"}
-        f4_3[/"request: delegate(model=ˋuse opus modelˋ, task=ˋreview the pull request ${pr}<br/>with a security focus and list each problem with file and lineˋ)"/]
-        f4_4{"Did the security review find a problem that must be fixed?<br/>security_problem: boolean"}
-        f4_5("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach security problem, with its file and lineˋ, pr=pr)")
-        f4_6("@./review/post_review(kind=ˋapproveˋ, body=ˋthe security checks you madeˋ, pr=pr)")
-        f4_7[/"request: delegate(model=ˋuse haiku modelˋ, task=ˋreview the pull request ${pr}<br/>and list each problem with file and lineˋ)"/]
-        f4_8{"What is the result of the code review?<br/>verdict: #quot;clean#quot; | #quot;small problems#quot; | #quot;blocking problems#quot;"}
-        f4_9("@./review/post_review(kind=ˋapproveˋ, body=ˋone line on what you checkedˋ, pr=pr)")
-        f4_10("@./review/post_review(kind=ˋcommentˋ, body=ˋeach small problem, with its file and lineˋ, pr=pr)")
-        f4_11("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach blocking problem, with its file and lineˋ, pr=pr)")
+        f4_3[/"request: delegate(model=ˋuse haiku modelˋ, task=ˋreview the pull request ${pr}<br/>and list each problem with file and lineˋ)"/]
+        f4_4{"What is the result of the code review?<br/>verdict: #quot;clean#quot; | #quot;small problems#quot; | #quot;blocking problems#quot;"}
+        f4_5("@./review/post_review(kind=ˋapproveˋ, body=ˋone line on what you checkedˋ, pr=pr)")
+        f4_6("@./review/post_review(kind=ˋcommentˋ, body=ˋeach small problem, with its file and lineˋ, pr=pr)")
+        f4_7("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach blocking problem, with its file and lineˋ, pr=pr)")
     end
     subgraph s5 ["review/post_review.rein"]
         f5[["review/post_review(kind, body, pr)"]]
         f5_0("Post one review on the pull request ${pr}. Type: ${kind}. Body:<br/>${body}. Do not merge in this run.")
+    end
+    subgraph s6 ["review/security_review.rein"]
+        f6[["review/security_review(pr)"]]
+        f6_0[/"request: delegate(model=ˋuse opus modelˋ, task=ˋreview the pull request ${pr}<br/>with a security focus and list each problem with file and lineˋ)"/]
+        f6_1{"Did the security review find a problem that must be fixed?<br/>security_problem: boolean"}
+        f6_2("@./post_review(kind=ˋrequest changesˋ, body=ˋeach security problem, with its file and lineˋ, pr=pr)")
+        f6_3("@./post_review(kind=ˋapproveˋ, body=ˋthe security checks you madeˋ, pr=pr)")
     end
     f0 --> f0_0
     f0_0 -->|"flaky job"| f0_1
@@ -95,21 +98,22 @@ flowchart TD
     f4 --> f4_0
     f4_0 -->|"yes"| f4_1
     f4_0 -->|"no"| f4_2
-    f4_2 -->|"yes"| f4_3
+    f4_2 -->|"yes<br/>pr=pr"| f6
+    f4_2 -->|"no"| f4_3
     f4_3 --> f4_4
-    f4_4 -->|"yes"| f4_5
+    f4_4 -->|"clean"| f4_5
     f4_5 -.-> f5
-    f4_4 -->|"no"| f4_6
+    f4_4 -->|"small problems"| f4_6
     f4_6 -.-> f5
-    f4_2 -->|"no"| f4_7
-    f4_7 --> f4_8
-    f4_8 -->|"clean"| f4_9
-    f4_9 -.-> f5
-    f4_8 -->|"small problems"| f4_10
-    f4_10 -.-> f5
-    f4_8 -->|"blocking problems"| f4_11
-    f4_11 -.-> f5
+    f4_4 -->|"blocking problems"| f4_7
+    f4_7 -.-> f5
     f5 --> f5_0
+    f6 --> f6_0
+    f6_0 --> f6_1
+    f6_1 -->|"yes"| f6_2
+    f6_2 -.-> f5
+    f6_1 -->|"no"| f6_3
+    f6_3 -.-> f5
 ```
 
 ## Source
@@ -145,3 +149,7 @@ flowchart TD
 ### `review/post_review.rein`
 
 <<< ../../../examples/rein/pr-handling/review/post_review.rein{rein}
+
+### `review/security_review.rein`
+
+<<< ../../../examples/rein/pr-handling/review/security_review.rein{rein}
