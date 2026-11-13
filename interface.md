@@ -152,6 +152,7 @@ trace: main -> escalate
 Each rein process that steps a flow appends JSON Lines to a shared folder. `rein watch` reads the folder to show the agents that use rein now.
 
 - The folder is `$REIN_RUNS_DIR`, else `$XDG_STATE_HOME/rein/runs`, else `~/.local/state/rein/runs`. Set `REIN_RUNS_DIR` to an empty string to turn logging off.
+- The log holds the inputs, answers and instructions of each flow in plain text. On unix the folder is mode 0700 and each file is mode 0600, so only the user can read them.
 - Each process appends to its own file. Lines are never rewritten.
   - `mcp-<pid>-<start_ms>.jsonl`: `rein serve --mcp`. One file per server, made at server start, so an idle server still shows.
   - `run-<pid>-<start_ms>.jsonl`: `rein run`. Its run id is `run-1`.
