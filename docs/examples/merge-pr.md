@@ -30,8 +30,8 @@ flowchart TD
     subgraph s3 ["merge_pr/review_code.rein"]
         f3[["merge_pr/review_code"]]
         f3_0{"Does the PR change authentication, payments, or permissions code?<br/>security_sensitive: boolean"}
-        f3_1>"delegate(model=#96;use opus model#96;, task=#96;code review the pr with a security focus#96;)"]
-        f3_2>"delegate(model=#96;use haiku model#96;, task=#96;code review the pr#96;)"]
+        f3_1>"delegate(model=ˋuse opus modelˋ, task=ˋcode review the pr with a security focusˋ)"]
+        f3_2>"delegate(model=ˋuse haiku modelˋ, task=ˋcode review the prˋ)"]
     end
     subgraph s4 ["review.rein"]
         f4[["review"]]

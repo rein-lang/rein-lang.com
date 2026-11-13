@@ -12,7 +12,7 @@ The decision flow, from `rein graph incident-triage`:
 flowchart TD
     subgraph s0 ["follow.rein"]
         f0[["follow"]]
-        f0_0[/"request: #96;Run the runbook steps for this alert. Then check the alert status and<br/>report whether it cleared.#96;"/]
+        f0_0[/"request: ˋRun the runbook steps for this alert. Then check the alert status and<br/>report whether it cleared.ˋ"/]
         f0_1{"Did the runbook steps clear the alert?<br/>fixed: boolean"}
         f0_2("Close the alert. Write a one-line note with the steps you ran.")
     end

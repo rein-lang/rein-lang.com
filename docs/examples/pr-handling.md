@@ -14,20 +14,20 @@ flowchart TD
         f0[["ci/fix(pr)"]]
         f0_0{"Why did the CI run fail?<br/>cause: #quot;test or code#quot; | #quot;flaky job#quot; | #quot;outside the pr#quot;"}
         f0_1("Run the failed job of ${pr} again, one time. If it fails again,<br/>start this program again for ${pr} with the cause test or code.")
-        f0_2("askUser(question=#96;CI fails on ${pr} for a reason outside this pull request.<br/>Do I wait, or do I fix it in a new pull request?#96;)")
-        f0_3[/"request: #96;Read the CI log of ${pr}. Find the first failing step. Fix the test<br/>or the code. Push one commit.#96;"/]
+        f0_2("askUser(question=ˋCI fails on ${pr} for a reason outside this pull request.<br/>Do I wait, or do I fix it in a new pull request?ˋ)")
+        f0_3[/"request: ˋRead the CI log of ${pr}. Find the first failing step. Fix the test<br/>or the code. Push one commit.ˋ"/]
         f0_4{"Did you push a fix for the failing job?<br/>fix_pushed: boolean"}
         f0_5("Wait for CI to finish on ${pr}. Then start this program again<br/>with the task merge.")
-        f0_6("askUser(question=#96;I cannot fix the failing CI job of ${pr}. What do you want<br/>me to try?#96;)")
+        f0_6("askUser(question=ˋI cannot fix the failing CI job of ${pr}. What do you want<br/>me to try?ˋ)")
     end
     subgraph s1 ["comments/address.rein"]
         f1[["comments/address(pr)"]]
         f1_0{"Does the pull request have a review comment with no answer?<br/>open_comments: boolean"}
         f1_1("No comment is open on ${pr}. Ask the reviewer for a new review.<br/>Then stop.")
-        f1_2[/"request: #96;For each open comment on ${pr}: fix the code or reply with the reason<br/>you do not. Push one commit. Resolve each thread you fixed.#96;"/]
+        f1_2[/"request: ˋFor each open comment on ${pr}: fix the code or reply with the reason<br/>you do not. Push one commit. Resolve each thread you fixed.ˋ"/]
         f1_3{"Did you answer every open comment with a fix or a reply?<br/>all_answered: boolean"}
         f1_4("Ask the reviewer for a new review of ${pr}. Then stop.")
-        f1_5("askUser(question=#96;I cannot answer one or more review comments on ${pr}. Which<br/>change do you want?#96;)")
+        f1_5("askUser(question=ˋI cannot answer one or more review comments on ${pr}. Which<br/>change do you want?ˋ)")
     end
     subgraph s2 ["main.rein"]
         f2(["main(pr)"])
@@ -47,17 +47,17 @@ flowchart TD
     subgraph s4 ["review.rein"]
         f4[["review(pr)"]]
         f4_0{"Did you write this pull request yourself?<br/>own_pr: boolean"}
-        f4_1("askUser(question=#96;This is my own pull request ${pr}. Who reviews it?#96;)")
+        f4_1("askUser(question=ˋThis is my own pull request ${pr}. Who reviews it?ˋ)")
         f4_2{"Does the PR change authentication, payments, or permissions code?<br/>security_sensitive: boolean"}
-        f4_3[/"request: delegate(model=#96;use opus model#96;, task=#96;review the pull request ${pr}<br/>with a security focus and list each problem with file and line#96;)"/]
+        f4_3[/"request: delegate(model=ˋuse opus modelˋ, task=ˋreview the pull request ${pr}<br/>with a security focus and list each problem with file and lineˋ)"/]
         f4_4{"Did the security review find a problem that must be fixed?<br/>security_problem: boolean"}
-        f4_5("@./review/post_review(kind=#96;request changes#96;, body=#96;each security problem, with its file and line#96;, pr=pr)")
-        f4_6("@./review/post_review(kind=#96;approve#96;, body=#96;the security checks you made#96;, pr=pr)")
-        f4_7[/"request: delegate(model=#96;use haiku model#96;, task=#96;review the pull request ${pr}<br/>and list each problem with file and line#96;)"/]
+        f4_5("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach security problem, with its file and lineˋ, pr=pr)")
+        f4_6("@./review/post_review(kind=ˋapproveˋ, body=ˋthe security checks you madeˋ, pr=pr)")
+        f4_7[/"request: delegate(model=ˋuse haiku modelˋ, task=ˋreview the pull request ${pr}<br/>and list each problem with file and lineˋ)"/]
         f4_8{"What is the result of the code review?<br/>verdict: #quot;clean#quot; | #quot;small problems#quot; | #quot;blocking problems#quot;"}
-        f4_9("@./review/post_review(kind=#96;approve#96;, body=#96;one line on what you checked#96;, pr=pr)")
-        f4_10("@./review/post_review(kind=#96;comment#96;, body=#96;each small problem, with its file and line#96;, pr=pr)")
-        f4_11("@./review/post_review(kind=#96;request changes#96;, body=#96;each blocking problem, with its file and line#96;, pr=pr)")
+        f4_9("@./review/post_review(kind=ˋapproveˋ, body=ˋone line on what you checkedˋ, pr=pr)")
+        f4_10("@./review/post_review(kind=ˋcommentˋ, body=ˋeach small problem, with its file and lineˋ, pr=pr)")
+        f4_11("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach blocking problem, with its file and lineˋ, pr=pr)")
     end
     subgraph s5 ["review/post_review.rein"]
         f5[["review/post_review(kind, body, pr)"]]
