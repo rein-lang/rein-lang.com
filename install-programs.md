@@ -43,7 +43,7 @@ The user npm project is the `npm/` folder inside it. With the default path, it i
 | `rein uninstall <args>...` | `pnpm remove <args>...` |
 | `rein update [<args>...]` | `pnpm update --ignore-scripts [<args>...]` |
 
-- The arguments go to pnpm unchanged. Any pnpm flag works. Rein reads no package spec.
+- The arguments go to pnpm unchanged. Any pnpm flag works. Rein reads no package spec. (A change is proposed: see Naming in decisions.md.)
 - The one exception is `--ignore-scripts`. `add` and `update` get it first, so package install scripts do not run. If your arguments already contain `--ignore-scripts`, Rein adds nothing. To let scripts run, pass `--ignore-scripts=false`. `remove` gets no such flag.
 - `rein update` with no arguments updates each direct dependency within its range.
 
@@ -92,7 +92,7 @@ A program package uses `package.json`, as a VS Code extension does. It has these
   "version": "1.0.0",
   "description": "Decide how the agent handles a pull request.",
   "license": "MIT",
-  "repository": "github:owner/pr-handling",
+  "repository": "github:owner/rein-pr-handling",
   "files": ["**/*.rein"],
   "keywords": ["rein", "pull-request"],
   "engines": {
@@ -120,7 +120,7 @@ Rein finds programs in three scopes:
 - Inside the project scope, the nearest `rein/` folder wins.
 - A program that loses a clash is shadowed. `rein list` hides it. `rein list -a` shows it marked `(shadowed by <scope>)`. The name runs the winning program.
 - `REIN_SYSTEM_DIRS` replaces the system folders. It is a colon-separated list.
-- `rein list` also lists the packages in each `npm/node_modules/` folder of the project and user scopes. Each top-level link is one program, named by its link name, including an alias. A scope folder such as `@scope/` holds `@scope/name` programs. Dot entries such as `.pnpm` are skipped. A package without a Rein entry is not a program.
+- `rein list` also lists the packages in each `npm/node_modules/` folder of the project and user scopes. Each top-level link is one program, named by its link name, including an alias. A scope folder such as `@scope/` holds `@scope/name` programs. (A change is proposed: see Naming in decisions.md.) Dot entries such as `.pnpm` are skipped. A package without a Rein entry is not a program.
 - `npm` is reserved in every `rein/` folder. It is the package project, so it is never a program.
 
 ## Confirm the install (Built)
