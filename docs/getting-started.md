@@ -96,6 +96,14 @@ rein debug ticket
 
 Set inputs and answers on the left, or answer the current question at the top. On each change the page walks the flow again. It marks the path taken, and shows the next question, the request, or the final instruction. **Back** removes the last answer. **Reset** removes all answers. To save a static view, run `rein graph ticket --answer main.urgent=yes -o ticket.html`.
 
+See the agents that use rein right now, with the step each run waits on:
+
+```sh
+rein watch
+```
+
+It serves a page on `127.0.0.1` and refreshes it every 2 seconds. It reads the run logs that agents write, and changes nothing.
+
 ## Next steps
 
 - Read the [Concepts](/concepts) page for the model.

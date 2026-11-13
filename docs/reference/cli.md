@@ -14,6 +14,7 @@ This document contains the help content for the `rein` command-line program.
 * [`rein describe`↴](#rein-describe)
 * [`rein graph`↴](#rein-graph)
 * [`rein debug`↴](#rein-debug)
+* [`rein watch`↴](#rein-watch)
 * [`rein list`↴](#rein-list)
 * [`rein show`↴](#rein-show)
 * [`rein serve`↴](#rein-serve)
@@ -40,6 +41,7 @@ A small language for agent decision flows
 * `describe` — Print a function's schema as JSON
 * `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes
 * `debug` — Debug a program in the browser: set inputs and answers, step through, and watch the path the flow takes
+* `watch` — Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page
 * `list` — List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 * `show` — Print a program's source: its manifest and every .rein file
 * `serve` — Serve the agent interface. Holds live runs in memory
@@ -192,6 +194,21 @@ Debug a program in the browser: set inputs and answers, step through, and watch 
 * `--entry <ENTRY>` — Function to start from, as its path under the root without `.rein`. Default: the program's entry
 * `--input <NAME=VALUE>` — First value of a `string` parameter of the entry, as name=value. Repeat for each input
 * `--answer <KEY=VALUE>` — First answer, as key=value, such as `main.task=merge`. Repeat for each answer
+* `--port <PORT>` — Port on 127.0.0.1. Default: a free port
+
+  Default value: `0`
+* `--no-open` — Do not open the page in the browser
+
+
+
+## `rein watch`
+
+Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page
+
+**Usage:** `rein watch [OPTIONS]`
+
+###### **Options:**
+
 * `--port <PORT>` — Port on 127.0.0.1. Default: a free port
 
   Default value: `0`
