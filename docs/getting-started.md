@@ -102,7 +102,7 @@ See the agents that use rein right now, with the step each run waits on:
 rein watch
 ```
 
-It serves a page on `127.0.0.1` and refreshes it every 2 seconds. It reads the run logs that agents write, and changes nothing.
+It serves a page on `127.0.0.1` and refreshes it every 2 seconds. It reads the run logs that agents write, and changes nothing. The graph marks the taken steps and the "now" step. Each run shows a status chip. Use the **Path** and **Whole program** buttons to switch the graph view.
 
 ## Next steps
 
