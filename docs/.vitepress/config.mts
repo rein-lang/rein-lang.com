@@ -87,6 +87,7 @@ const config = withMermaid(
             { text: 'Getting started', link: '/getting-started' },
             { text: 'Install a program', link: '/install-programs' },
             { text: 'Concepts', link: '/concepts' },
+            { text: 'Rein and skills', link: '/rein-vs-skills' },
             { text: 'Editor', link: '/editor' },
           ],
         },
