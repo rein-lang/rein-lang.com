@@ -2,7 +2,7 @@
 description: "Decide how the on-call agent handles a new production alert."
 ---
 
-<!--@include: ../../../examples/rein/incident-triage/README.md-->
+<!--@include: ../../rein/examples/rein/incident-triage/README.md-->
 
 ## Graph
 
@@ -53,24 +53,24 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../../examples/rein/incident-triage/package.json{json}
+<<< ../../rein/examples/rein/incident-triage/package.json{json}
 
 ### `rein.json`
 
-<<< ../../../examples/rein/incident-triage/rein.json{json}
+<<< ../../rein/examples/rein/incident-triage/rein.json{json}
 
 ### `main.rein`
 
-<<< ../../../examples/rein/incident-triage/main.rein{rein}
+<<< ../../rein/examples/rein/incident-triage/main.rein{rein}
 
 ### `follow.rein`
 
-<<< ../../../examples/rein/incident-triage/follow.rein{rein}
+<<< ../../rein/examples/rein/incident-triage/follow.rein{rein}
 
 ### `open.rein`
 
-<<< ../../../examples/rein/incident-triage/open.rein{rein}
+<<< ../../rein/examples/rein/incident-triage/open.rein{rein}
 
 ### `page_human.rein`
 
-<<< ../../../examples/rein/incident-triage/page_human.rein{rein}
+<<< ../../rein/examples/rein/incident-triage/page_human.rein{rein}

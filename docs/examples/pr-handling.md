@@ -2,7 +2,7 @@
 description: "Decide the next step for a pull request: review it, fix it, or merge it."
 ---
 
-<!--@include: ../../../examples/rein/pr-handling/README.md-->
+<!--@include: ../../rein/examples/rein/pr-handling/README.md-->
 
 ## Graph
 
@@ -120,36 +120,36 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../../examples/rein/pr-handling/package.json{json}
+<<< ../../rein/examples/rein/pr-handling/package.json{json}
 
 ### `rein.json`
 
-<<< ../../../examples/rein/pr-handling/rein.json{json}
+<<< ../../rein/examples/rein/pr-handling/rein.json{json}
 
 ### `main.rein`
 
-<<< ../../../examples/rein/pr-handling/main.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/main.rein{rein}
 
 ### `ci/fix.rein`
 
-<<< ../../../examples/rein/pr-handling/ci/fix.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/ci/fix.rein{rein}
 
 ### `comments/address.rein`
 
-<<< ../../../examples/rein/pr-handling/comments/address.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/comments/address.rein{rein}
 
 ### `merge.rein`
 
-<<< ../../../examples/rein/pr-handling/merge.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/merge.rein{rein}
 
 ### `review.rein`
 
-<<< ../../../examples/rein/pr-handling/review.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/review.rein{rein}
 
 ### `review/post_review.rein`
 
-<<< ../../../examples/rein/pr-handling/review/post_review.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/review/post_review.rein{rein}
 
 ### `review/security_review.rein`
 
-<<< ../../../examples/rein/pr-handling/review/security_review.rein{rein}
+<<< ../../rein/examples/rein/pr-handling/review/security_review.rein{rein}

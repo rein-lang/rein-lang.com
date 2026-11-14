@@ -2,7 +2,7 @@
 description: "Decide the next step for a pull request task."
 ---
 
-<!--@include: ../../../examples/rein/merge-pr/README.md-->
+<!--@include: ../../rein/examples/rein/merge-pr/README.md-->
 
 ## Graph
 
@@ -63,28 +63,28 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../../examples/rein/merge-pr/package.json{json}
+<<< ../../rein/examples/rein/merge-pr/package.json{json}
 
 ### `rein.json`
 
-<<< ../../../examples/rein/merge-pr/rein.json{json}
+<<< ../../rein/examples/rein/merge-pr/rein.json{json}
 
 ### `main.rein`
 
-<<< ../../../examples/rein/merge-pr/main.rein{rein}
+<<< ../../rein/examples/rein/merge-pr/main.rein{rein}
 
 ### `merge_pr.rein`
 
-<<< ../../../examples/rein/merge-pr/merge_pr.rein{rein}
+<<< ../../rein/examples/rein/merge-pr/merge_pr.rein{rein}
 
 ### `merge_pr/fix.rein`
 
-<<< ../../../examples/rein/merge-pr/merge_pr/fix.rein{rein}
+<<< ../../rein/examples/rein/merge-pr/merge_pr/fix.rein{rein}
 
 ### `merge_pr/review_code.rein`
 
-<<< ../../../examples/rein/merge-pr/merge_pr/review_code.rein{rein}
+<<< ../../rein/examples/rein/merge-pr/merge_pr/review_code.rein{rein}
 
 ### `review.rein`
 
-<<< ../../../examples/rein/merge-pr/review.rein{rein}
+<<< ../../rein/examples/rein/merge-pr/review.rein{rein}

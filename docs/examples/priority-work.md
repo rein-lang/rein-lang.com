@@ -2,7 +2,7 @@
 description: "Find the high priority projects of a workplace, then work on their pull requests."
 ---
 
-<!--@include: ../../../examples/rein/priority-work/README.md-->
+<!--@include: ../../rein/examples/rein/priority-work/README.md-->
 
 ## Graph
 
@@ -45,20 +45,20 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../../examples/rein/priority-work/package.json{json}
+<<< ../../rein/examples/rein/priority-work/package.json{json}
 
 ### `rein.json`
 
-<<< ../../../examples/rein/priority-work/rein.json{json}
+<<< ../../rein/examples/rein/priority-work/rein.json{json}
 
 ### `main.rein`
 
-<<< ../../../examples/rein/priority-work/main.rein{rein}
+<<< ../../rein/examples/rein/priority-work/main.rein{rein}
 
 ### `find_projects.rein`
 
-<<< ../../../examples/rein/priority-work/find_projects.rein{rein}
+<<< ../../rein/examples/rein/priority-work/find_projects.rein{rein}
 
 ### `open_prs.rein`
 
-<<< ../../../examples/rein/priority-work/open_prs.rein{rein}
+<<< ../../rein/examples/rein/priority-work/open_prs.rein{rein}

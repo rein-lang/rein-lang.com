@@ -1,1 +1,1 @@
-<!--@include: ../../docs/install-programs.md-->
+<!--@include: ../rein/docs/install-programs.md-->

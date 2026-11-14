@@ -1,15 +1,15 @@
 #!/usr/bin/env sh
-# Regenerate the CLI reference from `rein docs-cli`: an index page and one page per command group.
+# Regenerate the CLI reference: run `rein docs-cli` from the rein submodule, then write an index page and one page per command group.
 # The pages are cut from the one generated document at its `## `rein NAME`` headings.
 set -eu
 
-root="$(cd "$(dirname "$0")/../../.." && pwd)"
+root="$(cd "$(dirname "$0")/../.." && pwd)"
 
 cd "$root"
-ref=website/docs/reference
+ref=docs/reference
 src="$(mktemp)"
 trap 'rm -f "$src"' EXIT
-cargo run --quiet -p rein -- docs-cli > "$src"
+(cd rein && cargo run --quiet -p rein -- docs-cli) > "$src"
 
 awk -v ref="$ref" '
 BEGIN {

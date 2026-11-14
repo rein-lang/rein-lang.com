@@ -15,7 +15,7 @@ pnpm run preview   # serves dist/ locally
 
 `site.config.mjs` holds the site-wide values:
 
-- `SITE_URL`: the base URL for canonical links, Open Graph, sitemap and robots.txt. The domain is not decided, so it is a placeholder (`https://rein.dev`). Change it there only.
+- `SITE_URL`: the base URL for canonical links, Open Graph, sitemap and robots.txt. The domain is `https://rein-lang.com`. Change it there only.
 - `EARLY_ACCESS_HREF`: the "Request early access" mailto link.
 
 ## Routes
@@ -29,7 +29,7 @@ pnpm run preview   # serves dist/ locally
 
 The use-case pages come from `src/data/useCases.ts`. The flow diagrams come from `src/data/flows.ts`.
 
-`/docs/` is not part of this site. The docs site mounts there later.
+`/docs/` is the VitePress site in `../docs`. CI builds both and serves the docs under `/docs/`.
 
 ## Alpha rule
 

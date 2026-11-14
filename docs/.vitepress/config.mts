@@ -20,7 +20,7 @@ const siteLinks: Record<string, string> = {
   '../install-programs.md': '/install-programs',
 }
 // The spec is one page on the site: its topic files (docs/spec/) are included into it.
-const specTopics = new Set(readdirSync(new URL('../../../docs/spec', import.meta.url)))
+const specTopics = new Set(readdirSync(new URL('../../rein/docs/spec', import.meta.url)))
 // Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
 const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 

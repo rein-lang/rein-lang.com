@@ -2,7 +2,7 @@
 description: "Decide how the support agent handles a customer ticket."
 ---
 
-<!--@include: ../../../examples/rein/support-ticket/README.md-->
+<!--@include: ../../rein/examples/rein/support-ticket/README.md-->
 
 ## Graph
 
@@ -65,36 +65,36 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../../examples/rein/support-ticket/package.json{json}
+<<< ../../rein/examples/rein/support-ticket/package.json{json}
 
 ### `rein.json`
 
-<<< ../../../examples/rein/support-ticket/rein.json{json}
+<<< ../../rein/examples/rein/support-ticket/rein.json{json}
 
 ### `main.rein`
 
-<<< ../../../examples/rein/support-ticket/main.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/main.rein{rein}
 
 ### `escalate.rein`
 
-<<< ../../../examples/rein/support-ticket/escalate.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/escalate.rein{rein}
 
 ### `faq.rein`
 
-<<< ../../../examples/rein/support-ticket/faq.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/faq.rein{rein}
 
 ### `faq/close_ticket.rein`
 
-<<< ../../../examples/rein/support-ticket/faq/close_ticket.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/faq/close_ticket.rein{rein}
 
 ### `message.struct.rein`
 
-<<< ../../../examples/rein/support-ticket/message.struct.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/message.struct.rein{rein}
 
 ### `refund.rein`
 
-<<< ../../../examples/rein/support-ticket/refund.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/refund.rein{rein}
 
 ### `refund/tell_customer.rein`
 
-<<< ../../../examples/rein/support-ticket/refund/tell_customer.rein{rein}
+<<< ../../rein/examples/rein/support-ticket/refund/tell_customer.rein{rein}

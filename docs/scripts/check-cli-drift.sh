@@ -2,10 +2,10 @@
 # Regenerate the CLI reference pages (generate-cli.sh) and fail if a committed page differs.
 set -eu
 
-root="$(cd "$(dirname "$0")/../../.." && pwd)"
-targets="website/docs/reference/cli.md website/docs/reference/cli-run.md website/docs/reference/cli-inspect.md website/docs/reference/cli-programs.md website/docs/reference/cli-agents.md"
+root="$(cd "$(dirname "$0")/../.." && pwd)"
+targets="docs/reference/cli.md docs/reference/cli-run.md docs/reference/cli-inspect.md docs/reference/cli-programs.md docs/reference/cli-agents.md"
 
-sh "$root/website/docs/scripts/generate-cli.sh"
+sh "$root/docs/scripts/generate-cli.sh"
 cd "$root"
 
 # An untracked file has no diff, so it must fail on its own.
