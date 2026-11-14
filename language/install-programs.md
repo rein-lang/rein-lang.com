@@ -110,7 +110,7 @@ A program package uses `package.json`, as a VS Code extension does. It has these
 
 A program package can ship scripts next to its `.rein` files. Put shell commands in those scripts. Do not put them in a `request(...)` text or in a `/** */` doc comment.
 
-- Put the scripts in a `scripts/` folder, and add the folder to `files`. pnpm installs only the files that `files` lists. It keeps the executable bit.
+- Put the scripts in a `scripts/` folder, and add the folder to `files`. For a registry, tarball or git install, pnpm keeps only the files that `files` lists. A local folder install links the whole folder. Either way, the executable bit stays.
 - In the request text, name the script and its arguments: ``await request(`Run scripts/mark-done.sh <thread id> from this program's folder.`)``.
 - The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
