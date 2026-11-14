@@ -14,6 +14,10 @@ cargo install --git https://github.com/tupe12334/rein rein
 
 ## Install
 
-Build and install the extension from the [vscode-rein install steps](https://github.com/rein-lang/vscode-rein#install).
+Install [Rein Language](https://marketplace.visualstudio.com/items?itemName=rein-lang.rein-language) from the VS Code Marketplace:
+
+```sh
+code --install-extension rein-lang.rein-language
+```
 
 The [extension README](https://github.com/rein-lang/vscode-rein#readme) lists the features, commands, and settings.
