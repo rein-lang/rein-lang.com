@@ -1,1 +1,1 @@
-<!--@include: ../../rein/docs/interface.md-->
+<!--@include: ../../language/interface.md-->

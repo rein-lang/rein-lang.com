@@ -6,7 +6,8 @@ This repo is the source of https://rein-lang.com, the site for the Rein language
 
 - `landing/`: the Astro home page. It serves `/`.
 - `docs/`: the VitePress docs. It serves `/docs/`.
-- `rein/`: a git submodule with the Rein language sources. The docs include files from it.
+- `language/`: the language reference, decisions and agent interface. This is the only home of these docs; edit them here. The site includes them.
+- `rein/`: a git submodule with the Rein sources. The README, the examples and the CLI pages come from it.
 
 ## Setup
 

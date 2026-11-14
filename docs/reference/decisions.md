@@ -1,1 +1,1 @@
-<!--@include: ../../rein/docs/decisions.md-->
+<!--@include: ../../language/decisions.md-->
