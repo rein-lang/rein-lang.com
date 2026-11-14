@@ -84,7 +84,7 @@ rein step --flow ticket --answer main.urgent=yes --json
 {"kind":"done","version":1,"instruction":"Escalate the ticket to on-call now.","answers":{"main.urgent":"yes"},"trace":["main"]}
 ```
 
-For the full protocol, see [spec section 11](docs/spec.md#11-stepping-agent-interface).
+For the full protocol, see [spec section 11](docs/spec/stepping.md#11-stepping-agent-interface).
 
 ## Debug a program
 

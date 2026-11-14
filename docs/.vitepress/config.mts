@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
@@ -15,7 +15,12 @@ const siteLinks: Record<string, string> = {
   'docs/decisions.md': '/reference/decisions',
   'docs/interface.md': '/reference/interface',
   'docs/install-programs.md': '/install-programs',
+  '../decisions.md': '/reference/decisions',
+  '../interface.md': '/reference/interface',
+  '../install-programs.md': '/install-programs',
 }
+// The spec is one page on the site: its topic files (docs/spec/) are included into it.
+const specTopics = new Set(readdirSync(new URL('../../../docs/spec', import.meta.url)))
 // Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
 const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 
@@ -38,6 +43,8 @@ const config = withMermaid(
                 child.attrSet('href', siteLinks[href])
               } else if (flow) {
                 child.attrSet('href', `/examples/${flow[1]}`)
+              } else if (specTopics.has(href.split('#')[0].replace(/^spec\//, ''))) {
+                child.attrSet('href', `/reference/spec${href.slice(href.split('#')[0].length)}`)
               } else if (/^((docs|examples|crates)\/|LICENSE$)/.test(href)) {
                 child.attrSet('href', repoBlob + href)
               }
