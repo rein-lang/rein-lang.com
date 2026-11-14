@@ -4,6 +4,10 @@ description: "Create a logo for a project: write a brief, draw three SVG concept
 
 # logo-creation
 
+![The logo-creation logo: a purple pen nib with an amber spark](https://raw.githubusercontent.com/rein-lang/logo-creation/main/assets/logo-192.png)
+
+The program made this logo in its first real run, on its own repo.
+
 A published program that creates a logo for a project. It lives in its own repo, [rein-lang/logo-creation](https://github.com/rein-lang/logo-creation), not in `examples/rein/`. Use it as a model for a program you share.
 
 The agent writes a brief, and a subagent draws three SVG concepts. A script checks the concepts. The user picks one. The agent saves the logo files to `assets/` and adds the logo to the README.
