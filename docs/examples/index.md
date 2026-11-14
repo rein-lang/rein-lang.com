@@ -8,6 +8,10 @@ Each example is a flow under `examples/rein/<flow>/`, with a `package.json` mani
 - [priority-work](/examples/priority-work): Find the high priority projects of a workplace, then work on their pull requests.
 - [support-ticket](/examples/support-ticket): Decide how the support agent handles a customer ticket.
 
+A published program lives in its own repo:
+
+- [logo-creation](/examples/logo-creation): Create a logo for a project. Shows bundled scripts and a script as a gate.
+
 Run `rein list` from the `examples` folder to list them. Then run one by name. See [Install a program](docs/install-programs.md):
 
 ```sh
