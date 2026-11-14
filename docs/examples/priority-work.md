@@ -2,7 +2,26 @@
 description: "Find the high priority projects of a workplace, then work on their pull requests."
 ---
 
-<!--@include: ../../rein/examples/rein/priority-work/README.md-->
+# priority-work
+
+A program that needs the result of another function as a value. It finds the high priority projects of a workplace, then works on their pull requests.
+
+`main` calls `find_projects` with `await`. The agent walks `find_projects` as it walks a hand-off: it answers its question and gets its final instruction. Then the agent does that instruction and answers `main.projects` with the result. `main` goes on with the answer.
+
+## Files
+
+| File | Function | Job |
+| --- | --- | --- |
+| `main.rein` | `main` | Entry point. Awaits `find_projects`, then routes on its result. |
+| `find_projects.rein` | `find_projects` | Tells the agent how to find the priority repositories. |
+| `open_prs.rein` | `open_prs` | Works on the open pull requests of the repositories. |
+
+## Run it
+
+```sh
+cargo run -p rein -- check examples/rein/priority-work
+cargo run -p rein -- step --root examples/rein/priority-work --input workplace=~/work
+```
 
 ## Graph
 
@@ -45,20 +64,101 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../rein/examples/rein/priority-work/package.json{json}
+```json
+{
+  "name": "priority-work",
+  "version": "0.1.0",
+  "description": "Find the high priority projects of a workplace, then work on their pull requests.",
+  "license": "MIT",
+  "private": true,
+  "files": ["**/*.rein", "README.md", "rein.json"],
+  "engines": {
+    "rein": "^0.1.0"
+  }
+}
+```
 
 ### `rein.json`
 
-<<< ../../rein/examples/rein/priority-work/rein.json{json}
+```json
+{
+  "entry": "main.rein"
+}
+```
 
 ### `main.rein`
 
-<<< ../../rein/examples/rein/priority-work/main.rein{rein}
+```rein
+interface Projects {
+  /**
+   * The high priority repositories (`owner/name`), comma-separated,
+   * or `-`.
+   */
+  repos: string;
+  /** Did find_projects find no repository? */
+  none: boolean;
+}
+
+/**
+ * Work on the high priority projects of a workplace.
+ */
+export default async function main(
+  /** The workplace folder that lists the projects. */
+  workplace: string,
+) {
+  /** The high priority repositories. */
+  const projects: Projects = await @./find_projects(workplace=workplace);
+
+  if (projects.none) {
+    return `No priority project has activity.`;
+  }
+
+  return @./open_prs(repos=projects.repos);
+}
+```
 
 ### `find_projects.rein`
 
-<<< ../../rein/examples/rein/priority-work/find_projects.rein{rein}
+```rein
+interface Input {
+  /** The workplace folder that lists the projects. */
+  workplace: string;
+  /** Does the workplace have a priority list, such as `Ideas.md`? */
+  has_list: boolean;
+}
+
+/**
+ * Find the high priority repositories of a workplace that had activity
+ * this week.
+ */
+export default function findProjects({ workplace, has_list }: Input) {
+  if (!has_list) {
+    return `Report that ${workplace} has no priority list.`;
+  }
+
+  return `Read the priority list in ${workplace}. Pick the high priority
+  repositories with activity this week.`;
+}
+```
 
 ### `open_prs.rein`
 
-<<< ../../rein/examples/rein/priority-work/open_prs.rein{rein}
+```rein
+interface Input {
+  /** The repositories to work on, comma-separated. */
+  repos: string;
+  /** Does any of these repositories have an open pull request? */
+  has_open_prs: boolean;
+}
+
+/**
+ * Work on the open pull requests of the repositories, or open one.
+ */
+export default function openPrs({ repos, has_open_prs }: Input) {
+  if (!has_open_prs) {
+    return `Open a pull request for the oldest issue in ${repos}.`;
+  }
+
+  return `Merge the open pull requests in ${repos}, oldest first.`;
+}
+```

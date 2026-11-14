@@ -2,7 +2,32 @@
 description: "Decide the next step for a pull request task."
 ---
 
-<!--@include: ../../rein/examples/rein/merge-pr/README.md-->
+# merge-pr
+
+An agent flow that decides whether a pull request can merge.
+
+## Files
+
+| File | Function | Job |
+| --- | --- | --- |
+| `main.rein` | `main` | Entry point. Routes the task to a merge or a security review. |
+| `merge_pr.rein` | `merge_pr` | Checks docs-only changes and CI status. |
+| `merge_pr/review_code.rein` | `merge_pr/review_code` | Code review step after green CI. Delegates the review to a subagent, on a stronger model when the PR is security-sensitive. |
+| `review.rein` | `review` | Checks for secrets and auth changes. Reached from `main` for a security review task. |
+| `merge_pr/fix.rein` | `merge_pr/fix` | Fix a red CI run. Then the agent starts this program again. |
+
+## Run it
+
+```sh
+cargo run -p rein -- check examples/rein/merge-pr
+cargo run -p rein -- run --root examples/rein/merge-pr
+```
+
+## Retry without a cycle
+
+`merge_pr` references `merge_pr/fix`. `merge_pr/fix` does not reference back. Rein has no loops yet, so the retry ends the run.
+After a fix is pushed, `merge_pr/fix` returns the text "start this program again with the task merge".
+The agent then starts the program again, and `merge_pr` checks the pull request again.
 
 ## Graph
 
@@ -63,28 +88,135 @@ flowchart TD
 
 ### `package.json`
 
-<<< ../../rein/examples/rein/merge-pr/package.json{json}
+```json
+{
+  "name": "merge-pr",
+  "version": "0.1.0",
+  "description": "Decide the next step for a pull request task.",
+  "license": "MIT",
+  "private": true,
+  "files": ["**/*.rein", "README.md", "rein.json"],
+  "engines": {
+    "rein": "^0.1.0"
+  }
+}
+```
 
 ### `rein.json`
 
-<<< ../../rein/examples/rein/merge-pr/rein.json{json}
+```json
+{
+  "entry": "main.rein"
+}
+```
 
 ### `main.rein`
 
-<<< ../../rein/examples/rein/merge-pr/main.rein{rein}
+```rein
+/**
+ * Decide the next step for a pull request task.
+ */
+export default function main(
+  /** Which task does the agent do? */
+  task: "merge" | "security review",
+) {
+  switch (task) {
+    case "merge":
+      return @./merge_pr;
+    case "security review":
+      return @./review;
+  }
+}
+```
 
 ### `merge_pr.rein`
 
-<<< ../../rein/examples/rein/merge-pr/merge_pr.rein{rein}
+```rein
+// merge_pr.rein
+
+interface Input {
+  /** Does the PR change only documentation files? */
+  docs_only: boolean;
+  /** What is the CI status of the PR? */
+  ci: "green" | "red" | "pending";
+}
+
+/**
+ * Decide whether a pull request can be merged.
+ */
+export default function mergePr({ docs_only, ci }: Input) {
+  if (docs_only) {
+    return `approved`;
+  }
+
+  switch (ci) {
+    case "green":
+      return @./merge_pr/review_code;
+    case "red":
+      return @./merge_pr/fix;
+    case "pending":
+      return `wait for CI, then run merge_pr again`;
+  }
+}
+```
 
 ### `merge_pr/fix.rein`
 
-<<< ../../rein/examples/rein/merge-pr/merge_pr/fix.rein{rein}
+```rein
+/**
+ * Fix a failing CI run, then check the pull request again.
+ */
+export default function fixCi(
+  /** Did you push a fix for the failing job? */
+  fix_pushed: boolean,
+) {
+  if (fix_pushed) {
+    return `Wait for CI to finish. Then start this program again with the task
+    merge.`;
+  }
+
+  return `Read the CI log. Fix the failing test or code. Push the fix. Then run
+  merge_pr/fix again.`;
+}
+```
 
 ### `merge_pr/review_code.rein`
 
-<<< ../../rein/examples/rein/merge-pr/merge_pr/review_code.rein{rein}
+```rein
+/**
+ * Review the code changes in a pull request.
+ */
+export default function reviewCode(
+  /** Does the PR change authentication, payments, or permissions code? */
+  security_sensitive: boolean,
+) {
+  if (security_sensitive) {
+    return delegate(
+      model=`use opus model`,
+      task=`code review the pr with a security focus`,
+    );
+  }
+
+  return delegate(model=`use haiku model`, task=`code review the pr`);
+}
+```
 
 ### `review.rein`
 
-<<< ../../rein/examples/rein/merge-pr/review.rein{rein}
+```rein
+/**
+ * Review changes that touch security-sensitive code.
+ */
+export default function securityReview(
+  /** Does the PR add or change a secret, token, or key? */
+  secrets_added: boolean,
+) {
+  if (secrets_added) {
+    return `Stop. Remove the secret from the diff. Rotate the secret. Then run
+    merge_pr again.`;
+  }
+
+  return `Check the auth and permission changes. Ask the security owner to
+  approve. Then run merge_pr again.`;
+}
+```

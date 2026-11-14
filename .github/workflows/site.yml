@@ -18,23 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # Read-only deploy key on tupe12334/rein, the private submodule.
-          ssh-key: ${{ secrets.REIN_DEPLOY_KEY }}
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: docs/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rein
-      - name: Generated pages match the rein submodule
-        run: |
-          node docs/scripts/generate-examples.mjs --check
-          sh docs/scripts/check-cli-drift.sh
       - name: Build docs
         working-directory: docs
         run: |
