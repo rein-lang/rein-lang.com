@@ -95,7 +95,7 @@ Each choice can change. The reason is one line.
 - A program hands off to another installed program with `@program/function`, such as `@pr-handling/main(pr=pr)`. A bare `@program` means its entry. Why: the first name is the program, and `@./` and `@../` stay local, so no old file changes meaning. A program name never starts with a dot.
 - A program name may hold `-`, such as `pr-handling`. Why: `rein list` shows names with `-`. The function path keeps the old name rule.
 - A bare `@name` is no longer an error. Why: it now names a program. A typo gives `cannot find program`, which names the program.
-- Only a hand-off in `return`, with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
+- A hand-off in `return`, or the target of an `await` (Calls with return), with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
 - The programs are found by name through the scopes when a command loads the project. Why: the same lookup as `rein list` and `rein step NAME`; the core crate reads no environment.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
 - No `rein.lock`. pnpm pins each called program: `pnpm-lock.yaml` records its version and integrity hash, and `node_modules` holds the installed copy. Why: a second lock would repeat what pnpm already does.
@@ -149,6 +149,15 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 - An answer is a struct, never a free string. Only a `request` answer can be a struct, and its fields are `boolean`, a union, or `string`. Why: a struct names and documents every value, and the runtime validates it, so the agent cannot send loose text. A bare `string` answer is a checker error.
 - A field is read as `pick.pr`, one level, and works like the parameter of its type: a `string` field goes into a hand-off or a template, a `boolean` or union field decides a branch. `rein step` gives the struct as a `fields` list and takes a JSON object. Why: one rule for every value, and a bad value is rejected with the field name.
+
+## Calls with return
+
+- `const name: Type = await @program(args);` runs another function and gives its result as the answer. `await @./path` works the same for a local function. Why: a program needs another program's result as a value, such as the repositories that `priority-projects` picks. A hand-off ends the caller, so nothing came back.
+- The stepper walks the callee as a hand-off, with the callee's own keys. Its final text becomes a request whose key is the caller's `const`. Once answered, the caller goes on after the `await`. Why: `rein step` stays stateless. The answers replay the walk, and no call stack is kept between steps. The callee needs no change to be called.
+- The answer has the doc and type rules of a `request` answer, and the call has the argument rules of a hand-off. Why: no new rules to learn.
+- A template cannot be awaited. Why: it gives text, not a run. Put the text in `request(...)` instead.
+- `rein graph` draws an `await` as a request node with a `call` edge to the callee. Why: the flow goes on from the answer, unlike a hand-off, which ends the function.
+- Each call has its own answer keys: the caller's answer key, `>`, then the callee's key, such as `main.b>fn.ok`. Why: with one key per function, two calls of `fn` shared their answers, and a recursive call reused the outer level's answers and could never end. The prefix names the call site, so a key stays readable and stable across steps. A hand-off adds no prefix of its own: outside any call it keeps its old key, so no existing program changes, and inside a call it keeps the call's prefix.
 
 ## Planned (not built)
 
