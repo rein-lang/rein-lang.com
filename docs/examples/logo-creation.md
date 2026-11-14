@@ -21,11 +21,11 @@ The agent writes a brief, and a subagent draws three SVG concepts. A script chec
 ## What it shows
 
 - **Bundled scripts.** Each shell step is a script in `scripts/`, listed in `files` in `package.json`. A request names the script and its arguments. See [Install a program](/install-programs).
-- **A script as a gate.** The flow goes on only when `check-svg.sh` exits 0.
+- **A script as a gate.** The agent runs `check-svg.sh` and answers `valid: boolean`. The flow goes on only on yes.
 - **Rules in code.** Typed answers pick each branch, such as `info.logo == "has a logo"` in `write_brief`.
 - **A subagent hand-off.** `draw_concepts` gives the drawing to a subagent with `delegate`.
 - **A retry without a cycle.** On "none of them", the agent saves the feedback to `.logo/feedback.md` and starts the program again. `main` finds the brief and goes to `draw_concepts`.
-- **Names.** Each file is a snake_case imperative verb. A function with one caller sits in a folder named after the caller. See [Decisions](/reference/decisions#naming).
+- **Names.** Each file except `main` is a snake_case imperative verb. A function with one caller sits in a folder named after the caller, such as `draw_concepts/pick`. A function that only the entry calls stays at the root, such as `write_brief`. See [Decisions](/reference/decisions#naming) and [Project layout](/reference/spec#_1-project-layout).
 
 ## Run it
 
@@ -44,8 +44,13 @@ flowchart TD
     M -- "brief exists" --> C["draw_concepts"]
     B -- "no logo, or user wants a new one" --> C
     B -- "user keeps the logo" --> K["done"]
+    B -- "brief not written" --> Q["ask the user"]
     C -- "drawn and checked" --> P["draw_concepts/pick"]
     P -- "picked 1, 2 or 3" --> S["draw_concepts/pick/save"]
     P -- "none of them" --> F["write feedback, start again"]
     F -.-> M
 ```
+
+## Source
+
+The source lives in [rein-lang/logo-creation](https://github.com/rein-lang/logo-creation): the `.rein` files, `scripts/` and `package.json`. This page does not copy it, so it cannot drift.

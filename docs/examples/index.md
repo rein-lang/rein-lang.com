@@ -1,6 +1,6 @@
 # Examples
 
-Each example is a flow under `examples/rein/<flow>/`, with a `package.json` manifest. Open one to read its files and run it.
+Each example below, except logo-creation, is a flow under `examples/rein/<flow>/`, with a `package.json` manifest. Open one to read its files and run it.
 
 - [incident-triage](/examples/incident-triage): Decide how the on-call agent handles a new production alert.
 - [merge-pr](/examples/merge-pr): Decide the next step for a pull request task.
@@ -8,7 +8,7 @@ Each example is a flow under `examples/rein/<flow>/`, with a `package.json` mani
 - [priority-work](/examples/priority-work): Find the high priority projects of a workplace, then work on their pull requests.
 - [support-ticket](/examples/support-ticket): Decide how the support agent handles a customer ticket.
 
-A published program lives in its own repo:
+A published program lives in its own repo. Install it with `rein install -g`; `rein list` in `examples` does not show it:
 
 - [logo-creation](/examples/logo-creation): Create a logo for a project. Shows bundled scripts and a script as a gate.
 
