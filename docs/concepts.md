@@ -34,3 +34,7 @@ Some steps ask the agent to act first. The agent does the step, gives the answer
 ## Strict by design
 
 Rein favors explicit cases over fallbacks. The checker reports a missing case, or a path with no result, before a run starts. The rules live in the [checker section](/reference/spec#_8-checker-rules). The reasons for these choices live in [Decisions](/reference/decisions).
+
+## Rein and skills
+
+A skill gives the agent knowledge. A flow gives the agent the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each.

@@ -107,6 +107,7 @@ It serves a page on `127.0.0.1` and refreshes it every 2 seconds. It reads the r
 ## Next steps
 
 - Read the [Concepts](/concepts) page for the model.
+- Do you use skills today? Read [Rein and skills](/rein-vs-skills) to see where each one fits.
 - Open an [example](/examples/) and run it.
 - Read the [language reference](/reference/spec) when you write functions.
 - Look up every command and flag in the [CLI reference](/reference/cli).
