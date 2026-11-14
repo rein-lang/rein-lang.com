@@ -76,7 +76,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | Rule |
 | --- |
 | A parameter is declared but never used |
-| A hand-off or an `await` leaves a `boolean` or union parameter out (`` missing argument `ci` in call to `@./merge`; write `ci=value` ``), or a bare `return @./x;` goes to a function with only `boolean` and union parameters. It will become an error. Until then, the target asks the agent for the value |
+| A hand-off or an `await` leaves a `boolean` or union parameter out (`` missing argument `ci` in call to `@./merge`; write `ci=value` ``), or a bare `return @./x;` or `await @./x` goes to a function with only `boolean` and union parameters. It will become an error. Until then, the target asks the agent for the value |
 | An inline struct is not the parameter of the function in its file (`unused struct`) |
 | An `async` function has no `await` |
 | A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return or `await` of a reference that closes the cycle. The one exception: a cycle with an `await` call on it is not warned when a question comes before one of its edges (a parameter the agent answers, or a `request` answer above the call). Each level then asks a new key, and the 64-step limit still stops endless recursion. An `await` with no question before it on the cycle, such as `const again: boolean = await @./a;` as the first step, is warned, since it fails at the 64-step limit |

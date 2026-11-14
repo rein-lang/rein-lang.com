@@ -18,7 +18,7 @@ The argument for a `boolean` or union parameter is one of:
 
 Any other value is an error: `` `ci` of `@./merge` is `"green" | "red" | "pending"`; pass a parameter or an answer of that type, like `ci=ci`, or a literal: `true`/`false` for a boolean, a quoted member for a union ``. A name of the wrong type is an error: `` `ready` is `boolean`, but `ci` of `@./merge` is `"green" | "red" | "pending"` ``. `true` and `false` are literals, so no parameter, field or answer can have one as its name.
 
-The runtime binds each passed value, so the target does not ask the agent for it.
+The runtime binds each passed value, so the target does not ask the agent for it. A passed value beats a stored answer from earlier in the run: a hand-off back to `main` with `ready=ready` uses the passed `ready`, not the answer `main.ready`.
 
 A string input is used only in a template literal, as `${name}`, or as an argument of a call. A condition or a switch subject cannot read it. Error: `` `pr` is a string input; a condition cannot read it ``.
 
