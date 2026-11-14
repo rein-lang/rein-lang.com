@@ -73,6 +73,7 @@ const config = withMermaid(
             { text: 'incident-triage', link: '/examples/incident-triage' },
             { text: 'support-ticket', link: '/examples/support-ticket' },
             { text: 'pr-handling', link: '/examples/pr-handling' },
+            { text: 'priority-work', link: '/examples/priority-work' },
           ],
         },
         {

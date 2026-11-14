@@ -39,9 +39,9 @@ A small language for agent decision flows
 * `eval` — Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 * `step` — Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
 * `describe` — Print a function's schema as JSON
-* `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes
+* `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 * `debug` — Debug a program in the browser: set inputs and answers, step through, and watch the path the flow takes
-* `watch` — Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page
+* `watch` — Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The flow graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 * `list` — List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 * `show` — Print a program's source: its manifest and every .rein file
 * `serve` — Serve the agent interface. Holds live runs in memory
@@ -149,7 +149,7 @@ Print a function's schema as JSON
 
 ## `rein graph`
 
-Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes
+Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 
 **Usage:** `rein graph [OPTIONS] [PROGRAM]`
 
@@ -203,7 +203,7 @@ Debug a program in the browser: set inputs and answers, step through, and watch 
 
 ## `rein watch`
 
-Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page
+Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The flow graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 
 **Usage:** `rein watch [OPTIONS]`
 
