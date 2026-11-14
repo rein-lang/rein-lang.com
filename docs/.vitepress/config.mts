@@ -100,6 +100,7 @@ const config = withMermaid(
             { text: 'pr-handling', link: '/examples/pr-handling' },
             { text: 'priority-work', link: '/examples/priority-work' },
             { text: 'logo-creation', link: '/examples/logo-creation' },
+            { text: 'vscode-extension', link: '/examples/vscode-extension' },
           ],
         },
         {
