@@ -44,7 +44,7 @@ Both scripts need `cargo`.
 
 ## Deploy
 
-Every push to `main` deploys the site. GitHub Actions runs `.github/workflows/site.yml`. It publishes to GitHub Pages at https://rein-lang.com.
+Every push to `main` deploys the site. GitHub Actions runs `.github/workflows/site.yml`. It publishes to Cloudflare Pages at https://rein-lang.com.
 
 ## License
 
