@@ -20,6 +20,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+      - name: Brand files come from the assets submodule
+        run: |
+          for f in landing/public/favicon.svg landing/public/favicon.ico landing/public/apple-touch-icon.png landing/public/brand/* docs/public/logo.svg; do
+            test -L "$f" || { echo "$f must be a symlink into assets/ (rein-lang/assets is the single source of truth)"; exit 1; }
+            test -e "$f" || { echo "$f links to a missing file in assets/"; exit 1; }
+          done
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: docs/package.json
