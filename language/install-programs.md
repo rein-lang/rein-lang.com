@@ -106,6 +106,27 @@ A program package uses `package.json`, as a VS Code extension does. It has these
 - Rein checks `engines.rein` at install. (Proposed)
 - Rein-specific fields do not go in `package.json`. A separate Rein file holds them. That file is defined later. (Proposed)
 
+## Bundle scripts (Built)
+
+A program package can ship scripts next to its `.rein` files. Put shell commands in those scripts. Do not put them in a `request(...)` text or in a `/** */` doc comment.
+
+- Put the scripts in a `scripts/` folder, and add the folder to `files`. pnpm installs only the files that `files` lists. It keeps the executable bit.
+- In the request text, name the script and its arguments: ``await request(`Run scripts/mark-done.sh <thread id> from this program's folder.`)``.
+- The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
+- These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
+
+```json
+{
+  "files": ["**/*.rein", "scripts/", "README.md", "rein.json"]
+}
+```
+
+Why scripts, not inline commands:
+
+- A script is code. You can test it, review it, and run it by hand. It does the same thing on each run.
+- A long command line in prompt text is hard to review. The agent can copy it wrong or change it.
+- The prompt stays short. The program's typed questions choose the branch. The script does the step.
+
 ## Discovery and scopes
 
 Rein finds programs in three scopes:
