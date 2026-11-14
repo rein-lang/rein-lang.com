@@ -15,7 +15,7 @@ Each topic file keeps its section numbers. Read the file for the rule you need.
 - [Structs](spec/structs.md): section 4, inline and shared structs.
 - [References](spec/references.md): section 4, relative and program references.
 - [Std and templates](spec/std-and-templates.md): section 4, std names and templates.
-- [Inputs](spec/inputs.md): section 4, `string` parameters.
+- [Inputs](spec/inputs.md): section 4, call parameters: each call passes every parameter.
 - [Async requests](spec/async-requests.md): section 4, `request` answers and struct answers.
 - [Calls with return](spec/calls-with-return.md): section 4, `await` of a function.
 - [Statements, conditions and values](spec/statements-conditions-values.md): sections 5, 6 and 7.

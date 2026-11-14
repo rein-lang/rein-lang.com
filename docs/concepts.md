@@ -25,7 +25,7 @@ A function ends in text for the agent, a reference to another function, or a cal
 
 ## Inputs are typed questions
 
-An input is a boolean or a choice of strings. Rein asks for an input only when the path it is on needs that input. Inputs look like TypeScript parameters, so they are easy to read. See [Parameters](/reference/spec#parameters) and [Conditions](/reference/spec#_6-conditions).
+An input is a boolean or a choice of strings. The entry function asks for its inputs, and only when the path it is on needs them. A call to another function passes every input of that function. Inputs look like TypeScript parameters, so they are easy to read. See [Parameters](/reference/spec#parameters) and [Conditions](/reference/spec#_6-conditions).
 
 ## Requests wait for the agent
 

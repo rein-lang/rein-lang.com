@@ -27,7 +27,7 @@ unary       := "!" unary | atom
 atom        := "(" expr ")" | IDENT (("===" | "==" | "!==" | "!=") STRING)?
 ```
 
-A call argument is a STRING, a TEMPLATE, a bare name of a `string` parameter of the caller (or a `string` field of a struct answer, `pick.pr`), or a template call. A hand-off cannot be an argument of a call. Wherever a name is read (a condition, a switch subject, a call argument, `${}`), it may be `answer.field`: one `.` and one level. A declaration never has a `.`.
+A call argument is a STRING, a TEMPLATE, a bare name of a parameter or an answer of the caller (or a field of a struct answer, `pick.pr`), `true` or `false`, or a template call. A STRING passed to a union parameter is a member of that union (section 4, Inputs). A hand-off cannot be an argument of a call. Wherever a name is read (a condition, a switch subject, a call argument, `${}`), it may be `answer.field`: one `.` and one level. A declaration never has a `.`.
 
 Every argument has a name, as in Python: `name=value`. The name is a parameter of the callee: its scalar parameter, or a field of its struct parameter. The order of the arguments does not matter. A positional argument is a checker error, and no flag allows it. A parameter is given once.
 
