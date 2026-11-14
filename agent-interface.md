@@ -1,7 +1,7 @@
 # Agent interface: proposal
 
 Status: proposal. Not decided. No code implements it.
-The current rules are in [spec.md section 11](spec.md#11-stepping-agent-interface) and [section 12](spec.md#12-agent-integration). The reasons for the current choices are in [decisions.md](decisions.md).
+The current rules are in [spec.md section 11](spec/stepping.md#11-stepping-agent-interface) and [section 12](spec/agent-integration.md#12-agent-integration). The reasons for the current choices are in [decisions.md](decisions.md).
 
 The built interface is in [interface.md](interface.md): the MCP host, `rein run`, and programs as named apps. This file proposes what comes next.
 
@@ -26,13 +26,13 @@ With `rein step`, the agent has all five jobs. The MCP host moves the third job 
 | Trigger | One context block on the first prompt. The agent decides when a task matches a program. | [hook.rs](../crates/rein/src/hook.rs) |
 | Step | The MCP host keeps the answers of a live run in memory. `rein step` stays for replay, and there the agent sends every answer. | [interface.md](interface.md) |
 | Answer source | The agent answers every question. | [decisions.md](decisions.md), last open question |
-| Outcome | `done` holds free text. | [spec.md section 11](spec.md#11-stepping-agent-interface) |
+| Outcome | `done` holds free text. | [spec.md section 11](spec/stepping.md#11-stepping-agent-interface) |
 
 ## Findings
 
 Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build is not known. On commit `9d65e21`, the test `reference_cycle_hits_the_hop_limit` in [step.rs](../crates/rein-core/src/step.rs) asserts the error of finding 1.
 
-1. A reached reference cycle always ends in an error. An answer key is `<function>.<name>`, so a second visit gets the same answers and takes the same path. A call with return (`await`) is the exception: the keys inside it start with the caller's answer key and `>`, such as `main.b>fn.ok`, so each call, and each level of a recursive call, gets its own answers ([spec.md section 11](spec.md#11-stepping-agent-interface)). Run the `merge-pr` example with these answers:
+1. A reached reference cycle always ends in an error. An answer key is `<function>.<name>`, so a second visit gets the same answers and takes the same path. A call with return (`await`) is the exception: the keys inside it start with the caller's answer key and `>`, such as `main.b>fn.ok`, so each call, and each level of a recursive call, gets its own answers ([spec.md section 11](spec/stepping.md#11-stepping-agent-interface)). Run the `merge-pr` example with these answers:
 
    ```text
    $ rein step --root <merge-pr example> --json \
@@ -114,7 +114,7 @@ Each question names who answers it.
 | `user` | The user only. | Approval, such as "may I deploy?" |
 
 - A probe needs no agent turn. A program that reads its facts with probes asks fewer questions.
-- A probe needs a program input, such as the pull request number. Program inputs are built ([spec.md section 4](spec.md#4-declarations)). Probes are still a proposal. An input is a `string`. It goes into templates and probes only, and never into a condition.
+- A probe needs a program input, such as the pull request number. Program inputs are built ([spec.md section 4](spec/functions-and-parameters.md#4-declarations)). Probes are still a proposal. An input is a `string`. It goes into templates and probes only, and never into a condition.
 - The response for a `user` question says so. The harness can then use its own ask dialog, and the agent must not answer.
 
 ### 4. Outcome: a verdict that a gate can read
@@ -131,7 +131,7 @@ Contract 2 covers one run. This section covers what stays after a run ends.
 
 The state hangs on a subject, such as one pull request. A subject is like a document in an app. A run starts with its subject, and a later run on the same subject continues from the stored state.
 
-The subject of a run is a program input, such as the pull request link. The caller passes it as a `string` parameter ([spec.md section 4](spec.md#4-declarations)).
+The subject of a run is a program input, such as the pull request link. The caller passes it as a `string` parameter ([spec.md section 4](spec/functions-and-parameters.md#4-declarations)).
 
 Not all state is equal:
 

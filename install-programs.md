@@ -151,8 +151,8 @@ rein run <name>
   - `name` defaults to the folder name.
   - `description` defaults to the first paragraph of the doc comment in the entry file.
   - `entry` defaults to `main.rein`.
-  - `maxFunctionLines` sets the line limit of a function. See [spec section 4](docs/spec.md#functions).
-  - `maxLineLength` sets the most characters a line may hold. The default is 80. See [spec section 2](docs/spec.md#2-lexical-rules).
+  - `maxFunctionLines` sets the line limit of a function. See [spec section 4](spec/functions-and-parameters.md#functions).
+  - `maxLineLength` sets the most characters a line may hold. The default is 80. See [spec section 2](spec/lexical-rules.md#2-lexical-rules).
   - When a `package.json` exists, its `name` and `description` win over these two fields.
 - A `rein.json` that is not valid JSON is ignored. The defaults apply.
 - A folder that starts with `.` is not a program. A folder with only `main.rein` is a program.

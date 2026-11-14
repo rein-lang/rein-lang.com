@@ -1,0 +1,18 @@
+### References
+
+A relative reference names another function of the project. The path is relative to the file that holds it, and it has no extension.
+
+- `@./name` is a function in the same folder. `@./ci/fix` is `ci/fix` in the same folder. `@../escalate` is `escalate` one folder up.
+- The reference resolves to `<dir of current file>/<path>.rein`. The target must stay inside the project root. `@../../outside` in `ci/fix.rein` is an error: `` `@../../outside` leaves the project root ``.
+- A missing target is an error on the reference: `` cannot find function `@../x` ``.
+- Function identity is the root-relative name (`ci/fix`). The CLI, JSON, graph, cycles, and reachability from `main` use it.
+- `return @./path;` hands the agent to the function (section 9). The function must have no `string` parameter.
+- `return @./path(name=value);` calls a template (section 4, Templates). It hands the agent to a normal function with values (section 4, Inputs).
+- `const name: Type = await @./path(name=value);` runs a function and waits for its result (section 4, Calls with return).
+- `@program/function` hands off to a function of another installed program. The program is found by name through the scopes, as `rein list` and `rein step NAME` find it. A bare `@program` means the entry of that program. It is allowed as a hand-off in a `return`, or as the target of an `await` (section 4, Calls with return), with the same argument rules as a hand-off to a local function: only `string` parameters are passed, by name. The other inputs of the target are asked by the target as normal questions.
+- A program that is not installed is an error on the reference: `` unknown program `x`; run `rein list` to list programs, or `rein install -g x` to install it ``. A function that the program does not have is an error: `` cannot find function `f` in program `x` ``.
+- A program with a `package.json` reaches only the programs it declares there, as pnpm gives a package only its declared packages. Its `dependencies`, `devDependencies`, `optionalDependencies` and `peerDependencies` count. A reference to any other program is an error on the reference: `` program `x` is not a dependency of `a`; add it to `dependencies` in package.json, such as with `pnpm add x` ``. The rule holds inside a linked program too, against that program's own `package.json`. A folder without a `package.json` is not a package, so it may hand off to any program.
+- Rein loads every program that a hand-off can reach, through other programs too, when it loads the project. A program reference that a hand-off reaches inside another program, and that does not resolve, is an error on the function of this project that starts the hand-off, at 1:1: `` `@b/main` hands off to `@c/main`: unknown program `c`; run `rein list` to list programs, or `rein install -g c` to install it ``. So `rein check` reports it, and the first step of `rein step`, `rein run` and `rein_start`, and the `first_step` of `rein_programs`, is an error step. The run does not start, and the agent learns about each missing program before it does any work.
+- `rein step` follows the hand-off into the other program in the same run. The functions of that program have the name `@program/function`, so its answer keys are `@pr-handling/main.task`, and a local file `pr-handling/main.rein` cannot collide with them. The trace shows the same names. A program reference inside the other program is followed the same way, so a chain of hand-offs can cross many programs.
+- `rein graph` draws a `program` node labelled `@program/function`, and a hand-off edge to it. It does not draw the other program.
+- A reference to a template without a call is an error: `` `@./tpl` is a template; call it with arguments, like `@./tpl(...)` ``.
