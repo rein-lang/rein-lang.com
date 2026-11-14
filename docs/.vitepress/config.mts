@@ -8,8 +8,10 @@ const grammar = JSON.parse(
 )
 const reinLanguage = { ...grammar, name: 'rein' }
 
-// Included repo files link to sources outside the site. Send those links to GitHub.
-const repoBlob = 'https://github.com/tupe12334/rein/blob/main/'
+// Links to files of this repo go to GitHub. Links into the Rein source repo (crates/, examples/) become
+// plain text: that repo is private, so a link would 404 for readers.
+const repoBlob = 'https://github.com/rein-lang/rein-lang.com/blob/main/'
+const privateSource = /^(\.\.\/)*(crates|examples)\//
 const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
   'docs/decisions.md': '/reference/decisions',
@@ -35,7 +37,12 @@ const config = withMermaid(
       config(md) {
         md.core.ruler.push('repo-links', (state) => {
           for (const block of state.tokens) {
+            const unlinked: number[] = []
             for (const child of block.children ?? []) {
+              if (child.type === 'link_close' && unlinked.at(-1) === child.level) {
+                unlinked.pop()
+                Object.assign(child, { type: 'text', content: '' })
+              }
               if (child.type !== 'link_open') continue
               const href = child.attrGet('href') ?? ''
               const flow = flowFolder.exec(href)
@@ -45,8 +52,13 @@ const config = withMermaid(
                 child.attrSet('href', `/examples/${flow[1]}`)
               } else if (specTopics.has(href.split('#')[0].replace(/^spec\//, ''))) {
                 child.attrSet('href', `/reference/spec${href.slice(href.split('#')[0].length)}`)
-              } else if (/^((docs|examples|crates)\/|LICENSE$)/.test(href)) {
+              } else if (/^docs\//.test(href)) {
+                child.attrSet('href', repoBlob + href.replace(/^docs\//, 'language/'))
+              } else if (href === 'LICENSE') {
                 child.attrSet('href', repoBlob + href)
+              } else if (privateSource.test(href)) {
+                unlinked.push(child.level)
+                Object.assign(child, { type: 'text', content: '' })
               }
             }
           }
