@@ -31,6 +31,11 @@ const config = withMermaid(
     title: 'Rein',
     description: 'A strict TypeScript-like language for agent decision flows.',
     base: '/docs/',
+    // Favicons live in landing/public and are served from the site root.
+    head: [
+      ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
+      ['link', { rel: 'icon', href: '/favicon.ico', sizes: '48x48' }],
+    ],
     markdown: {
       html: false,
       languages: [reinLanguage],
@@ -66,6 +71,7 @@ const config = withMermaid(
       },
     },
     themeConfig: {
+      logo: { src: '/logo.svg', alt: '' },
       nav: [
         { text: 'Getting started', link: '/getting-started' },
         { text: 'Concepts', link: '/concepts' },
