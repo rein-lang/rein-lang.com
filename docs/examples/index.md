@@ -8,7 +8,7 @@ Each example below, except logo-creation, is a flow under `examples/rein/<flow>/
 - [priority-work](/examples/priority-work): Find the high priority projects of a workplace, then work on their pull requests.
 - [support-ticket](/examples/support-ticket): Decide how the support agent handles a customer ticket.
 
-A published program lives in its own repo. Install it with `rein install -g`; `rein list` in `examples` does not show it:
+A published program lives in its own repo. Install it with `rein install -g`:
 
 - [logo-creation](/examples/logo-creation): Create a logo for a project. Shows bundled scripts and a script as a gate.
 
