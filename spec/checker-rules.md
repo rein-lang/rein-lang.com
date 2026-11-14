@@ -76,7 +76,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A parameter is declared but never used |
 | An inline struct is not the parameter of the function in its file (`unused struct`) |
 | An `async` function has no `await` |
-| A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return of a reference that lies on the cycle |
+| A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return or `await` of a reference that closes the cycle. The one exception: a cycle with an `await` call on it is not warned when a question comes before one of its edges (a parameter the agent answers, or a `request` answer above the call). Each level then asks a new key, and the 64-step limit still stops endless recursion. An `await` with no question before it on the cycle, such as `const again: boolean = await @./a;` as the first step, is warned, since it fails at the 64-step limit |
 | A doc tag other than `@param` (`unknown tag `@x``) |
 | A function cannot be reached from the entry (`main`, or `entry` in `rein.json`) through references (`x is not reachable from main`). This warning is not given when the entry is missing or has a syntax error |
 | A function that exactly one other function calls is not in the folder named after that caller (`` `fix_ci` is only called by `merge`; move it to `merge/fix_ci.rein` so the folders show the flow. The move changes its answer keys and breaks `@<program>/fix_ci` references from other programs ``). A function that only the entry calls belongs at the root. It is not given when the entry is missing or has a syntax error, since reachability is unknown. Section 1 has the rule and its exceptions |
