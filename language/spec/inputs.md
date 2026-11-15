@@ -38,6 +38,7 @@ export default function merge({ pr, ci }: Input) {
   if (ci === "green") {
     return `Merge ${pr}. Then delete its branch.`;
   }
+
   return `Wait for CI, then start this program again.`;
 }
 ```

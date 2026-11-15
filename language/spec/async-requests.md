@@ -11,13 +11,17 @@ export default async function answerFaq(
   if (!article_found) {
     return @../escalate;
   }
+
   /** Did the customer confirm the article solved the problem? */
   const solved: boolean = await request(
-    `Reply with the help article link and ask the customer if it solved the problem.`,
+    `Reply with the help article link and ask the customer if it solved the
+    problem.`,
   );
+
   if (solved) {
     return `Close the ticket as solved.`;
   }
+
   return @../escalate;
 }
 ```

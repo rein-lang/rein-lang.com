@@ -37,7 +37,8 @@ export default function handleTicket({ category, vip }: Ticket) {
   if (vip) {
     return @./escalate;
   }
-  return `Answer the ticket.`;
+
+  return `Answer the ${category} ticket.`;
 }
 ```
 
