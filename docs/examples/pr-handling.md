@@ -64,7 +64,7 @@ $ rein step ... --answer merge.review=approved
 
 ## Graph
 
-The decision flow, from `rein graph pr-handling`:
+The decision graph, from `rein graph pr-handling`:
 
 ```mermaid
 flowchart TD

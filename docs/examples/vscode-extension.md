@@ -27,7 +27,7 @@ Each run reads the repo and the Marketplace, then does the first missing step. R
 
 ## What it shows
 
-- **A resumable flow.** `main` reads the state each run, so one program covers many sessions and pull requests. Each code change is one pull request handed to `pr-handling`.
+- **A resumable process.** `main` reads the state each run, so one program covers many sessions and pull requests. Each code change is one pull request handed to `pr-handling`.
 - **One script for the whole state.** `read-state.sh` prints the `State` struct as JSON. The `if` chain in `main` holds the order of the steps, not a prompt.
 - **Hand-offs to other programs.** `add_icon` hands off to `logo-creation`, and the code steps to `pr-handling`. Both are `peerDependencies` in `package.json`.
 - **The user approves account steps; git approves releases.** Creating a publisher and the trust policy wait for a typed yes. A release goes public only through a merged pull request; the program never pushes a tag.
