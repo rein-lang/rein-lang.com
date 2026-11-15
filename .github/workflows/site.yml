@@ -74,6 +74,27 @@ jobs:
       - name: Each complete sample passes rein check
         run: python3 scripts/check-samples.py
 
+  # Per-file line limits from linecheck.yml. Uses a pinned linecheck release binary
+  # (checksum-verified), so no Rust toolchain is needed.
+  linecheck:
+    runs-on: ubuntu-latest
+    env:
+      LINECHECK_TAG: v1.2.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install linecheck
+        working-directory: ${{ runner.temp }}
+        run: |
+          ARCHIVE="linecheck-$LINECHECK_TAG-x86_64-unknown-linux-gnu.tar.gz"
+          BASE="https://github.com/tupe12334/linecheck/releases/download/$LINECHECK_TAG/$ARCHIVE"
+          curl -fsSLO "$BASE"
+          curl -fsSLO "$BASE.sha256"
+          sha256sum -c "$ARCHIVE.sha256"
+          tar xzf "$ARCHIVE"
+          sudo install "linecheck-$LINECHECK_TAG-x86_64-unknown-linux-gnu/linecheck" /usr/local/bin/
+      - name: Each file stays within its line limit
+        run: linecheck .
+
   # Deploys the exact artifact the build job checked, to Cloudflare Pages project "rein-lang".
   deploy:
     if: github.ref == 'refs/heads/main'
