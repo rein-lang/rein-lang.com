@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+          # Full history: VitePress reads each page's last git commit date for lastUpdated.
+          fetch-depth: 0
       - name: Brand files come from the assets submodule
         run: |
           for f in landing/public/favicon.svg landing/public/favicon.ico landing/public/apple-touch-icon.png landing/public/brand/* docs/public/logo.svg; do

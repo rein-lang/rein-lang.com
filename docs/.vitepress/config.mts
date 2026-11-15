@@ -49,6 +49,9 @@ const config = withMermaid(
     cleanUrls: true,
     // The landing site lists its own pages. This lists the docs pages, at /docs/sitemap.xml.
     sitemap: { hostname: 'https://rein-lang.com/docs/' },
+    // Git dates of each page: the sitemap's lastmod, dateModified in JSON-LD, and the page footer.
+    // CI checks out the full history (fetch-depth: 0) so the dates are real.
+    lastUpdated: true,
     // Favicons live in landing/public and are served from the site root.
     head: [
       ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
@@ -61,6 +64,7 @@ const config = withMermaid(
       const title = pageData.title || siteData.title
       const description = pageData.description || siteData.description
       const isIndex = path === ''
+      const modified = pageData.lastUpdated ? new Date(pageData.lastUpdated).toISOString() : undefined
       const section = sections[path.split('/')[0]]
       const crumbs = [
         { name: 'Home', url: site },
@@ -75,6 +79,7 @@ const config = withMermaid(
           ...(isIndex ? { name: title } : { headline: title }),
           description,
           url,
+          ...(modified ? { dateModified: modified } : {}),
           inLanguage: 'en',
           isPartOf: { '@type': 'WebSite', name: 'Rein', url: site },
           publisher: rein,
@@ -93,6 +98,7 @@ const config = withMermaid(
         ['meta', { property: 'og:title', content: title }],
         ['meta', { property: 'og:description', content: description }],
         ['meta', { property: 'og:url', content: url }],
+        ...(modified ? [['meta', { property: 'article:modified_time', content: modified }] as [string, Record<string, string>]] : []),
         ['meta', { property: 'og:image', content: ogImage }],
         ['meta', { property: 'og:image:width', content: '1200' }],
         ['meta', { property: 'og:image:height', content: '630' }],
