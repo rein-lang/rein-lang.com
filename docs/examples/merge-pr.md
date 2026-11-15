@@ -19,8 +19,10 @@ An agent flow that decides whether a pull request can merge.
 ## Run it
 
 ```sh
-cargo run -p rein -- check examples/rein/merge-pr
-cargo run -p rein -- run --root examples/rein/merge-pr
+git clone https://github.com/rein-lang/examples
+cd examples
+rein check rein/merge-pr
+rein run merge-pr
 ```
 
 ## Retry without a cycle

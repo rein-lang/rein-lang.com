@@ -19,8 +19,10 @@ A program that needs the result of another function as a value. It finds the hig
 ## Run it
 
 ```sh
-cargo run -p rein -- check examples/rein/priority-work
-cargo run -p rein -- step --root examples/rein/priority-work --input workplace=~/work
+git clone https://github.com/rein-lang/examples
+cd examples
+rein check rein/priority-work
+rein step --flow priority-work --input workplace=~/work
 ```
 
 ## Graph
