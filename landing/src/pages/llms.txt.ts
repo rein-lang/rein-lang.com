@@ -25,6 +25,7 @@ export const GET: APIRoute = () => {
     "",
     "## Use cases",
     "",
+    link("All use cases", "/use-cases/", "every use case page, with a short summary of each"),
     ...cases,
     "",
     "## Optional",

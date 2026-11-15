@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import FlowDiagram from "../../components/FlowDiagram.astro";
 import { SITE_URL, GET_STARTED_HREF } from "../../../site.config.mjs";
 import { useCases, type UseCase } from "../../data/useCases";
+import { breadcrumbs, website } from "../../data/structuredData";
 
 export function getStaticPaths() {
   return useCases.map((useCase) => ({ params: { slug: useCase.slug }, props: { useCase } }));
@@ -12,14 +13,20 @@ const { useCase } = Astro.props as { useCase: UseCase };
 const path = `/use-cases/${useCase.slug}/`;
 const related = useCases.filter((u) => u.slug !== useCase.slug);
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  name: useCase.title,
-  description: useCase.description,
-  url: new URL(path, SITE_URL).href,
-  isPartOf: { "@type": "WebSite", name: "Rein", url: new URL("/", SITE_URL).href },
-};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: useCase.title,
+    description: useCase.description,
+    url: new URL(path, SITE_URL).href,
+    isPartOf: website,
+  },
+  breadcrumbs([
+    ["Use cases", "/use-cases/"],
+    [useCase.h1, path],
+  ]),
+];
 ---
 
 <Base title={useCase.title} description={useCase.description} path={path} jsonLd={jsonLd}>
@@ -27,7 +34,7 @@ const jsonLd = {
     <nav aria-label="Breadcrumb" class="text-sm text-muted">
       <ol class="flex flex-wrap gap-2">
         <li><a href="/" class="text-ink">Home</a> <span aria-hidden="true">/</span></li>
-        <li><a href="/#use-cases" class="text-ink">Use cases</a> <span aria-hidden="true">/</span></li>
+        <li><a href="/use-cases/" class="text-ink">Use cases</a> <span aria-hidden="true">/</span></li>
         <li aria-current="page">{useCase.h1}</li>
       </ol>
     </nav>
@@ -71,7 +78,7 @@ const jsonLd = {
           </li>
         ))}
       </ul>
-      <p class="mt-8"><a href="/" class="font-semibold">Back to Rein home</a></p>
+      <p class="mt-8"><a href="/use-cases/" class="font-semibold">All use cases</a></p>
     </section>
   </article>
 </Base>

@@ -3,18 +3,21 @@ import "../styles/global.css";
 import { SITE_URL } from "../../site.config.mjs";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import type { JsonLd } from "../data/structuredData";
 
 interface Props {
   title: string;
   description: string;
   path: string;
-  jsonLd?: Record<string, unknown>;
+  // One JSON-LD object, or several. Each one gets its own script tag.
+  jsonLd?: JsonLd | JsonLd[];
   noindex?: boolean;
 }
 
 const { title, description, path, jsonLd, noindex = false } = Astro.props;
 const canonical = new URL(path, SITE_URL).href;
 const ogImage = new URL("/og.png", SITE_URL).href;
+const jsonLdBlocks = jsonLd ? [jsonLd].flat() : [];
 ---
 
 <!doctype html>
@@ -43,7 +46,7 @@ const ogImage = new URL("/og.png", SITE_URL).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {jsonLdBlocks.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}
   </head>
   <body class="min-h-dvh antialiased">
     <a
