@@ -1,6 +1,6 @@
 # Decisions
 
-Status: proof of concept. Private.
+Status: proof of concept.
 Language rules live in [spec.md](spec.md). This file holds the reasons and the open work.
 
 ## Facts from the owner

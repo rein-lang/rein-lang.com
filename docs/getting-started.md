@@ -11,7 +11,7 @@ cargo install --git https://github.com/rein-lang/rein --tag v0.1.0 --locked rein
 rein --version
 ```
 
-If you do not want to install it, run it through cargo from the repository root with `cargo run -p rein -- <command>`.
+If you do not want to install it, clone [rein-lang/rein](https://github.com/rein-lang/rein) and run it from that folder with `cargo run -p rein -- <command>`.
 
 ## Install the editor extension
 
@@ -38,6 +38,7 @@ export default function main(
   if (urgent) {
     return `Escalate the ticket to on-call now.`;
   }
+
   return `Answer the ticket from the queue.`;
 }
 ```
@@ -54,10 +55,11 @@ rein check hello/rein/ticket
 
 ## List the flows
 
-From the project folder, list the flows the CLI can see:
+Go to the project folder, and list the flows the CLI can see:
 
 ```sh
-rein list
+cd hello
+rein list -l
 ```
 
 The output shows `ticket`, its scope, its path, and its description.
@@ -84,7 +86,7 @@ rein step --flow ticket --answer main.urgent=yes --json
 {"kind":"done","version":1,"instruction":"Escalate the ticket to on-call now.","answers":{"main.urgent":"yes"},"trace":["main"]}
 ```
 
-For the full protocol, see [spec section 11](docs/spec/stepping.md#11-stepping-agent-interface).
+For the full protocol, see [spec section 11](/reference/spec#_11-stepping-agent-interface).
 
 ## Debug a program
 

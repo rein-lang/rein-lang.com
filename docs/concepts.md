@@ -29,7 +29,7 @@ An input is a boolean or a choice of strings. Rein asks for an input only when t
 
 ## Requests wait for the agent
 
-Some steps ask the agent to act first. The agent does the step, gives the answer, and runs again. Rein keeps no state between runs. See [Async requests](/reference/spec#async-requests).
+Some steps ask the agent to act first. The agent does the step, gives the answer, and the flow goes on. A live run holds its answers. With `rein step`, Rein keeps no state: each call takes every answer so far. See [Async requests](/reference/spec#async-requests).
 
 ## Strict by design
 

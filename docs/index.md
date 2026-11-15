@@ -1,6 +1,6 @@
 # Rein
 
-Status: proof of concept. Private.
+Status: proof of concept. Syntax can still change.
 
 Rein is a language for agent flows. Other tools manage the harness or a graph that the agent runs in. Rein does not. It gives the agent instructions for what to do. Each function is one file. It returns the next step as text, as a reference to another function, or as a template call. When it needs a fact, it asks the agent. When it needs a step done, it sends the agent a request and waits for the answer.
 
@@ -29,6 +29,7 @@ export default function mergePr({ docs_only, ci }: Input) {
   if (docs_only) {
     return `approved`;
   }
+
   switch (ci) {
     case "green":
       return @./merge_pr/review_code;
@@ -77,51 +78,38 @@ $ rein step --json --answer main.vip=no --answer main.category=how_to --answer f
 # exit 0
 ```
 
-A call follows each reference in the same call. The `trace` lists the functions it visited. For a `question` or a `request`, the agent asks the user or does the step, adds the key to its answers, and steps again. Without `--json`, `rein step` prints plain text. `rein eval` evaluates one function, for debugging. The protocol and exit codes are in [spec.md section 11](https://github.com/rein-lang/rein-lang.com/blob/main/language/spec/stepping.md#11-stepping-agent-interface).
+A call follows each reference in the same call. The `trace` lists the functions it visited. For a `question` or a `request`, the agent asks the user or does the step, adds the key to its answers, and steps again. Without `--json`, `rein step` prints plain text. `rein eval` evaluates one function, for debugging. The protocol and exit codes are in [spec section 11](/reference/spec#_11-stepping-agent-interface).
 
 ## Quickstart
 
 ```sh
 cargo install --git https://github.com/rein-lang/rein --tag v0.1.0 --locked rein  # puts `rein` on PATH
+git clone https://github.com/rein-lang/examples
 cd examples
 rein list                               # the programs visible from here
 rein run support-ticket                 # run one program by name, answer on stdin
 rein graph support-ticket               # its decision flow as Mermaid (--format dot|json, -o graph.svg)
-rein serve --mcp                        # the MCP host for agents (see https://github.com/rein-lang/rein-lang.com/blob/main/language/interface.md)
+rein serve --mcp                        # the MCP host for agents
 rein watch                              # a page of the agents that use rein now
 ```
-
-To install, update, or remove a program, see [Install a program](https://github.com/rein-lang/rein-lang.com/blob/main/language/install-programs.md).
 
 Check an example:
 
 ```sh
-cargo run -p rein -- check examples/rein/merge-pr
+rein check rein/merge-pr
 ```
 
-Examples: [merge-pr](examples/rein/merge-pr), [incident-triage](examples/rein/incident-triage), [support-ticket](examples/rein/support-ticket), [pr-handling](examples/rein/pr-handling), [priority-work](examples/rein/priority-work).
+Examples: [merge-pr](/examples/merge-pr), [incident-triage](/examples/incident-triage), [support-ticket](/examples/support-ticket), [pr-handling](/examples/pr-handling), [priority-work](/examples/priority-work).
 
-The VS Code extension lives in [rein-lang/vscode-rein](https://github.com/rein-lang/vscode-rein). Its tests run there with `pnpm test`.
+## Next steps
 
-The docs site and the landing page live in [rein-lang/rein-lang.com](https://github.com/rein-lang/rein-lang.com) and deploy to https://rein-lang.com.
-
-## Repository layout
-
-| Path | Contents |
-| --- | --- |
-| `crates/rein-core` | Lexer, parser, checker, evaluator, and the std library (`std/`). |
-| `crates/rein` | CLI and language server. |
-| [rein-lang/vscode-rein](https://github.com/rein-lang/vscode-rein) | VS Code extension, in its own repo. A thin JS client for the language server, a Rein grammar, snippets, and tests. |
-| `examples` | Example projects. |
-| [rein-lang/rein-lang.com](https://github.com/rein-lang/rein-lang.com) | Language reference, decisions and the docs site, in its own repo. |
-
-## Docs
-
-- [Language reference](https://github.com/rein-lang/rein-lang.com/blob/main/language/spec.md): syntax, rules, evaluation, CLI.
-- [Decisions](https://github.com/rein-lang/rein-lang.com/blob/main/language/decisions.md): owner facts, PoC choices, open questions.
-- [Agent interface](https://github.com/rein-lang/rein-lang.com/blob/main/language/interface.md): programs as named apps, the MCP host, and `rein run`.
-
-Enable the repo hooks once with `git config core.hooksPath .githooks`. The pre-push hook needs `linecheck` and runs it. It builds `rein` from the branch and runs `rein check` on every installed program (`scripts/check-installed-programs.sh`). A checker change that breaks an installed program blocks the push. The site's CLI and example pages are generated from this repo in rein-lang/rein-lang.com. Its CI fails when they drift from the pinned rein commit.
+- [Getting started](/getting-started): install the CLI and write a first flow.
+- [Install a program](/install-programs): install, update, or remove a program.
+- [Concepts](/concepts): the model in one page.
+- [Editor](/editor): the VS Code extension.
+- [Language reference](/reference/spec): syntax, rules, evaluation, CLI.
+- [Decisions](/reference/decisions): owner facts, PoC choices, open questions.
+- [Agent interface](/reference/interface): programs as named apps, the MCP host, and `rein run`.
 
 ## License
 
