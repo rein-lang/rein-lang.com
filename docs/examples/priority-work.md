@@ -27,7 +27,7 @@ rein step --flow priority-work --input workplace=~/work
 
 ## Graph
 
-The decision flow, from `rein graph priority-work`:
+The decision graph, from `rein graph priority-work`:
 
 ```mermaid
 flowchart TD

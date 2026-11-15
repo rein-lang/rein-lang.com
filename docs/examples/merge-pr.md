@@ -4,7 +4,7 @@ description: "Decide the next step for a pull request task."
 
 # merge-pr
 
-An agent flow that decides whether a pull request can merge.
+An agent process that decides whether a pull request can merge.
 
 ## Files
 
@@ -33,7 +33,7 @@ The agent then starts the program again, and `merge_pr` checks the pull request 
 
 ## Graph
 
-The decision flow, from `rein graph merge-pr`:
+The decision graph, from `rein graph merge-pr`:
 
 ```mermaid
 flowchart TD

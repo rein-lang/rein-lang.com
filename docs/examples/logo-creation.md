@@ -25,7 +25,7 @@ The agent writes a brief, and a subagent draws three SVG concepts. A script chec
 ## What it shows
 
 - **Bundled scripts.** Each shell step is a script in `scripts/`, listed in `files` in `package.json`. A request names the script and its arguments. See [Install a program](/install-programs).
-- **A script as a gate.** The agent runs `check-svg.sh` and answers `valid: boolean`. The flow goes on only on yes.
+- **A script as a gate.** The agent runs `check-svg.sh` and answers `valid: boolean`. The process goes on only on yes.
 - **Rules in code.** Typed answers pick each branch, such as `info.logo == "has a logo"` in `write_brief`.
 - **A subagent hand-off.** `draw_concepts` gives the drawing to a subagent with `delegate`.
 - **A retry without a cycle.** On "none of them", the agent saves the feedback to `.logo/feedback.md` and starts the program again. `main` finds the brief and goes to `draw_concepts`.
