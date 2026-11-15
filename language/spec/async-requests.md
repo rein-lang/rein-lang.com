@@ -26,7 +26,7 @@ export default async function answerFaq(
 }
 ```
 
-- The `const` must have a doc comment, a type (`boolean`, a union of strings, or a struct; not `string`), `= await request(value)`, and an optional `;`. A bare `string` is an error: ``a `string` answer is not allowed; answer a struct with a `string` field``.
+- The `const` must have a doc comment, a type (`boolean`, a union of strings, or a struct; not `string`), `= await request(value)` (or `= await agentSetup(...)`, which is `await request(agentSetup(...))`), and an optional `;`. A bare `string` is an error: ``a `string` answer is not allowed; answer a struct with a `string` field``.
 - `value` is a string, a template literal, or a template call. ``await request(delegate(model=`use opus model`, task=`code review the pr`))`` is valid.
 - The `const` is the only `const` in Rein. It is an answer, not a variable. Its name is a parameter for the rest of its block. A name clash with a parameter or another answer is an error: `duplicate name`. Using the name before its declaration is an error: `` `x` is used before it is declared ``.
 - `await` needs `export default async function`. An `async` function with no `await` is a warning: `` `async` function has no `await`; drop `async` ``.

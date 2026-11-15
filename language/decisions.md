@@ -44,7 +44,7 @@ Each choice can change. The reason is one line.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
 - Functions are used through references: `return @./ci/fix;`. Why: no import statement; a reference is a path from the current file, so a file is moved with its folder.
 - A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.
-- Std names need no import: `delegate`, `askUser`, `request`. Why: the std library is part of the language, so it is always there.
+- Std names need no import: `agentSetup`, `askUser`, `delegate`, `request`, and the std struct `Setup`. Why: the std library is part of the language, so it is always there.
 - Templates are files with `string` parameters, called by a std name or a reference. Why: a template is a string builder, and calls keep the caller in control of the values.
 - Inputs are parameters of the exported function: `boolean`, a union of strings such as `"green" | "red"`, or `string`. Why: a TypeScript signature the agent can read, and the checker can test values.
 - A `string` parameter is an input: the caller passes it. A `boolean` or a union is a question. Why: the type decides, so no new keyword is needed.
@@ -161,6 +161,9 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 ## Planned (not built)
 
+- Agent requirements, the rest: the handler templates `subagent`,
+  `localSession` and `remoteSession`. `agentSetup` and `Setup` are built. See
+  `language/agent-requirements.md`.
 - Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
 - Research an agent-agnostic tool that installs agent hooks. Why: each agent keeps its hook config in its own format and place, so Rein should not own a per-agent installer.
 

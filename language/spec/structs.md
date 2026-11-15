@@ -6,6 +6,7 @@ A struct is inline or shared.
 
 - An inline struct is an `interface` in the file of the function. It is the input of that function only. No other file can name it.
 - An inline struct cannot be exported. Error: `` input struct `Input` cannot be exported; to share it, move it to its own `.struct.rein` file ``.
+- A struct answer may name the std struct `Setup` (see Std and templates) without declaring it. A file that declares its own `interface Setup` uses its own.
 - The function names its inline struct: `({ a, b }: Input)`. A missing one is an error: `` cannot find struct `Input`; declare `interface Input { ... }` in this file ``.
 - An inline struct that the function does not take gives a warning: `` unused struct `X`; an inline struct is the input of the function in its file ``.
 - A shared struct is a file `<name>.struct.rein`. It holds one `export default interface` and nothing else. Error: ``a `.struct.rein` file holds one `export default interface` and nothing else``.

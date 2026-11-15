@@ -57,7 +57,8 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A template interpolates a boolean, or a name that is not a parameter or an answer |
 | An import statement is in the file (`Rein has no imports`) |
 | `await` without `export default async function` |
-| `await` of a name other than `request` or a reference (`only `request` or a reference like `@program` can be awaited`) |
+| `await` of a name other than `request`, `agentSetup` or a reference (`only `request`, `agentSetup` or a reference like `@program` can be awaited`) |
+| `await agentSetup(...)` with a type other than `Setup` (`` `agentSetup` gives a `Setup`; write `const NAME: Setup` ``) |
 | `await` outside a `const` answer (`` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` ``) |
 | An `await` names a template (`` `@./tpl` is a template; only a function can be awaited ``). A target that does not resolve, or a wrong argument, gives the hand-off errors above |
 | An answer has no doc comment |
