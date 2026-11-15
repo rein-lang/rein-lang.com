@@ -2,5 +2,4 @@
 
 export const SITE_URL = "https://rein-lang.com";
 
-export const EARLY_ACCESS_HREF =
-  "mailto:ofek.gabay.he@gmail.com?subject=Rein%20early%20access";
+export const GET_STARTED_HREF = "/docs/getting-started";
