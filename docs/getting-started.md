@@ -4,10 +4,10 @@ This page builds the `rein` command and runs a first flow. It needs a Rust toolc
 
 ## Install the CLI
 
-From the repository root, install the binary:
+Install the binary from a release tag:
 
 ```sh
-cargo install --path crates/rein
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.0 --locked rein
 rein --version
 ```
 
