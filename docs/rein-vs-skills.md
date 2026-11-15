@@ -45,6 +45,8 @@ flowchart LR
 | How it changes | Edit the text and test it with an agent. | Edit the code. The checker shows each place that needs a new case. |
 | How you share it | Copy the folder. | Install an npm package with a version. |
 
+For how each one gives the agent its text, see [Progressive disclosure](/progressive-disclosure).
+
 ## Use a skill for knowledge
 
 A skill is the more suitable tool when the agent needs to know something:
