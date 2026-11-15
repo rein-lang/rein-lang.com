@@ -49,12 +49,7 @@ const config = withMermaid(
       config(md) {
         md.core.ruler.push('repo-links', (state) => {
           for (const block of state.tokens) {
-            const unlinked: number[] = []
             for (const child of block.children ?? []) {
-              if (child.type === 'link_close' && unlinked.at(-1) === child.level) {
-                unlinked.pop()
-                Object.assign(child, { type: 'text', content: '' })
-              }
               if (child.type !== 'link_open') continue
               const href = child.attrGet('href') ?? ''
               const flow = flowFolder.exec(href)
