@@ -2,9 +2,9 @@
 
 Status: proof of concept. Syntax can still change.
 
-Rein is a language for agent flows. Other tools manage the harness or a graph that the agent runs in. Rein does not. It gives the agent instructions for what to do. Each function is one file. It returns the next step as text, as a reference to another function, or as a template call. When it needs a fact, it asks the agent. When it needs a step done, it sends the agent a request and waits for the answer.
+Rein is a language for agent processes. Other tools manage the harness or a graph that the agent runs in. Rein does not. It gives the agent instructions for what to do. Each function is one file. It returns the next step as text, as a reference to another function, or as a template call. When it needs a fact, it asks the agent. When it needs a step done, it sends the agent a request and waits for the answer.
 
-Do you use skills today? A skill gives the agent knowledge, and a flow gives it the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each. See [Progressive disclosure](/progressive-disclosure) for how each one gives the agent its text.
+Do you use skills today? A skill gives the agent knowledge, and a process gives it the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each. See [Progressive disclosure](/progressive-disclosure) for how each one gives the agent its text.
 
 Rein mimics TypeScript syntax and types, except `@` references. There are no imports, no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
 
@@ -53,7 +53,7 @@ flowchart TD
 
 ## How an agent uses it
 
-The agent steps the flow with `rein step`. The runtime keeps no state, so each call takes every answer so far. Each call returns one of four kinds: `question`, `request`, `done`, or `error`. The walk below runs `examples/rein/support-ticket`. Each line after `$` is one call. `# exit` is its exit code:
+The agent steps the process with `rein step`. The runtime keeps no state, so each call takes every answer so far. Each call returns one of four kinds: `question`, `request`, `done`, or `error`. The walk below runs `examples/rein/support-ticket`. Each line after `$` is one call. `# exit` is its exit code:
 
 ```text
 $ cd examples/rein/support-ticket
@@ -88,7 +88,7 @@ git clone https://github.com/rein-lang/examples
 cd examples
 rein list                               # the programs visible from here
 rein run support-ticket                 # run one program by name, answer on stdin
-rein graph support-ticket               # its decision flow as Mermaid (--format dot|json, -o graph.svg)
+rein graph support-ticket               # its decision graph as Mermaid (--format dot|json, -o graph.svg)
 rein serve --mcp                        # the MCP host for agents
 rein watch                              # a page of the agents that use rein now
 ```
@@ -103,7 +103,7 @@ Examples: [merge-pr](/examples/merge-pr), [incident-triage](/examples/incident-t
 
 ## Next steps
 
-- [Getting started](/getting-started): install the CLI and write a first flow.
+- [Getting started](/getting-started): install the CLI and write a first process.
 - [Install a program](/install-programs): install, update, or remove a program.
 - [Concepts](/concepts): the model in one page.
 - [Editor](/editor): the VS Code extension.

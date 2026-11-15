@@ -32,7 +32,7 @@ const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 const config = withMermaid(
   defineConfig({
     title: 'Rein',
-    description: 'A strict TypeScript-like language for agent decision flows.',
+    description: 'A strict TypeScript-like language for agent decision processes.',
     base: '/docs/',
     // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
     cleanUrls: true,

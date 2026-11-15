@@ -5,9 +5,9 @@ description: Why Rein is its own small language and not TypeScript or Python. Re
 
 # Why not an existing language
 
-Rein looks like TypeScript. So the question is fair: why not write agent flows in TypeScript, or in Python?
+Rein looks like TypeScript. So the question is fair: why not write agent processes in TypeScript, or in Python?
 
-The answer is in what a flow is. A flow does not compute. It decides. The agent does the work, and the flow tells the agent the next step.
+The answer is in what a process is. A process does not compute. It decides. The agent does the work, and the process tells the agent the next step.
 
 - A programming language handles **logic**: data, loops, calculations, input and output.
 - Free text handles **decisions** badly: the agent must find the branches in the prose.
@@ -29,11 +29,11 @@ flowchart LR
 | A missing case | No one sees it | The checker reports it | Only some compilers report it, and only if you ask |
 | All paths are known before a run | No | Yes | No |
 | A question to the agent | A sentence | A typed parameter | Code that you write |
-| What it can do on your machine | Nothing | Nothing | All that the process can do |
+| What it can do on your machine | Nothing | Nothing | All that your user account can do |
 
 Free text is too loose for a decision. A programming language is too large for it. Rein is the part between them.
 
-## What a flow needs
+## What a process needs
 
 A decision tree needs five things:
 
@@ -67,7 +67,7 @@ export default function main({ docs_only, ci }: Input) {
     case "red":
       return @./fix;
     case "pending":
-      return `Wait for CI, then run this flow again.`;
+      return `Wait for CI, then run this process again.`;
   }
 }
 ```
@@ -81,7 +81,7 @@ merge-pr
     └── ci ?
         ├── green   ──> review_code
         ├── red     ──> fix
-        └── pending ──> Wait for CI, then run this flow again.
+        └── pending ──> Wait for CI, then run this process again.
 ```
 
 The code and the tree have the same shape. That is the goal: you read the file, and you see the tree.
@@ -127,19 +127,19 @@ In a general language, you write this part yourself: a way to ask, a way to wait
 
 ### A run can stop and continue
 
-A function has no side effects. So the answers so far are the full state of a run. Give the same answers again, and the run is at the same step. A flow can wait an hour for a person, with no process that stays open.
+A function has no side effects. So the answers so far are the full state of a run. Give the same answers again, and the run is at the same step. A process can wait an hour for a person, and nothing stays open on your machine.
 
 A general program holds its state in memory. To stop it and continue later, you must save that state yourself.
 
 ### A program from another person is safe to read and run
 
-A Rein function cannot read a file, call a network, or start a process. The worst result of a bad program is a bad instruction, and the agent and the user see that instruction as text.
+A Rein function cannot read a file, call a network, or run a command. The worst result of a bad program is a bad instruction, and the agent and the user see that instruction as text.
 
-A TypeScript or Python program can do all that its process can do. You must review it or put it in a sandbox before you run it.
+A TypeScript or Python program can do all that your user account can do. You must review it or put it in a sandbox before you run it.
 
 ### An agent can write it
 
-The grammar is small, and each error names the fix. An agent writes a flow, runs `rein check`, and corrects it. There are few ways to write one decision, so two flows for the same task look the same.
+The grammar is small, and each error names the fix. An agent writes a process, runs `rein check`, and corrects it. There are few ways to write one decision, so two processes for the same task look the same.
 
 ## Why the TypeScript syntax
 
@@ -151,18 +151,18 @@ Rein takes only the syntax. A Rein file is not a TypeScript file, and it does no
 
 Some steps need real logic: parse a file, call an API, calculate a number. Do not put that in Rein. Write a script in the language that fits, and let a step tell the agent to run it.
 
-The [logo-creation](/examples/logo-creation) example does this. A script checks the drawings. The agent runs the script and answers one typed question: valid, or not valid. The flow branches on the answer.
+The [logo-creation](/examples/logo-creation) example does this. A script checks the drawings. The agent runs the script and answers one typed question: valid, or not valid. The process branches on the answer.
 
 So the split is:
 
 ```text
 your task
 ├── knowledge   ──> a skill
-├── a decision  ──> a Rein flow
+├── a decision  ──> a Rein process
 └── logic       ──> a script, in a language that fits
 ```
 
-The three work together. The flow gives the order. A step names the skill or the script.
+The three work together. The process gives the order. A step names the skill or the script.
 
 ## Limits
 
@@ -174,4 +174,4 @@ The three work together. The flow gives the order. A step names the skill or the
 
 - [Rein and skills](/rein-vs-skills): Rein compared with free text.
 - [Progressive disclosure](/progressive-disclosure): how the agent gets one step at a time.
-- [Getting started](/getting-started): write a first flow.
+- [Getting started](/getting-started): write a first process.
