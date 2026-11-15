@@ -4,6 +4,8 @@ Status: proof of concept. Private.
 
 Rein is a language for agent flows. Other tools manage the harness or a graph that the agent runs in. Rein does not. It gives the agent instructions for what to do. Each function is one file. It returns the next step as text, as a reference to another function, or as a template call. When it needs a fact, it asks the agent. When it needs a step done, it sends the agent a request and waits for the answer.
 
+Do you use skills today? A skill gives the agent knowledge, and a flow gives it the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each.
+
 Rein mimics TypeScript syntax and types, except `@` references. There are no imports, no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
 
 ## Sample
