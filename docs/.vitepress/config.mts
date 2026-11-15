@@ -156,6 +156,7 @@ const config = withMermaid(
             { text: 'Getting started', link: '/getting-started' },
             { text: 'Install a program', link: '/install-programs' },
             { text: 'Concepts', link: '/concepts' },
+            { text: 'Call another program', link: '/call-programs-by-entry' },
             { text: 'Rein and skills', link: '/rein-vs-skills' },
             { text: 'Progressive disclosure', link: '/progressive-disclosure' },
             { text: 'Why not an existing language', link: '/why-not-a-programming-language' },
