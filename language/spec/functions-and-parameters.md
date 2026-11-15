@@ -56,6 +56,7 @@ Parsing rules, for each doc block:
 - The parameter is a scalar or a struct.
 - A scalar parameter is `name: type`. The type is `boolean`, a union of strings, or `string`.
 - `boolean` is true or false. A union is one of its string members. It needs at least 2 unique, non-empty members. A leading `|` is allowed.
+- The agent answers a `boolean` or union parameter, unless the caller passes its value (section 4, Inputs).
 - `string` is text. It is an input: the caller passes its value, and the agent is never asked for it (section 4, Inputs).
 - A struct parameter is destructured: `{ a, b }: Name`. The braces name every field of the struct, each one once. The body reads each field by its name, as it reads a scalar parameter.
 - Errors on the braces: `` `z` is not a field of `Name`; fields are a, b ``, `` destructure every field of `Name`; missing: `b` ``, and `` `a` is destructured twice ``.
