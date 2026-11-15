@@ -14,7 +14,7 @@ Serve the agent interface. Holds live runs in memory
 
 ## `rein agent-context`
 
-Print the block an agent needs to use the visible flows
+Print the block an agent needs to use the visible processes
 
 **Usage:** `rein agent-context [OPTIONS]`
 

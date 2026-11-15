@@ -2,7 +2,7 @@
 
 ## `rein graph`
 
-Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
+Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the process takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 
 **Usage:** `rein graph [OPTIONS] [PROGRAM]`
 
@@ -14,9 +14,9 @@ Print the program graph: functions, questions, branches, outcomes, and hand-offs
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 * `--refs` — Draw only the references: one node per function, one edge per reference
-* `--entry <ENTRY>` — Walk the flow from this function, as its path under the root without `.rein`. Default: the program's entry
-* `--answer <KEY=VALUE>` — Walk the flow with this answer, as key=value, such as `main.task=merge`. Repeat for each answer
-* `--input <NAME=VALUE>` — Walk the flow with this value of a `string` parameter of the entry, as name=value. Repeat for each input
+* `--entry <ENTRY>` — Walk the process from this function, as its path under the root without `.rein`. Default: the program's entry
+* `--answer <KEY=VALUE>` — Walk the process with this answer, as key=value, such as `main.task=merge`. Repeat for each answer
+* `--input <NAME=VALUE>` — Walk the process with this value of a `string` parameter of the entry, as name=value. Repeat for each input
 * `--format <FORMAT>` — Output format. Default: `html` for a `.html` FILE or with --open, else `mermaid`
 
   Possible values:
@@ -33,7 +33,7 @@ Print the program graph: functions, questions, branches, outcomes, and hand-offs
 
 ## `rein debug`
 
-Debug a program in the browser: set inputs and answers, step through, and watch the path the flow takes
+Debug a program in the browser: set inputs and answers, step through, and watch the path the process takes
 
 **Usage:** `rein debug [OPTIONS] [PROGRAM]`
 
@@ -56,7 +56,7 @@ Debug a program in the browser: set inputs and answers, step through, and watch 
 
 ## `rein watch`
 
-Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The flow graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
+Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The process graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 
 **Usage:** `rein watch [OPTIONS]`
 

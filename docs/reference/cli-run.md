@@ -16,13 +16,13 @@ Check a project directory, or one .rein file, and print diagnostics
 
 ## `rein run`
 
-Run a flow as a live process. Writes one step per line, reads one answer per line on stdin
+Run a process live. Writes one step per line, reads one answer per line on stdin
 
-**Usage:** `rein run [OPTIONS] [FLOW]`
+**Usage:** `rein run [OPTIONS] [PROGRAM]`
 
 ###### **Arguments:**
 
-* `<FLOW>` — Program to run: a `.rein` file, or a name (see `rein list`)
+* `<PROGRAM>` — Program to run: a `.rein` file, or a name (see `rein list`)
 
 ###### **Options:**
 
@@ -54,7 +54,7 @@ Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 
 ## `rein step`
 
-Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
+Step the whole process from `main`. This is the agent-facing interface: answer one key per call
 
 **Usage:** `rein step [OPTIONS] [PROGRAM]`
 
@@ -66,7 +66,7 @@ Step the whole flow from `main`. This is the agent-facing interface: answer one 
 
 * `--entry <ENTRY>` — Function to start from, as its path under the root without `.rein`. Default: `main`
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
-* `--flow <FLOW>` — Program to step, by name (see `rein list`). Same as the positional program
+* `--flow <NAME>` — Program to step, by name (see `rein list`). Same as the positional program
 * `--answer <KEY=VALUE>` — Answer as key=value, such as `merge_pr.ci=green`. Repeat for each answer
 * `--input <NAME=VALUE>` — Value of a `string` parameter of the entry function, as name=value. Repeat for each input
 * `--stdin` — Read the whole request as JSON from stdin. Output is always JSON
