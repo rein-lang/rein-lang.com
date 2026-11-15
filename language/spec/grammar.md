@@ -8,7 +8,7 @@ params      := param ("," param)* ","?       // more than one param is a checker
 param       := DOC IDENT ":" type            // a scalar parameter. DOC is required; the checker reports a missing one
              | "{" IDENT ("," IDENT)* ","? "}" ":" (IDENT | REF)   // a struct parameter, destructured
 field       := DOC IDENT ":" type (";" | ",")?   // DOC is required; the checker reports a missing one
-type        := "boolean" | "string" | "|"? STRING ("|" STRING)*
+type        := "boolean" | "string" | "@" | "|"? STRING ("|" STRING)*   // "@": a callback (section 4, Callbacks)
 block       := "{" stmt* "}"
 stmt        := if | switch | return | answer
 if          := "if" "(" expr ")" block       // no else: see section 5
@@ -17,10 +17,10 @@ clause      := "case" STRING ":" (block | stmt*)   // a label with no body joins
 answer      := DOC "const" IDENT ":" (type | IDENT | REF) "=" "await" awaited ";"?   // IDENT or REF: a struct answer (section 4, Struct answers)
 awaited     := "request" "(" value ")"       // ask the agent to do a step (section 4, Async requests)
              | REF | REF "(" args ")"        // a call with return (section 4, Calls with return)
-return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?   // REF with args: a template call or a hand-off
+return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")" | IDENT) ";"?   // REF with args: a template call or a hand-off. A bare IDENT: a callback
 args        := arg ("," arg)* ","?           // the args of a call or a hand-off
 arg         := IDENT "=" value               // named, as in Python. A value with no name is a checker error
-value       := STRING | TEMPLATE | IDENT | IDENT "(" args ")" | REF "(" args ")"
+value       := STRING | TEMPLATE | IDENT | IDENT "(" args ")" | REF "(" args ")" | REF   // a bare REF: only for a callback parameter
 expr        := and ("||" and)*
 and         := unary ("&&" unary)*
 unary       := "!" unary | atom
@@ -47,5 +47,4 @@ Helpful errors from the parser:
 | a doc comment before a struct parameter | `` a struct parameter has no doc comment; document each field in its `interface` `` |
 | `await` of a name other than `request` or a reference | `only `request` or a reference like `@program` can be awaited` |
 | `await` outside a `const` answer, such as `await @./x;` or `return await @./x;` | `` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` `` |
-| a bare name as a return value | `expected a string, a template literal, or a reference like `@./path`` |
 | a second `export default function` | `expected end of file ...; a file holds one `export default function`` |

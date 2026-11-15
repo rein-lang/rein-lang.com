@@ -11,7 +11,7 @@
   | Position | Form | Example |
   | --- | --- | --- |
   | Return value (an instruction or a final answer) | TEMPLATE | ``return `Merge the pull request.`;`` |
-  | Call argument value: std templates (`delegate`, `askUser`), project templates, hand-offs and calls with return (`await @./x(...)`) with arguments | TEMPLATE, or a bare name of a `string` parameter | ``delegate(model=`use opus model`, task=`review ${pr}`)`` |
+  | Call argument value: std templates (`delegate`, `askUser`), project templates, hand-offs and calls with return (`await @./x(...)`) with arguments | TEMPLATE, or a bare name of a `string` parameter. A callback parameter takes a REF or a bare name of a callback parameter (section 4, Callbacks) | ``delegate(model=`use opus model`, task=`review ${pr}`)`` |
   | `request(...)` argument | TEMPLATE, or a template call | ``await request(`Run the tests.`)`` |
   | Union member in a parameter, field or answer type | STRING | `ci: "green" \| "red"` |
   | `===` and `!==` operand | STRING | `ci === "green"` |
