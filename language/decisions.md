@@ -103,6 +103,17 @@ Each choice can change. The reason is one line.
 - Each program that a hand-off from the root can reach, through any number of programs, must be installed and have the named function before the first step. Otherwise `rein check`, `rein step`, `rein run` and the MCP start refuse to run, and name the missing program and how to install it. There is no flag. Why: an agent learns of a missing program before it does any work, and as strict as possible means one rule with no opt-out.
 - Programs reached through other programs are found through the root project's scopes, not through the called program's own installs. Why: one lookup for every program, the same as `rein list`. A program that pnpm installed only as a dependency of another package is not visible, so install it in a scope to call it. (A change is proposed; see Naming, Identity and local names.)
 
+## Callbacks
+
+- A callback is a parameter of type `@`, such as `then: @`. Why: Rein marks every reference with `@`, so a bare `@` reads as "some reference". The TypeScript form `() => void` needs three new tokens, and a name such as `Function` looks like a struct type, which a scalar parameter cannot name.
+- The caller passes it by name, like a `string` input: `then=@./after` or `then=@program`. Why: one argument rule for every hand-off (fact 24), and a hand-off already binds its inputs by name.
+- The callee goes on with `return then;`, or passes it on with `then=then`. Why: a return is the only place a flow moves to another function (fact 15), so a callback is a hand-off whose target the caller picks. The callee never names its caller.
+- A callback is not a value: no condition, switch, template literal or text argument reads it, and it is never an answer. Why: it names a function, not text; the agent cannot choose where the flow goes.
+- The callback target takes no arguments. Why: a callback is returned bare, so it has no place for arguments. A callee that must pass values on calls a function, not a callback.
+- On the wire a callback is the qualified path of its function, such as `after` or `@pr-handling/main`, inside the run. An entry input is a reference as text: `--input then=@./after` or `"then": "@pr-handling"`. Why: the value is plain text, so the request stays JSON with no new shape, and the step stays stateless.
+- Program linking is transitive: the programs that a linked program names are linked too, in one table by name. Why: a callback back into the calling program, such as `then=@rein-github-notifications-handler`, needs that program's own references to resolve.
+- A function that one step call enters again has its own answers: `main#2.pick` on the second visit. Why: a callback loop, such as "merge this pull request, then pick the next one", must ask again. Reusing the first answers would run the next pull request with the answers of the last one. Each pass of a cycle must reach a new question or request; a cycle without one still ends at the hop limit of 64. This also answers the cycle question in [agent-interface.md](docs/agent-interface.md): answers for each visit.
+
 ## Naming
 
 Anyone can build and share a program, so two authors can pick the same name. The rules below keep names short in code and still tell authors apart.
@@ -168,7 +179,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 - The one-file format. How several functions live in one file, and how references resolve inside it.
 
-- Loops and retries. Today a retry is a reference cycle.
+- Loops and retries. Today a retry is a reference cycle or a callback, and each visit in one step call has its own answers.
 - Side effects inside functions. Today a return value is text for the agent to act on, and a request is the only step that waits for the agent.
 - Who answers inputs: agent judgment, or deterministic tools.
 - Once an index of programs exists, does a `rein-lang` program win a bare `rein install <name>`, or is `rein-lang` one owner like any other?

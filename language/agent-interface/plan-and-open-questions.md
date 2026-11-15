@@ -16,7 +16,7 @@ Each step is usable without the next one.
 ## Open questions
 
 - Where does a program declare its gate: a doc tag in `main.rein`, or the manifest?
-- Cycles: answers for each visit, or a checker error?
+- Cycles: answered for one step call. Each visit of a function in a call has its own answers (`main#2.pick`); see [decisions.md](../decisions.md), Callbacks.
 - How does the hook match a run to a session? The hook can record the run id from the event after the start tool call. A weaker match is the working directory.
 - State: when does the state of a subject end? For a pull request, merged or closed is the likely end.
 - State: how does a program declare the kind of each question: remember, or read again?

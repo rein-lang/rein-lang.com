@@ -45,6 +45,11 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A program reference names a program that is not installed (`` cannot find program `x`; run `rein list` to list programs ``), or a function the program does not have (`` cannot find function `f` in program `x` ``) |
 | A reference to a template is returned without a call |
+| A callback is read as a value: in a condition, a switch, a template literal, or a `string` or `request` argument (``then` is a callback; return it (`return then;`) or pass it to a callback parameter`) |
+| A callback parameter gets a value that is not a reference or a callback (``then` is a callback; pass a reference like `then=@./name``), or a reference that does not resolve, is a template, or takes arguments |
+| A reference is passed to a parameter that is not a callback (``@./x` is a reference; only a callback (`@`) parameter takes one`) |
+| A bare name is returned that is not a callback (``pr` is not a callback; only a callback (`@`) parameter is returned by name`) |
+| An answer is a callback, or a struct answer has a callback field (`a callback is not an answer; the caller passes it`) |
 | A call, a hand-off or an `await` has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call, a hand-off or an `await` names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
 | A call, a hand-off or an `await` gives one parameter twice (`` `a` is given twice in call to `@./tpl`; give each name once ``) |

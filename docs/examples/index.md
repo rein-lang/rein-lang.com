@@ -10,6 +10,7 @@ Each example below, except the published programs, is a process under `examples/
 - [incident-triage](/examples/incident-triage): Decide how the on-call agent handles a new production alert.
 - [merge-pr](/examples/merge-pr): Decide the next step for a pull request task.
 - [pr-handling](/examples/pr-handling): Decide the next step for a pull request: review it, fix it, or merge it.
+- [pr-queue](/examples/pr-queue): Merge the pull requests in a queue, one at a time. Shows a callback.
 - [priority-work](/examples/priority-work): Find the high priority projects of a workplace, then work on their pull requests.
 - [support-ticket](/examples/support-ticket): Decide how the support agent handles a customer ticket.
 
