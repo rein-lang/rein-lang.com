@@ -88,7 +88,7 @@ Each choice can change. The reason is one line.
 - A misplaced function is a warning that names the target path, and the language server has a quick fix that moves the file. Why: existing programs keep working while they move. The warning can become an error later, as a ratchet, when programs follow the rule.
 - A function keeps its file name when it moves. Why: the folder already names the caller, and the quick fix stays one step.
 - The quick fix moves the folder of the function's nested callees with it. Why: they stay in their caller's folder, so the move does not bring their warnings back.
-- The warning says that a move changes the answer keys and breaks `@program/...` references from other programs. Why: an installed program can be referenced by path, and the author should know before moving.
+- The warning says that a move changes the answer keys. Why: the author should know before moving. A move breaks no reference from another program, since other programs reach only the entry (Cross-program references).
 
 ## Cross-program references
 
@@ -96,6 +96,7 @@ Each choice can change. The reason is one line.
 - A program name may hold `-`, such as `pr-handling`. Why: `rein list` shows names with `-`. The function path keeps the old name rule.
 - A bare `@name` is no longer an error. Why: it now names a program. A typo gives `cannot find program`, which names the program.
 - A hand-off in `return`, or the target of an `await` (Calls with return), with the same argument rules as a local hand-off. Why: one rule for all hand-offs. The target asks its other inputs itself.
+- A program reference targets only the entry: `@program` or `@program/<entry>`. Any other path, such as `@pr-handling/ci/fix`, is a check error. Why: a program has one job and one public door. Its other functions are private, and their paths and answer keys change when the author moves files. See [Call another program by its entry](https://rein-lang.com/docs/call-programs-by-entry).
 - The programs are found by name through the scopes when a command loads the project. Why: the same lookup as `rein list` and `rein step NAME`; the core crate reads no environment.
 - One shared run. The target functions are named `@program/function`, so answer keys are `@pr-handling/main.task`. Why: the interface stays the same, and a local `pr-handling/main.rein` cannot give the same key.
 - No `rein.lock`. pnpm pins each called program: `pnpm-lock.yaml` records its version and integrity hash, and `node_modules` holds the installed copy. Why: a second lock would repeat what pnpm already does.
