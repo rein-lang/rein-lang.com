@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run `rein check` on each complete Rein sample in the docs.
 
-A complete sample is a `rein` or `ts` code block with `export default`.
+A complete sample is a `rein` or `ts` code block with `export default function`.
 A sample is one file of a larger flow, so a message about a file that the
 sample does not show is not a failure. Each other error or warning is.
 
@@ -24,7 +24,7 @@ for path in files:
     text = open(path, encoding="utf8").read()
     for match in re.finditer(r"```(?:rein|ts)\n(.*?)```", text, re.S):
         code = match.group(1)
-        if "export default" not in code:
+        if not re.search(r"export default (async )?function", code):
             continue
         samples += 1
         line = text[: match.start()].count("\n") + 2
