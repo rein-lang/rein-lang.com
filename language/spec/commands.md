@@ -66,7 +66,7 @@ Each run prints one of these objects:
 {"kind":"request","instruction":"...","response":{"name":"...","type":"boolean|union","options":["..."],"description":"..."}}
 ```
 
-`options` appears only for `union` inputs. A boolean input has `"type":"boolean"`. A union input has `"type":"union"`, and its members are in `options`.
+`options` appears only for `union` inputs. A boolean input has `"type":"boolean"`. A union input has `"type":"union"`, and its members are in `options`. A `string` input has `"type":"string"`: `rein eval` runs one function with no caller, so a missing `string` parameter is a `need_input`. Give it with `--set`. `rein step` never asks for one (section 11).
 
 ### `rein describe` output
 
