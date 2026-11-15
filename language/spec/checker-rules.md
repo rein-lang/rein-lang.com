@@ -33,7 +33,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A condition compares a boolean parameter with `===` or `!==` |
 | A condition or switch subject names an unknown parameter |
 | A condition or switch subject names a `string` parameter (`` `pr` is a string input; a condition cannot read it ``) |
-| A bare name in an argument is not a `string` parameter of the caller (`` `x` is not a string input ``) |
+| A bare name in an argument for a `string` parameter is not a `string` parameter of the caller (`` `x` is not a string input ``) |
 | `switch` subject is not a union |
 | A compared value or case value is not a member of the union |
 | A switch does not have a case for every member |
@@ -48,8 +48,10 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A call, a hand-off or an `await` has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call, a hand-off or an `await` names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
 | A call, a hand-off or an `await` gives one parameter twice (`` `a` is given twice in call to `@./tpl`; give each name once ``) |
-| A call, a hand-off or an `await` leaves a parameter out (`` missing argument `b` in call to `@./tpl`; write `b=value` ``) |
-| A call, a hand-off or an `await` gives arguments to a function with no `string` parameter (`` `@./x` takes no arguments; return it without a call ``) |
+| A call, a hand-off or an `await` leaves a `string` parameter out (`` missing argument `b` in call to `@./tpl`; write `b=value` ``). A bare `return @./x;` or `await @./x` to a function with a `string` parameter gives `` `@./x` takes 2 arguments, got 0; pass `pr` and `ci` `` |
+| A `boolean` or union argument of a hand-off or an `await` is not a parameter, an answer, a struct field, `true`/`false` or a quoted member of the union (`` `ci` of `@./merge` is `"green" \| "red"`; pass a parameter or an answer of that type, ... ``), or it names a value of another type (`` `ready` is `boolean`, but `ci` of `@./merge` is `"green" \| "red"` ``). A union fits when each of its members is a member of the target's union |
+| A parameter, field or answer is named `true` or `false` (`` `true` is a boolean literal; pick another name ``) |
+| A call, a hand-off or an `await` gives arguments to a function with no parameter (`` `@./x` takes no arguments; return it without a call ``) |
 | A call to a function that is not a template is not the value of a `return`, for example inside an argument or a `request` value (`A hand-off cannot be an argument of a call.`) |
 | A std name is unknown, or a call names a std item that is not a template |
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
@@ -74,6 +76,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | Rule |
 | --- |
 | A parameter is declared but never used |
+| A hand-off or an `await` leaves a `boolean` or union parameter out (`` missing argument `ci` in call to `@./merge`; write `ci=value` ``), or a bare `return @./x;` or `await @./x` goes to a function with only `boolean` and union parameters. It will become an error. Until then, the target asks the agent for the value |
 | An inline struct is not the parameter of the function in its file (`unused struct`) |
 | An `async` function has no `await` |
 | A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return or `await` of a reference that closes the cycle. The one exception: a cycle with an `await` call on it is not warned when a question comes before one of its edges (a parameter the agent answers, or a `request` answer above the call). Each level then asks a new key, and the 64-step limit still stops endless recursion. An `await` with no question before it on the cycle, such as `const again: boolean = await @./a;` as the first step, is warned, since it fails at the 64-step limit |
