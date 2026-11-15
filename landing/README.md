@@ -27,7 +27,7 @@ pnpm run preview   # serves dist/ locally
 - `/use-cases/delegating-to-subagents/`
 - `/use-cases/human-in-the-loop/`
 
-The use-case pages come from `src/data/useCases.ts`. The flow diagrams come from `src/data/flows.ts`.
+The use-case pages come from `src/data/useCases.ts`. The process diagrams come from `src/data/flows.ts`.
 
 `/docs/` is the VitePress site in `../docs`. CI builds both and serves the docs under `/docs/`.
 
