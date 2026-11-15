@@ -89,6 +89,7 @@ const config = withMermaid(
             { text: 'Concepts', link: '/concepts' },
             { text: 'Rein and skills', link: '/rein-vs-skills' },
             { text: 'Progressive disclosure', link: '/progressive-disclosure' },
+            { text: 'Why not an existing language', link: '/why-not-a-programming-language' },
             { text: 'Editor', link: '/editor' },
           ],
         },

@@ -33,7 +33,7 @@ Some steps ask the agent to act first. The agent does the step, gives the answer
 
 ## Strict by design
 
-Rein favors explicit cases over fallbacks. The checker reports a missing case, or a path with no result, before a run starts. The rules live in the [checker section](/reference/spec#_8-checker-rules). The reasons for these choices live in [Decisions](/reference/decisions).
+Rein favors explicit cases over fallbacks. The checker reports a missing case, or a path with no result, before a run starts. The rules live in the [checker section](/reference/spec#_8-checker-rules). The reasons for these choices live in [Decisions](/reference/decisions). For why Rein is its own small language, see [Why not an existing language](/why-not-a-programming-language).
 
 ## Rein and skills
 
