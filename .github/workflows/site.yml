@@ -47,10 +47,32 @@ jobs:
           mkdir -p site
           cp -R landing/dist/. site/
           cp -R docs/.vitepress/dist site/docs
+      - name: No broken internal link or anchor
+        run: python3 scripts/check-links.py site
       - uses: actions/upload-artifact@v4
         with:
           name: site
           path: site
+
+  # Runs `rein check` on the code samples in the docs. It installs rein with the command that
+  # Getting started gives the reader, so that command is tested too.
+  samples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the install command from Getting started
+        id: install
+        run: echo "command=$(grep -m1 '^cargo install --git' docs/getting-started.md)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: rein
+        with:
+          path: ~/.cargo/bin/rein
+          key: rein-${{ runner.os }}-${{ hashFiles('docs/getting-started.md') }}
+      - name: Install rein as Getting started says
+        if: steps.rein.outputs.cache-hit != 'true'
+        run: ${{ steps.install.outputs.command }}
+      - name: Each complete sample passes rein check
+        run: python3 scripts/check-samples.py
 
   # Deploys the exact artifact the build job checked, to Cloudflare Pages project "rein-lang".
   deploy:
