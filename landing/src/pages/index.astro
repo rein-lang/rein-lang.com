@@ -4,7 +4,7 @@ import FlowDiagram from "../components/FlowDiagram.astro";
 import ConceptTurn from "../components/ConceptTurn.astro";
 import { GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
 import HomeFaq from "../components/HomeFaq.astro";
-import { faqs } from "../data/faq";
+import { faqs, faqText } from "../data/faq";
 import { absolute, website } from "../data/structuredData";
 import { flows } from "../data/flows";
 import { useCases } from "../data/useCases";
@@ -35,8 +35,6 @@ const jsonLd = {
       alternateName: "Rein language",
       description,
       url: home,
-      author: project,
-      license: "https://opensource.org/licenses/MIT",
       sameAs: ["https://github.com/rein-lang/rein"],
     },
     {
@@ -61,12 +59,12 @@ const jsonLd = {
       mainEntity: faqs.map((faq) => ({
         "@type": "Question",
         name: faq.question,
-        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        acceptedAnswer: { "@type": "Answer", text: faqText(faq) },
       })),
     },
   ],
 };
-------
+---
 
 <Base title={title} description={description} path="/" jsonLd={jsonLd}>
   <!-- Hero -->

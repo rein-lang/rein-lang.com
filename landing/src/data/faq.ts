@@ -43,3 +43,6 @@ export const faqs: Faq[] = [
     link: { href: "https://github.com/rein-lang/rein", label: "rein-lang/rein on GitHub" },
   },
 ];
+
+// The answer as the page shows it, with its link label, for FAQPage JSON-LD.
+export const faqText = (faq: Faq) => (faq.link ? `${faq.answer} ${faq.link.label}.` : faq.answer);
