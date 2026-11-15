@@ -26,24 +26,24 @@ This document contains the help content for the `rein` command-line program.
 
 ## `rein`
 
-A small language for agent decision flows
+A small language for agent decision processes
 
 **Usage:** `rein <COMMAND>`
 
 ###### **Subcommands:**
 
 * `check` — Check a project directory, or one .rein file, and print diagnostics
-* `run` — Run a flow as a live process. Writes one step per line, reads one answer per line on stdin
+* `run` — Run a process live. Writes one step per line, reads one answer per line on stdin
 * `eval` — Evaluate one function, for debugging. Agents use `rein run` or `rein step`
-* `step` — Step the whole flow from `main`. This is the agent-facing interface: answer one key per call
+* `step` — Step the whole process from `main`. This is the agent-facing interface: answer one key per call
 * `describe` — Print a function's schema as JSON
-* `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the flow takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
-* `debug` — Debug a program in the browser: set inputs and answers, step through, and watch the path the flow takes
-* `watch` — Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The flow graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
+* `graph` — Print the program graph: functions, questions, branches, outcomes, and hand-offs. With answers, mark the path the process takes. The graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
+* `debug` — Debug a program in the browser: set inputs and answers, step through, and watch the path the process takes
+* `watch` — Show the agents that use rein now: their programs, answers and the step each run waits on, in a browser page. The process graph shows functions, not calls: a function called several times with `await` is marked with the answers of its first call
 * `list` — List the programs visible from here, as `ls` lists files: names, or `-l` for details. Operands are name globs
 * `show` — Print a program's source: its manifest and every .rein file
 * `serve` — Serve the agent interface. Holds live runs in memory
-* `agent-context` — Print the block an agent needs to use the visible flows
+* `agent-context` — Print the block an agent needs to use the visible processes
 * `hook` — The agent hook entry point. Reads one event on stdin. Run by the agent, not by hand
 * `install` — Install a program package: runs `pnpm add` with these arguments
 * `uninstall` — Remove an installed program package: runs `pnpm remove` with these arguments. `-g` picks the user folder
