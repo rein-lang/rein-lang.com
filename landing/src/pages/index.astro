@@ -8,7 +8,7 @@ import { useCases } from "../data/useCases";
 
 const title = "Rein: instructions, not infrastructure for agents";
 const description =
-  "Rein is an alpha language for agent decision flows. Write each decision as a small function in its own file. Every path ends in an instruction or a pointer.";
+  "Rein is an alpha language for agent decision processes. Write each decision as a small function in its own file. Every path ends in an instruction or a pointer.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -33,7 +33,7 @@ const jsonLd = {
           Give agents instructions, not infrastructure
         </h1>
         <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-          Rein is a strict, TypeScript-like language for agent decision flows. Write each decision as a small
+          Rein is a strict, TypeScript-like language for agent decision processes. Write each decision as a small
           function, one file each. The agent answers the questions, then follows the pointers to its next step.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
@@ -90,7 +90,7 @@ const jsonLd = {
   <!-- Four concept steps -->
   <section id="how-it-works" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="steps-heading">
     <div class="mx-auto max-w-6xl">
-      <h2 id="steps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Four ideas make a flow</h2>
+      <h2 id="steps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Four ideas make a process</h2>
       <ol class="mt-12 grid gap-6 md:grid-cols-2">
         <li class="card flex flex-col gap-5 p-5 sm:p-6">
           <figure class="overflow-hidden rounded-xl">
@@ -170,7 +170,7 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- Flow -->
+  <!-- Process -->
   <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="flow-heading">
     <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
       <div>
@@ -196,9 +196,9 @@ const jsonLd = {
   <!-- Guarantees -->
   <section id="guarantees" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="guarantees-heading">
     <div class="mx-auto max-w-6xl">
-      <h2 id="guarantees-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A checker guards every flow</h2>
+      <h2 id="guarantees-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A checker guards every process</h2>
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-        The checker reads your functions and reports gaps. It catches these three problems before a flow goes to an
+        The checker reads your functions and reports gaps. It catches these three problems before a process goes to an
         agent.
       </p>
       <ul class="mt-10 grid gap-5 md:grid-cols-3">
@@ -240,7 +240,7 @@ const jsonLd = {
   <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="video-heading">
     <div class="mx-auto max-w-4xl">
       <h2 id="video-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Watch the concept</h2>
-      <p class="mt-4 text-lg leading-relaxed text-muted">A concept video of about 70 seconds. It shows the four ideas and one flow.</p>
+      <p class="mt-4 text-lg leading-relaxed text-muted">A concept video of about 70 seconds. It shows the four ideas and one process.</p>
       <figure class="card mt-8 overflow-hidden">
         <!--
           TODO: host the concept video (an mp4 built from rein-lang/videos concept/, not committed to this repo)
@@ -268,7 +268,7 @@ const jsonLd = {
       <h2 id="alpha-heading" class="mt-3 text-3xl font-bold tracking-tight">Rein is in alpha</h2>
       <p class="mt-4 text-lg leading-relaxed text-muted">
         Rein is a proof of concept. Syntax, tools and behavior can still change. Install the command
-        line tool, and write a first flow in a few minutes.
+        line tool, and write a first process in a few minutes.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={GET_STARTED_HREF} class="btn btn-primary">Get started</a>
@@ -281,7 +281,7 @@ const jsonLd = {
   <section id="use-cases" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="use-cases-heading">
     <div class="mx-auto max-w-6xl">
       <h2 id="use-cases-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Use cases</h2>
-      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">Each page shows one flow, in concept terms.</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">Each page shows one process, in concept terms.</p>
       <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {useCases.map((u) => (
           <li>

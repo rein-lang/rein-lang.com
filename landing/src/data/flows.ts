@@ -1,4 +1,4 @@
-// Abstract flow diagrams, drawn as inline SVG. Labels are plain words, never code.
+// Abstract process diagrams, drawn as inline SVG. Labels are plain words, never code.
 // Layout: a source card on the left, question pills in the middle, outcomes on the right.
 
 export interface CardNode {
@@ -130,7 +130,7 @@ const customerSupport: FlowSpec = {
     question("VIP plan?", 24),
     question("Category?", 123),
     outcome("Escalate", 24),
-    outcome("Refund flow", 123),
+    outcome("Refund process", 123),
     outcome("Help article", 222),
   ],
   edges: [

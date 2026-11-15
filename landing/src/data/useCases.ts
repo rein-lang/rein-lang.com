@@ -40,7 +40,7 @@ export const useCases: UseCase[] = [
     teaser: "Route a production alert to a person, a runbook, or a ticket.",
     paragraphs: [
       "An alert can mean very different things. Customers may feel it now. The severity sets how urgent it is. A runbook may already cover the problem.",
-      "The first question is whether customers feel the impact. If they do, the alert goes to a person at once. If not, the flow asks about severity.",
+      "The first question is whether customers feel the impact. If they do, the alert goes to a person at once. If not, the process asks about severity.",
       "Lower-severity alerts ask one more question: does a runbook exist? A known runbook sends the agent to follow it and report whether the alert cleared. If it did not clear, a person is paged. An unknown alert becomes a ticket.",
       "Each outcome names its next step. The agent does not invent a plan, and no path leaves an alert without an answer.",
     ],
@@ -51,20 +51,20 @@ export const useCases: UseCase[] = [
   },
   {
     slug: "customer-support",
-    title: "Customer support flows for agents | Rein",
+    title: "Customer support processes for agents | Rein",
     description:
-      "See how Rein sends a support ticket to a help article, a refund flow, or a person. VIP tickets and every ticket category have a defined case.",
+      "See how Rein sends a support ticket to a help article, a refund process, or a person. VIP tickets and every ticket category have a defined case.",
     h1: "Answer tickets, or hand them to a person",
     teaser: "Answer a support ticket, start a refund, or hand it to a person.",
     paragraphs: [
-      "Support tickets come in many shapes. Some need a help article. Some need a refund. Some need a person who can decide. A flow for them must say which is which.",
+      "Support tickets come in many shapes. Some need a help article. Some need a refund. Some need a person who can decide. A process for them must say which is which.",
       "The first question is about the customer's plan. VIP customers go straight to a person. Everyone else gets a question about the ticket's category.",
-      "Each category has one case. A billing ticket goes to the refund flow. A how-to ticket goes to a help article. An account ticket goes to a person.",
+      "Each category has one case. A billing ticket goes to the refund process. A how-to ticket goes to a help article. An account ticket goes to a person.",
       "For a help article, the agent sends the link and asks the customer whether it solved the problem. If the answer is no, the ticket goes to a person.",
     ],
     flow: flows.customerSupport,
     flowLabel:
-      "Diagram. A ticket first asks whether the customer is VIP. If yes, it goes to a person. If not, it asks for the category and leads to escalation, a refund flow, or a help article.",
+      "Diagram. A ticket first asks whether the customer is VIP. If yes, it goes to a person. If not, it asks for the category and leads to escalation, a refund process, or a help article.",
     flowCaption: "The category check has one case per category, so no ticket falls through.",
   },
   {
@@ -75,9 +75,9 @@ export const useCases: UseCase[] = [
     h1: "Pick the right model for each delegated task",
     teaser: "Delegate each task to a subagent, with the model that fits it.",
     paragraphs: [
-      "Not every task needs the largest model. A simple lookup can go to a smaller model. A hard design question may need the largest one. Choosing the model is a decision, so Rein writes it as a flow.",
+      "Not every task needs the largest model. A simple lookup can go to a smaller model. A hard design question may need the largest one. Choosing the model is a decision, so Rein writes it as a process.",
       "The first question asks whether the task is simple. A simple task goes to a subagent with a smaller model. Other tasks ask one more question about how much reasoning they need.",
-      "Delegation uses a template. A template is text with slots, such as the model and the task. The flow fills the slots, and the agent sends the result to a subagent.",
+      "Delegation uses a template. A template is text with slots, such as the model and the task. The process fills the slots, and the agent sends the result to a subagent.",
       "Each model choice has a case. Add a new option, and the checker reports every place that still needs a case.",
     ],
     flow: flows.delegation,
@@ -89,13 +89,13 @@ export const useCases: UseCase[] = [
     slug: "human-in-the-loop",
     title: "Human-in-the-loop requests for agents | Rein",
     description:
-      "See how a Rein flow asks a person a question, waits for the answer, and branches on it. The run stops at the request and restarts with the answer.",
+      "See how a Rein process asks a person a question, waits for the answer, and branches on it. The run stops at the request and restarts with the answer.",
     h1: "Ask a person, wait, then branch on the answer",
     teaser: "Ask a person a question, wait for the answer, then branch on it.",
     paragraphs: [
-      "Some steps need a person. The agent should not decide alone whether a refund is fair, or whether a change can ship. Rein lets a flow send the agent a request and wait for a typed answer.",
-      "The run stops at the request. The agent asks the person, then the flow starts again with the answer. No state is kept between runs, so the flow restarts with the answer it gets.",
-      "The answer is typed, like any other input. A yes or no answer branches the flow. A choice among fixed options branches it again, and every option has its own case.",
+      "Some steps need a person. The agent should not decide alone whether a refund is fair, or whether a change can ship. Rein lets a process send the agent a request and wait for a typed answer.",
+      "The run stops at the request. The agent asks the person, then the process starts again with the answer. No state is kept between runs, so the process restarts with the answer it gets.",
+      "The answer is typed, like any other input. A yes or no answer branches the process. A choice among fixed options branches it again, and every option has its own case.",
       "This keeps the person in control of the decision, and the agent in control of the steps around it.",
     ],
     flow: flows.humanInTheLoop,
