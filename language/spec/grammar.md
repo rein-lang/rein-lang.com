@@ -16,6 +16,7 @@ switch      := "switch" "(" IDENT ")" "{" clause* "}"
 clause      := "case" STRING ":" (block | stmt*)   // a label with no body joins the next body
 answer      := DOC "const" IDENT ":" (type | IDENT | REF) "=" "await" awaited ";"?   // IDENT or REF: a struct answer (section 4, Struct answers)
 awaited     := "request" "(" value ")"       // ask the agent to do a step (section 4, Async requests)
+             | "agentSetup" "(" args ")"     // short for request(agentSetup(args)); the type is Setup
              | REF | REF "(" args ")"        // a call with return (section 4, Calls with return)
 return      := "return" (STRING | TEMPLATE | REF | REF "(" args ")" | IDENT "(" args ")") ";"?   // REF with args: a template call or a hand-off
 args        := arg ("," arg)* ","?           // the args of a call or a hand-off
@@ -45,7 +46,7 @@ Helpful errors from the parser:
 | a doc comment in any other place | `the doc comment must go right before `export default function`, an `interface`, a parameter, a field, or a const answer` |
 | `x: Name` or `x: @./name` as a parameter | `` a struct parameter is destructured: write `{ field, ... }: Name` `` |
 | a doc comment before a struct parameter | `` a struct parameter has no doc comment; document each field in its `interface` `` |
-| `await` of a name other than `request` or a reference | `only `request` or a reference like `@program` can be awaited` |
+| `await` of a name other than `request` or a reference | `only `request`, `agentSetup` or a reference like `@program` can be awaited` |
 | `await` outside a `const` answer, such as `await @./x;` or `return await @./x;` | `` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` `` |
 | a bare name as a return value | `expected a string, a template literal, or a reference like `@./path`` |
 | a second `export default function` | `expected end of file ...; a file holds one `export default function`` |

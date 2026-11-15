@@ -1,14 +1,15 @@
 ### Std
 
-The std library needs no import. Its names are always available: `delegate`, `askUser`, and `request`.
+The std library needs no import. Its names are always available: `agentSetup`, `askUser`, `delegate`, and `request`. Std also has one struct, `Setup`.
 
 | Name | Kind | Signature | Text |
 | --- | --- | --- | --- |
 | `delegate` | template | `delegate({ model, task }: Input)` | "Delegate this task to a subagent.\nModel: ${model}\nTask: ${task}". Doc: "Hand a task to a subagent, with the model to use." Its input is an inline struct. Fields: `model`, the model the subagent runs on; `task`, what the subagent does. A call is `delegate(model="...", task="...")`. |
+| `agentSetup` | template | `agentSetup({ harness, model, effort }: Input)` | Gives the agent the program's targets and asks it to rate its harness, model tier and effort against them, one row each. `await agentSetup(...)` is short for `await request(agentSetup(...))`, and its answer type is the std struct `Setup` (fields `harness`, `model`, `effort`, each `"ok" \| "mismatch" \| "unknown"`). See `language/agent-requirements.md`. |
 | `askUser` | template | `askUser(question: string)` | "Ask the user: ${question}". Doc: "Ask the user a question and wait for the answer." Param: `question`, the question in the user's language. |
 | `request` | built in | `await request(value)` | Asks the agent to do a step, then wait for its answer (section 4, Async requests). It is not a template. |
 
-An unknown std name is an error that lists the std names: `` `x` is not in std; std has: askUser, delegate, request ``.
+An unknown std name is an error that lists the std names: `` `x` is not in std; std has: agentSetup, askUser, delegate, request ``.
 
 ### Templates
 
