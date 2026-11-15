@@ -1,5 +1,6 @@
 ---
-description: "Decide the next step for a pull request task."
+title: "merge-pr: pull request merge process"
+description: "A Rein process that decides if a pull request can merge. It checks docs-only changes and CI status, sends code to review, and retries a fix without a cycle."
 ---
 
 # merge-pr

@@ -1,5 +1,6 @@
 ---
-description: "Decide the next step for a pull request: review it, fix it, or merge it."
+title: "pr-handling: pull request agent program"
+description: "A Rein program for one pull request. It stops on a draft, checks CI, conflicts and review state, then tells the agent to review, fix, answer comments or merge."
 ---
 
 # pr-handling

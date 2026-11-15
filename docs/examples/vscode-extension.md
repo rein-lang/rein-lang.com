@@ -1,5 +1,6 @@
 ---
-description: "Ship a VS Code extension: a free name, a publisher, an icon, a Marketplace README, publishing from git tags, and a checked install."
+title: "vscode-extension: ship a VS Code extension"
+description: "A published Rein program that ships a VS Code extension: a free name, a publisher, an icon, a README, publishing from git tags and a checked install."
 ---
 
 # vscode-extension

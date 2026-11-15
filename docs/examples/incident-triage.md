@@ -1,5 +1,6 @@
 ---
-description: "Decide how the on-call agent handles a new production alert."
+title: "incident-triage: on-call alert process"
+description: "A Rein process for an on-call agent. It asks three typed questions about a production alert, then pages a human, follows the runbook or opens a ticket."
 ---
 
 # incident-triage
