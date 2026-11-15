@@ -9,9 +9,10 @@ interface Props {
   description: string;
   path: string;
   jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
 }
 
-const { title, description, path, jsonLd } = Astro.props;
+const { title, description, path, jsonLd, noindex = false } = Astro.props;
 const canonical = new URL(path, SITE_URL).href;
 const ogImage = new URL("/og.png", SITE_URL).href;
 ---
@@ -24,7 +25,8 @@ const ogImage = new URL("/og.png", SITE_URL).href;
     <meta name="color-scheme" content="dark light" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
