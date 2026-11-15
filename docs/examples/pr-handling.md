@@ -37,7 +37,7 @@ rein step --flow pr-handling --input pr=https://example.com/pr/1 --json
 The merge task on a pull request that is ready. Each call after the first repeats the input and the earlier answers. `...` stands for them. Each output line shows part of the JSON.
 
 ```text
-$ rein step --root examples/rein/pr-handling --input pr=https://example.com/pr/1 --json
+$ rein step --flow pr-handling --input pr=https://example.com/pr/1 --json
 {"kind": "question", "key": "main.draft", "description": "Is the pull request still a draft?", "trace": ["main"]}
 # exit 2
 
