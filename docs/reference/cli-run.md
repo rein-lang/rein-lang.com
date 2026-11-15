@@ -1,3 +1,7 @@
+---
+description: "Reference for rein check, run, eval, step and describe. Check a project, run a program on stdin, evaluate one function, or step a process as JSON."
+---
+
 # CLI: check, run, eval, step, describe
 
 ## `rein check`

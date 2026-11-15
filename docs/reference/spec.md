@@ -1,3 +1,7 @@
+---
+description: "The full Rein language reference: project layout, grammar, functions and parameters, structs, references, inputs, async requests, checker rules and evaluation."
+---
+
 <!--@include: ../../language/spec.md-->
 <!--@include: ../../language/spec/project-layout.md-->
 <!--@include: ../../language/spec/lexical-rules.md-->

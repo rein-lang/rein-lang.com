@@ -1,3 +1,8 @@
+---
+title: "rein CLI reference"
+description: "See every rein command with a short summary: check, run, step, graph, debug, watch, list, install, serve and more. Each one links to its flags."
+---
+
 # Command-Line Help for `rein`
 
 This document contains the help content for the `rein` command-line program.

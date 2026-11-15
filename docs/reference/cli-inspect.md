@@ -1,3 +1,7 @@
+---
+description: "Reference for rein graph, debug and watch. Draw the decision graph of a program, debug it in the browser, and see the agents that run programs now."
+---
+
 # CLI: graph, debug, watch
 
 ## `rein graph`
