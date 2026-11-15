@@ -1,6 +1,6 @@
 # Concepts
 
-Rein describes an agent flow as a set of small functions. Each function is one file. The functions reference each other by path. Together they tell the agent what to do next, one step at a time.
+Rein describes an agent process as a set of small functions. Each function is one file. The functions reference each other by path. Together they tell the agent what to do next, one step at a time.
 
 ```mermaid
 flowchart TD
@@ -11,7 +11,7 @@ flowchart TD
     D -- "instructs" --> E["Agent acts"]
 ```
 
-## The agent drives the flow
+## The agent drives the process
 
 Rein does not run the agent. The agent starts a program with the `rein_start` MCP tool, or with `rein run`, and answers it one step at a time. The program holds its state while it runs. The agent does each step it is given. See [Evaluation](/reference/spec#_9-evaluation) for what a run returns.
 
@@ -29,7 +29,7 @@ An input is a boolean or a choice of strings. Rein asks for an input only when t
 
 ## Requests wait for the agent
 
-Some steps ask the agent to act first. The agent does the step, gives the answer, and the flow goes on. A live run holds its answers. With `rein step`, Rein keeps no state: each call takes every answer so far. See [Async requests](/reference/spec#async-requests).
+Some steps ask the agent to act first. The agent does the step, gives the answer, and the process goes on. A live run holds its answers. With `rein step`, Rein keeps no state: each call takes every answer so far. See [Async requests](/reference/spec#async-requests).
 
 ## Strict by design
 
@@ -37,4 +37,4 @@ Rein favors explicit cases over fallbacks. The checker reports a missing case, o
 
 ## Rein and skills
 
-A skill gives the agent knowledge. A flow gives the agent the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each.
+A skill gives the agent knowledge. A process gives the agent the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each.
