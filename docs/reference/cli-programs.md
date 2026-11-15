@@ -1,3 +1,7 @@
+---
+description: "Reference for rein list, show, install, uninstall and update. Find the programs visible from a folder, print their source, and manage packages."
+---
+
 # CLI: list, show, install, uninstall, update
 
 ## `rein list`

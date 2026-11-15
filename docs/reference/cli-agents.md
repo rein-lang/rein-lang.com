@@ -1,3 +1,7 @@
+---
+description: "Reference for rein serve, agent-context, hook, lsp and dap. Serve programs to agents over MCP, hook into an agent, and start the editor servers."
+---
+
 # CLI: serve, agent-context, hook, lsp, dap
 
 ## `rein serve`
