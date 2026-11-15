@@ -125,7 +125,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 ### Repos and packages
 
-- A program repo is `<owner>/rein-<name>`, such as `tupe12334/rein-pr-handling`. Programs of the `rein-lang` organization drop the prefix: `rein-lang/pr-handling`. Why: the prefix makes a program easy to find in a shared GitHub account; the organization already says Rein.
+- A program repo is `<owner>/rein-<name>`, such as `tupe12334/rein-pr-handling`. Programs of the `rein-lang` organization drop the prefix: `rein-lang/logo-creation`. Why: the prefix makes a program easy to find in a shared GitHub account; the organization already says Rein.
 - A repo that holds a tool, not a program, names its kind: `vscode-rein`.
 - Each program repo has the GitHub topic `rein-program`. Why: search can find programs by topic, not by guessing from names.
 - A program has one canonical repo. A copy is archived with a link to it.
