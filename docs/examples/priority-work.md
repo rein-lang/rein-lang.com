@@ -1,5 +1,6 @@
 ---
-description: "Find the high priority projects of a workplace, then work on their pull requests."
+title: "priority-work: await another function"
+description: "A Rein program that uses await. It finds the high priority projects of a workplace with one function, then works on their pull requests with the result."
 ---
 
 # priority-work

@@ -1,5 +1,6 @@
 ---
-description: "Decide how the support agent handles a customer ticket."
+title: "support-ticket: customer support process"
+description: "A Rein process for a support agent. It routes VIP customers to a human, sorts other tickets by category, and closes or escalates them from the agent's answers."
 ---
 
 # support-ticket

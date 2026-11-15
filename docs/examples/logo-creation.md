@@ -1,5 +1,6 @@
 ---
-description: "Create a logo for a project: write a brief, draw three SVG concepts, let the user pick one, then save the logo files."
+title: "logo-creation: published logo program"
+description: "A published Rein program that makes a project logo. A subagent draws three SVG concepts, a bundled script checks them, and the user picks one."
 ---
 
 # logo-creation

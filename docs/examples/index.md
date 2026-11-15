@@ -1,3 +1,8 @@
+---
+title: "Rein examples"
+description: "Read and run example Rein processes: incident triage, pull request merge and review, support tickets, priority work, and two published programs."
+---
+
 # Examples
 
 Each example below, except the published programs, is a process under `examples/rein/<name>/`, with a `package.json` manifest. Open one to read its files and run it.
