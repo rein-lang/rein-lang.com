@@ -17,7 +17,7 @@ Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build
    $ rein step --root <merge-pr example> --json \
        --answer main.task=merge --answer merge_pr.docs_only=no \
        --answer merge_pr.ci=red --answer merge_pr/fix.fix_pushed=yes
-   {"kind":"error", ... "message":"flow did not finish in 64 steps (reference cycle?)", ...}
+   {"kind":"error", ... "message":"process did not finish in 64 steps (reference cycle?)", ...}
    ```
 
    That run failed on that commit. The `merge-pr` example now ends the retry with a text, so `merge_pr/fix` no longer references `merge_pr`.

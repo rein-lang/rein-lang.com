@@ -8,7 +8,7 @@ Rein mimics TypeScript syntax and types, except `@` references. A reader who kno
 
 Each topic file keeps its section numbers. Read the file for the rule you need.
 
-- [Project layout](spec/project-layout.md): section 1, flows and scopes (1a).
+- [Project layout](spec/project-layout.md): section 1, processes and scopes (1a).
 - [Lexical rules](spec/lexical-rules.md): section 2.
 - [Grammar](spec/grammar.md): section 3, and the parser errors.
 - [Functions and parameters](spec/functions-and-parameters.md): section 4, functions, doc comments and parameters.

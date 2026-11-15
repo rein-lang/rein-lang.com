@@ -8,4 +8,4 @@
 - Every other event is a no-op: no output, exit 0. Errors are a no-op too, with the reason on stderr. The hook never blocks the agent.
 - Other tools have no hook yet.
 
-The context block says what flows are, lists the visible flows with their descriptions, and shows the stepping rule from section 11.
+The context block says what processes are, lists the visible processes with their descriptions, and shows the stepping rule from section 11.
