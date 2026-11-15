@@ -66,7 +66,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A field of a struct answer is not in the struct (`` `z` is not a field of `Pick`; fields are pr, task ``), or the answer itself is read as a value (`` `pick` is a struct answer; read one of its fields, like `pick.field` ``) |
 | An answer name clashes with a parameter or another answer (`duplicate name`) |
 | An answer is used before its declaration (`` `x` is used before it is declared ``) |
-| The flow root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
+| The process root has no `main.rein` (`project has no main.rein; it is the agent's entry point`). It is reported on `main.rein`, at 1:1. A step reports it only when its entry is missing too |
 | A hand-off reaches, inside another program, a program that is not installed or a function that the program does not have (`` `@b/main` hands off to `@c/main`: unknown program `c`; run `rein list` to list programs, or `rein install -g c` to install it ``). It is reported on the function of this project that starts the hand-off, at 1:1 |
 
 ### Warnings

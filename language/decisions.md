@@ -5,7 +5,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 
 ## Facts from the owner
 
-1. Rein is a programming language to describe agent flows. Instead of managing the harness or a graph (like Hermes, LangGraph or Deep Agents), Rein gives the agent instructions for what to do.
+1. Rein is a programming language to describe agent processes. Instead of managing the harness or a graph (like Hermes, LangGraph or Deep Agents), Rein gives the agent instructions for what to do.
 2. No `for` or `while` for now. Only `if` and `switch`.
 3. Each function is one file.
 4. Example: when the agent wants to merge a PR, it runs the `merge_pr` function. Its input is, for example, "is this a docs-only update?". Body: if yes, return "approved"; if not, return a reference to another function.
@@ -38,7 +38,7 @@ Each choice can change. The reason is one line.
 
 - Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
-- A flow root is a directory that holds `main.rein`, or the folder of a program's entry file (fact 25). The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per flow matches `.claude/`.
+- A process root is a directory that holds `main.rein`, or the folder of a program's entry file (fact 25). The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per process matches `.claude/`.
 - Scopes: project (`rein/` up the tree), user (`~/.config/rein/programs/`), system (`/etc/rein/`). Why: visible folders an agent can read and write with its normal tools.
 - The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
@@ -51,7 +51,7 @@ Each choice can change. The reason is one line.
 - Each parameter has its own doc comment right before it. The function has its own doc comment before `export default function`. Why: each component holds its own docs, so an edit to one parameter never touches another.
 - A function with no doc comment, or an empty one, is a compile error. No flag turns it off. Why: the description is what the agent and the reader see, so a function without one cannot run.
 - An async answer is a `const` with a doc comment, and it is stateless. Why: the run stops at the request, the caller answers, and the run starts again with the answer. No state is kept between runs.
-- `rein eval` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a flow.
+- `rein eval` and `rein describe` default to `main`. Why: the entry point is one name, so the agent needs no argument to start a process.
 - Functions not reachable from the entry (`main`, or `entry` in `rein.json`) give a warning. Why: an unused function is usually a mistake, such as a missing reference.
 - Evaluation is lazy. The runtime asks only for the parameters the taken path needs. Why: the agent does not answer questions that do not change the result.
 - `if` is a guard with no `else`. Why: each branch returns, so a function is a list of checks, and the reader sees each case in order.
@@ -64,10 +64,10 @@ Each choice can change. The reason is one line.
 - The line length counts characters, not bytes, and a tab is one character. Why: a reader sees characters; bytes would punish non-English text.
 - An `if` has an empty line above it and after its closing `}`, unless it is the first statement of its block or the next line is a `}`. Rein warns, not errors, so an installed program with a dense `if` still runs. Why: blank lines around `if` blocks keep programs readable, not dense, and the `if` is the one place where a reader must see where a check starts and ends.
 - A template that spans lines drops the indent shared by its lines after the first, so the agent text has no code indentation. Why: a long instruction is written indented inside the code, and the indent is not part of the instruction. This departs from TypeScript on purpose: a TypeScript template keeps the indent.
-- Reference cycles are allowed, but the checker warns. A cycle with an `await` call on it is not warned only when a question comes before one of its edges, such as a parameter the agent answers or a `request` above the call. Why: a cycle of returns, or an `await` cycle with no question, replays the same answers and fails at the 64-step limit. An `await` after a question asks a new key at each level, so the recursion can run until the agent stops it. A retry flow needs a loop.
+- Reference cycles are allowed, but the checker warns. A cycle with an `await` call on it is not warned only when a question comes before one of its edges, such as a parameter the agent answers or a `request` above the call. Why: a cycle of returns, or an `await` cycle with no question, replays the same answers and fails at the 64-step limit. An `await` after a question asks a new key at each level, so the recursion can run until the agent stops it. A retry process needs a loop.
 - One step per eval. `rein eval` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
-- Agents consume flows through `rein step` (protocol v1, see [spec.md section 11](spec/stepping.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same flow. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
+- Agents consume processes through `rein step` (protocol v1, see [spec.md section 11](spec/stepping.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same process. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
 - Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
 - Programs live in a visible `rein/` folder with a `rein.json` manifest, and packages come from `rein install`. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
 - Programs are npm packages installed with pnpm into `<user programs>/npm` (with `-g`) or the repo's `rein/npm` (without). Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
@@ -156,7 +156,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 - The stepper walks the callee as a hand-off, with the callee's own keys. Its final text becomes a request whose key is the caller's `const`. Once answered, the caller goes on after the `await`. Why: `rein step` stays stateless. The answers replay the walk, and no call stack is kept between steps. The callee needs no change to be called.
 - The answer has the doc and type rules of a `request` answer, and the call has the argument rules of a hand-off. Why: no new rules to learn.
 - A template cannot be awaited. Why: it gives text, not a run. Put the text in `request(...)` instead.
-- `rein graph` draws an `await` as a request node with a `call` edge to the callee. Why: the flow goes on from the answer, unlike a hand-off, which ends the function.
+- `rein graph` draws an `await` as a request node with a `call` edge to the callee. Why: the process goes on from the answer, unlike a hand-off, which ends the function.
 - Each call has its own answer keys: the caller's answer key, `>`, then the callee's key, such as `main.b>fn.ok`. Why: with one key per function, two calls of `fn` shared their answers, and a recursive call reused the outer level's answers and could never end. The prefix names the call site, so a key stays readable and stable across steps. A hand-off adds no prefix of its own: outside any call it keeps its old key, so no existing program changes, and inside a call it keeps the call's prefix.
 
 ## Planned (not built)
