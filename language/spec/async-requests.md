@@ -14,7 +14,8 @@ export default async function answerFaq(
 
   /** Did the customer confirm the article solved the problem? */
   const solved: boolean = await request(
-    `Reply with the help article link and ask the customer if it solved the problem.`,
+    `Reply with the help article link and ask the customer if it solved the
+    problem.`,
   );
 
   if (solved) {
