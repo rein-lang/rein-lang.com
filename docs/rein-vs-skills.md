@@ -47,6 +47,8 @@ flowchart LR
 
 For how each one gives the agent its text, see [Progressive disclosure](/progressive-disclosure).
 
+For why a flow is not written in TypeScript or Python, see [Why not an existing language](/why-not-a-programming-language).
+
 ## Use a skill for knowledge
 
 A skill is the more suitable tool when the agent needs to know something:
