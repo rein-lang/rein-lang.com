@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tupe12334/linecheck/main/schema/linecheck.schema.json
+
+# Per-file line limits, checked in CI by the `linecheck` job in .github/workflows/site.yml.
+# Run locally: `cargo install linecheck && linecheck --status .`
+rules:
+  # Docs and spec pages: long reference pages are normal, so the limits are looser.
+  - pattern: "**/*.md"
+    warn: 300
+    error: 600
+    warn_message: "Long page — consider splitting it into sub-pages"
+  # Site code: Astro pages/components, TS data, config, scripts and styles.
+  - pattern: "**/*.astro"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.ts"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.mts"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.mjs"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.py"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.css"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+  - pattern: "**/*.html"
+    warn: 200
+    warn_message: "Getting long — consider splitting into smaller components or modules"
+    error: 400
+    error_message: "Too large to review easily; split this file before merging"
+
+exclude:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/.vitepress/cache/**"
+  - "**/.astro/**"
+  - "**/pnpm-lock.yaml"
+  - "assets/**"
