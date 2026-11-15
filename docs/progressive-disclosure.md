@@ -1,6 +1,6 @@
 ---
-title: Progressive disclosure
-description: How skills and Rein programs give an agent information in steps. See the three levels of a skill, the four places where they stop, and how a Rein program shows one step at a time.
+title: "Progressive disclosure"
+description: "Learn how skills and Rein programs give an agent text in steps. See the three levels of a skill, where they stop, and how Rein shows one step."
 ---
 
 # Progressive disclosure

@@ -1,3 +1,7 @@
+---
+description: "Learn the Rein model on one page: the agent drives the process, each function is one file, inputs are typed questions, and the checker is strict."
+---
+
 # Concepts
 
 Rein describes an agent process as a set of small functions. Each function is one file. The functions reference each other by path. Together they tell the agent what to do next, one step at a time.

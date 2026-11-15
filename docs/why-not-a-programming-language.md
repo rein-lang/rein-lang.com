@@ -1,6 +1,6 @@
 ---
-title: Why not an existing language
-description: Why Rein is its own small language and not TypeScript or Python. Rein does not handle logic. It handles decision trees, with a stricter method than free text.
+title: "Why not an existing language"
+description: "Learn why Rein is its own small language and not TypeScript or Python. Rein does not do logic. It does decision trees, with stricter rules than text."
 ---
 
 # Why not an existing language
