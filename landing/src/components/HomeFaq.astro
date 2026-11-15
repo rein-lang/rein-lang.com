@@ -1,0 +1,25 @@
+---
+import { faqs } from "../data/faq";
+---
+
+<section id="faq" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="faq-heading">
+  <div class="mx-auto max-w-3xl">
+    <h2 id="faq-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Questions</h2>
+    <dl class="mt-10 space-y-8">
+      {faqs.map((faq) => (
+        <div>
+          <dt class="text-lg font-semibold">{faq.question}</dt>
+          <dd class="mt-2 leading-relaxed text-muted">
+            {faq.answer}
+            {faq.link && (
+              <>
+                {" "}
+                <a href={faq.link.href}>{faq.link.label}</a>.
+              </>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

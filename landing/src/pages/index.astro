@@ -2,7 +2,10 @@
 import Base from "../layouts/Base.astro";
 import FlowDiagram from "../components/FlowDiagram.astro";
 import ConceptTurn from "../components/ConceptTurn.astro";
-import { SITE_URL, GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
+import { GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
+import HomeFaq from "../components/HomeFaq.astro";
+import { faqs } from "../data/faq";
+import { absolute, website } from "../data/structuredData";
 import { flows } from "../data/flows";
 import { useCases } from "../data/useCases";
 import { reinVersion } from "../data/docsPages";
@@ -10,21 +13,60 @@ import { reinVersion } from "../data/docsPages";
 const title = "Rein language: instructions, not infrastructure for AI agents";
 const description = HOME_DESCRIPTION;
 
+// One linked graph: the site, the project, the language and its command line tool, and the questions below.
+const home = absolute("/");
+const project = { "@id": `${home}#organization` };
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Rein",
-  description,
-  url: new URL("/", SITE_URL).href,
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "Any",
-  softwareVersion: reinVersion(),
-  isAccessibleForFree: true,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  license: "https://opensource.org/licenses/MIT",
-  sameAs: ["https://github.com/rein-lang/rein"],
+  "@graph": [
+    { ...website, "@id": `${home}#website`, description, publisher: project },
+    {
+      "@type": "Organization",
+      ...project,
+      name: "Rein",
+      url: home,
+      logo: absolute("/apple-touch-icon.png"),
+      sameAs: ["https://github.com/rein-lang"],
+    },
+    {
+      "@type": "ComputerLanguage",
+      "@id": `${home}#language`,
+      name: "Rein",
+      alternateName: "Rein language",
+      description,
+      url: home,
+      author: project,
+      license: "https://opensource.org/licenses/MIT",
+      sameAs: ["https://github.com/rein-lang/rein"],
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${home}#cli`,
+      name: "rein",
+      description: "The rein command line tool checks, runs, steps, graphs and debugs Rein processes.",
+      url: absolute(GET_STARTED_HREF),
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "Any",
+      softwareVersion: reinVersion(),
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      license: "https://opensource.org/licenses/MIT",
+      author: project,
+      downloadUrl: "https://github.com/rein-lang/rein/releases",
+      sameAs: ["https://github.com/rein-lang/rein"],
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${home}#faq`,
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    },
+  ],
 };
----
+------
 
 <Base title={title} description={description} path="/" jsonLd={jsonLd}>
   <!-- Hero -->
@@ -299,4 +341,6 @@ const jsonLd = {
       </ul>
     </div>
   </section>
+
+  <HomeFaq />
 </Base>
