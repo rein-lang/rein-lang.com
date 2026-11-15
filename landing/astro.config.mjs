@@ -22,7 +22,7 @@ export default defineConfig({
   site: SITE_URL,
   output: "static",
   trailingSlash: "always",
-  integrations: [sitemap(), sitemapXml],
+  integrations: [sitemap({ filter: (page) => !/\/404\/?$/.test(new URL(page).pathname) }), sitemapXml],
   vite: {
     plugins: [tailwindcss()],
   },

@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import { GET_STARTED_HREF } from "../../site.config.mjs";
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/docs/", label: "Docs" },
+  { href: GET_STARTED_HREF, label: "Get started" },
+  { href: "/#use-cases", label: "Use cases" },
+];
+---
+
+<Base
+  title="Page not found | Rein"
+  description="This page does not exist on rein-lang.com."
+  path="/404"
+  noindex
+>
+  <section class="mx-auto max-w-3xl px-4 py-20 sm:px-6" aria-labelledby="not-found-heading">
+    <p class="text-sm font-medium text-muted">404</p>
+    <h1 id="not-found-heading" class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Page not found</h1>
+    <p class="mt-4">This page does not exist. It moved, or the link has an error. Use one of these links:</p>
+    <ul class="mt-6 flex flex-wrap gap-3">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="btn btn-secondary px-3 py-2 no-underline">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>

@@ -2,13 +2,13 @@
 import Base from "../layouts/Base.astro";
 import FlowDiagram from "../components/FlowDiagram.astro";
 import ConceptTurn from "../components/ConceptTurn.astro";
-import { SITE_URL, GET_STARTED_HREF } from "../../site.config.mjs";
+import { SITE_URL, GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
 import { flows } from "../data/flows";
 import { useCases } from "../data/useCases";
+import { reinVersion } from "../data/docsPages";
 
 const title = "Rein: instructions, not infrastructure for agents";
-const description =
-  "Rein is an alpha language for agent decision processes. Write each decision as a small function in its own file. Every path ends in an instruction or a pointer.";
+const description = HOME_DESCRIPTION;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -18,6 +18,11 @@ const jsonLd = {
   url: new URL("/", SITE_URL).href,
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Any",
+  softwareVersion: reinVersion(),
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  license: "https://opensource.org/licenses/MIT",
+  sameAs: ["https://github.com/rein-lang/rein"],
 };
 ---
 
