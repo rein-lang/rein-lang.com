@@ -16,7 +16,7 @@ pnpm run preview   # serves dist/ locally
 `site.config.mjs` holds the site-wide values:
 
 - `SITE_URL`: the base URL for canonical links, Open Graph, sitemap and robots.txt. The domain is `https://rein-lang.com`. Change it there only.
-- `EARLY_ACCESS_HREF`: the "Request early access" mailto link.
+- `GET_STARTED_HREF`: the "Get started" link, to the Getting started docs page.
 
 ## Routes
 
