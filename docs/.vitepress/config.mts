@@ -8,10 +8,13 @@ const grammar = JSON.parse(
 )
 const reinLanguage = { ...grammar, name: 'rein' }
 
-// Links to files of this repo go to GitHub. Links into the Rein source repo (crates/, examples/) become
-// plain text: that repo is private, so a link would 404 for readers.
+// Links to files of this repo go to GitHub. Links into the Rein source (crates/) and the examples
+// (examples/) go to their public repos.
 const repoBlob = 'https://github.com/rein-lang/rein-lang.com/blob/main/'
-const privateSource = /^(\.\.\/)*(crates|examples)\//
+const reinSource = /^(?:\.\.\/)*(crates\/.*)$/
+const examplesSource = /^(?:\.\.\/)*examples\/(.*)$/
+// VitePress puts `_` before a heading id that starts with a digit, such as `#_11-stepping-agent-interface`.
+const siteAnchor = (hash: string) => hash.replace(/^#(?=\d)/, '#_')
 const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
   'docs/decisions.md': '/reference/decisions',
@@ -31,6 +34,10 @@ const config = withMermaid(
     title: 'Rein',
     description: 'A strict TypeScript-like language for agent decision flows.',
     base: '/docs/',
+    // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
+    cleanUrls: true,
+    // The landing site lists its own pages. This lists the docs pages, at /docs/sitemap.xml.
+    sitemap: { hostname: 'https://rein-lang.com/docs/' },
     // Favicons live in landing/public and are served from the site root.
     head: [
       ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
@@ -56,14 +63,15 @@ const config = withMermaid(
               } else if (flow) {
                 child.attrSet('href', `/examples/${flow[1]}`)
               } else if (specTopics.has(href.split('#')[0].replace(/^spec\//, ''))) {
-                child.attrSet('href', `/reference/spec${href.slice(href.split('#')[0].length)}`)
+                child.attrSet('href', `/reference/spec${siteAnchor(href.slice(href.split('#')[0].length))}`)
               } else if (/^docs\//.test(href)) {
                 child.attrSet('href', repoBlob + href.replace(/^docs\//, 'language/'))
               } else if (href === 'LICENSE') {
                 child.attrSet('href', repoBlob + href)
-              } else if (privateSource.test(href)) {
-                unlinked.push(child.level)
-                Object.assign(child, { type: 'text', content: '' })
+              } else if (reinSource.test(href)) {
+                child.attrSet('href', `https://github.com/rein-lang/rein/blob/main/${reinSource.exec(href)![1]}`)
+              } else if (examplesSource.test(href)) {
+                child.attrSet('href', `https://github.com/rein-lang/examples/blob/main/${examplesSource.exec(href)![1]}`)
               }
             }
           }
