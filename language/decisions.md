@@ -11,7 +11,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 4. Example: when the agent wants to merge a PR, it runs the `merge_pr` function. Its input is, for example, "is this a docs-only update?". Body: if yes, return "approved"; if not, return a reference to another function.
 5. Each function has a description.
 6. A return value is always a string or a reference to another function.
-7. This repo is a proof of concept, private for now. It holds everything known for a fact so far: the language server, a VS Code extension, and several example projects.
+7. Rein is a proof of concept. The [rein](https://github.com/rein-lang/rein) repo is public. It holds the checker, the evaluator, the CLI and the language server. The VS Code extension, the example projects and this site have their own repos.
 8. Use Rust as much as possible. The core, the CLI and the language server are Rust. The VS Code extension is a thin JS client.
 9. Rein mimics TypeScript types and syntax as much as possible (for example `|` unions for choices), because TypeScript is very good to write and read.
 10. Every project has a `main.rein`; it is the agent's entry point. A program run from its own file needs none (fact 25).
