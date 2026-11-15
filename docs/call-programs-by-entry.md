@@ -20,7 +20,7 @@ A hand-off or an `await` to another program targets only the entry of that progr
 `rein check` gives this error on the reference:
 
 ```text
-`@pr-handling/ci/fix` is not the entry of program `pr-handling`; call `@pr-handling` with its inputs. See https://rein-lang.com/docs/call-programs-by-entry
+`@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry
 ```
 
 ## Fix it

@@ -44,7 +44,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A statement follows a terminating statement (`unreachable statement`) |
 | A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A program reference names a program that is not installed (`` cannot find program `x`; run `rein list` to list programs ``), or a function the program does not have (`` cannot find function `f` in program `x` ``) |
-| A program reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` is not the entry of program `pr-handling`; call `@pr-handling` with its inputs. See https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
+| A program reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
 | A reference to a template is returned without a call |
 | A call, a hand-off or an `await` has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call, a hand-off or an `await` names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
