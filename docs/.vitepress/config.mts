@@ -29,10 +29,21 @@ const specTopics = new Set(readdirSync(new URL('../../language/spec', import.met
 // Flows live in examples/rein/<flow>/. A link to one flow folder opens its example page.
 const flowFolder = /^examples\/rein\/([\w-]+)\/?$/
 
+// Search and social metadata for each page. The canonical URL matches the sitemap and cleanUrls.
+const site = 'https://rein-lang.com/'
+const docsUrl = `${site}docs/`
+const ogImage = `${site}og.png`
+const rein = { '@type': 'Organization', name: 'Rein', url: site }
+const sections: Record<string, { name: string; url: string }> = {
+  examples: { name: 'Examples', url: `${docsUrl}examples/` },
+  reference: { name: 'Reference', url: `${docsUrl}reference/spec` },
+}
+
 const config = withMermaid(
   defineConfig({
     title: 'Rein',
-    description: 'A strict TypeScript-like language for agent decision processes.',
+    description:
+      'Rein is a strict, typed language for agent processes. Each step asks the agent a typed question and returns the next instruction. Alpha.',
     base: '/docs/',
     // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
     cleanUrls: true,
@@ -43,6 +54,55 @@ const config = withMermaid(
       ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
       ['link', { rel: 'icon', href: '/favicon.ico', sizes: '48x48' }],
     ],
+    transformHead({ pageData, siteData }) {
+      if (pageData.isNotFound) return
+      const path = pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
+      const url = docsUrl + path
+      const title = pageData.title || siteData.title
+      const description = pageData.description || siteData.description
+      const isIndex = path === ''
+      const section = sections[path.split('/')[0]]
+      const crumbs = [
+        { name: 'Home', url: site },
+        { name: 'Docs', url: docsUrl },
+        ...(section && section.url !== url ? [section] : []),
+        ...(isIndex ? [] : [{ name: title, url }]),
+      ]
+      const jsonLd = [
+        {
+          '@context': 'https://schema.org',
+          '@type': isIndex ? 'WebPage' : 'TechArticle',
+          ...(isIndex ? { name: title } : { headline: title }),
+          description,
+          url,
+          inLanguage: 'en',
+          isPartOf: { '@type': 'WebSite', name: 'Rein', url: site },
+          publisher: rein,
+          author: rein,
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: c.url })),
+        },
+      ]
+      return [
+        ['link', { rel: 'canonical', href: url }],
+        ['meta', { property: 'og:type', content: isIndex ? 'website' : 'article' }],
+        ['meta', { property: 'og:site_name', content: 'Rein' }],
+        ['meta', { property: 'og:title', content: title }],
+        ['meta', { property: 'og:description', content: description }],
+        ['meta', { property: 'og:url', content: url }],
+        ['meta', { property: 'og:image', content: ogImage }],
+        ['meta', { property: 'og:image:width', content: '1200' }],
+        ['meta', { property: 'og:image:height', content: '630' }],
+        ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+        ['meta', { name: 'twitter:title', content: title }],
+        ['meta', { name: 'twitter:description', content: description }],
+        ['meta', { name: 'twitter:image', content: ogImage }],
+        ['script', { type: 'application/ld+json' }, JSON.stringify(jsonLd)],
+      ]
+    },
     markdown: {
       html: false,
       languages: [reinLanguage],

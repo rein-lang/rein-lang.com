@@ -1,3 +1,7 @@
+---
+description: "Install the rein CLI, write a first Rein process, then check, list, step and debug it. You need a Rust toolchain with cargo for the install."
+---
+
 # Getting started
 
 This page builds the `rein` command and runs a first process. It needs a Rust toolchain with `cargo`.

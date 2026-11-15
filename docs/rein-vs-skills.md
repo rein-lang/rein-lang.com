@@ -1,6 +1,6 @@
 ---
-title: Rein and skills
-description: When to use a Rein process and when to use an agent skill. See the use cases for each, the same task written both ways, and how to use them together.
+title: "Rein and skills"
+description: "Learn when to use a Rein process and when to use an agent skill. See the use cases of each, one task written both ways, and how to use them together."
 ---
 
 # Rein and skills

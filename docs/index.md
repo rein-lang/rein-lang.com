@@ -1,3 +1,8 @@
+---
+title: "Rein: a typed language for agent processes"
+description: "Rein is a strict, typed language for agent processes. Read what a process is, see a sample, and see how an agent steps it one answer at a time."
+---
+
 # Rein
 
 Status: proof of concept. Syntax can still change.

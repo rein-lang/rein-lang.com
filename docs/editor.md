@@ -1,3 +1,7 @@
+---
+description: "Install the Rein extension for VS Code. Get syntax highlighting, snippets and language server diagnostics for .rein files from the rein CLI."
+---
+
 # Rein for VS Code
 
 The VS Code extension adds syntax highlighting, snippets, and language server support for `.rein` files. It lives in its own repo: [rein-lang/vscode-rein](https://github.com/rein-lang/vscode-rein).
