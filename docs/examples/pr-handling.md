@@ -26,8 +26,10 @@ Each function gets `pr` from its caller and passes it on. There is no global sco
 ## Run it
 
 ```sh
-rein check examples/rein/pr-handling
-rein step --root examples/rein/pr-handling --input pr=https://example.com/pr/1 --json
+git clone https://github.com/rein-lang/examples
+cd examples
+rein check rein/pr-handling
+rein step --flow pr-handling --input pr=https://example.com/pr/1 --json
 ```
 
 ## Sample walk

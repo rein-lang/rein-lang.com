@@ -20,8 +20,10 @@ The flow asks three questions: how severe the alert is, whether customers feel i
 ## Run it
 
 ```sh
-cargo run -p rein -- check examples/rein/incident-triage
-cargo run -p rein -- run --root examples/rein/incident-triage
+git clone https://github.com/rein-lang/examples
+cd examples
+rein check rein/incident-triage
+rein run incident-triage
 ```
 
 ## Graph
