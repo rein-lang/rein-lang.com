@@ -17,15 +17,15 @@ Rein does not run the agent. The agent starts a program with the `rein_start` MC
 
 ## Functions are files
 
-A project holds one function per file, and the file path gives the function its name. The entry point is always `main`. A function describes itself in a doc comment. Every input carries a question of its own, which the agent reads before it answers. See [Declarations](/reference/spec#_4-declarations).
+A project holds one function per file, and the file path gives the function its name. The entry point is always `main`. A function describes itself in a doc comment. Every input carries a doc comment of its own. For a question, the agent reads it before it answers. See [Declarations](/reference/spec#_4-declarations).
 
 ## Functions hand off by reference
 
 A function ends in text for the agent, a reference to another function, or a call to a template that builds text. A reference is a relative path from the current file. Rein has no imports. See [References](/reference/spec#references) and [Templates](/reference/spec#templates).
 
-## Inputs are typed questions
+## Inputs are typed
 
-An input is a boolean or a choice of strings. The entry function asks for its inputs, and only when the path it is on needs them. A call to another function passes every input of that function. Inputs look like TypeScript parameters, so they are easy to read. See [Parameters](/reference/spec#parameters) and [Conditions](/reference/spec#_6-conditions).
+An input is a boolean, a choice of strings, or a `string`. The entry function gets its `string` inputs from `--input` or `rein_start`. It asks for its boolean and choice inputs as questions, and only when the path it is on needs them. A called function gets all its inputs from the caller. Inputs look like TypeScript parameters, so they are easy to read. See [Parameters](/reference/spec#parameters) and [Conditions](/reference/spec#_6-conditions).
 
 ## Requests wait for the agent
 
