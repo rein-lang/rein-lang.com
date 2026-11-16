@@ -114,6 +114,7 @@ A program package can ship scripts next to its `.rein` files. Put shell commands
 - In the request text, name the script and its arguments: ``await request(`Run scripts/mark-done.sh <thread id> from this program's folder.`)``.
 - The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
+- Security: bundled scripts run with the agent's rights, and `--ignore-scripts` does not protect against them. Review a third-party program's `scripts/` folder before you install it.
 
 ```json
 {
