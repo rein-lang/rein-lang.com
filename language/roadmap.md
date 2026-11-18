@@ -6,10 +6,10 @@ Language rules live in [spec.md](spec.md). The reasons live in [decisions.md](de
 
 ## Key dates
 
-| Date | Release | `@./path` and `@program` references | `import` statements |
-| --- | --- | --- | --- |
-| 2026-11-19 | the next release | Work. Each one gives a deprecation warning. | Work. |
-| 2026-12-19 | the first release on or after this date | An error. The program does not check or run. | The only way to name another file or program. |
+| Date | Release | `@./path` and `@program` references | Default import `import fix from "./ci/fix"` | Named import `import { fix } from "./ci/fix"` |
+| --- | --- | --- | --- | --- |
+| 2026-11-19 | the next release | Work. Each one gives a deprecation warning. | Works. Each one gives a deprecation warning. | Works. |
+| 2026-12-19 | the first release on or after this date | An error. The program does not check or run. | An error. The program does not check or run. | The only way to name another file or program. |
 
 The removal is a release, not a clock. An installed `rein` binary never starts to fail on a date by itself. The release that removes `@` references comes out on 2026-12-19 or soon after. Every warning names that date.
 
@@ -17,7 +17,7 @@ The removal is a release, not a clock. An installed `rein` binary never starts t
 
 Rein mimics TypeScript. The `@` reference is the one form TypeScript does not have. So Rein adopts the TypeScript named import, `import { name } from "path"`, and deprecates `@` references. The deprecation period is one month: from 2026-11-19 to 2026-12-19.
 
-Rein has one import form: the named import. A default import, `import fix from "./ci/fix"`, is an error. Why: the name in the importing file is always the name that the target declares, so a reader and a search find one name for one function.
+Rein keeps one import form: the named import. A default import, `import fix from "./ci/fix"`, works for the same month with a deprecation warning, so a file that a TypeScript habit or a tool writes still checks. It becomes an error on 2026-12-19, with the `@` references. Why only named imports: the name in the importing file is always the name that the target declares, so a reader and a search find one name for one function.
 
 ### The new syntax
 
@@ -74,7 +74,7 @@ No file needs a new export. Only the files that use `@` references change.
 - Each name in the braces is the name that the target's `export default function` or `export default interface` declares. Another name is an error: `` `./ci/fix` declares `fix`, not `fixCi`; write `import { fix } from "./ci/fix"` ``.
 - `as` gives a local name when two targets declare the same name: `import { fix as ciFix } from "./ci/fix";`. An `as` that keeps the same name is a warning.
 - A file exports one name, so the braces hold one name. A second name is an error.
-- A default import, `import fix from "./ci/fix"`, is an error: `` Rein has named imports only; write `import { fix } from "./ci/fix"` ``.
+- A default import, `import fix from "./ci/fix"`, resolves like the named import, under the local name it gives. Until 2026-12-19 it gives a warning: `` default imports are deprecated and become an error on 2026-12-19; write `import { fix } from "./ci/fix"` ``. From 2026-12-19 the same text is an error.
 - A path that starts with `./` or `../` names a file of the project. It has no `.rein` extension. The root rules of references stay: the target must stay inside the project root.
 - `"./message.struct"` names `message.struct.rein`. A struct name is used only as a type. A function name is used only as a hand-off, a template call or an `await`.
 - A bare path, such as `"pr-handling"`, names an installed program. The name in the braces is the name its entry function declares. The `package.json` dependency rules of references stay. Any other function of the program is an error that links [Call another program by its entry](https://rein-lang.com/docs/call-programs-by-entry).
@@ -87,17 +87,18 @@ No file needs a new export. Only the files that use `@` references change.
 
 Every tool gives the same warning text and the same removal date.
 
-- **`rein check`** gives a warning on each `@` reference:
+- **`rein check`** gives a warning on each `@` reference and each default import:
   `` warning: `@./ci/fix` is deprecated and becomes an error on 2026-12-19; write `import { fix } from "./ci/fix";` and use `fix`. Run `rein migrate imports` to change every file ``.
-  The summary line counts them: `3 deprecated references; they become errors on 2026-12-19`. The exit code stays 0 for warnings.
-- **`rein check --deny-deprecated`** makes each deprecation an error. Use it in CI to stop new `@` references before the removal.
+  A default import gives the warning in the Import rules.
+  The summary line counts them: `3 deprecated imports and references; they become errors on 2026-12-19`. The exit code stays 0 for warnings.
+- **`rein check --deny-deprecated`** makes each deprecation an error. Use it in CI to stop new `@` references and default imports before the removal.
 - **The language server** gives the same warning with:
   - the `Deprecated` diagnostic tag, so editors draw the reference struck through;
   - the diagnostic code `deprecated-reference`, which links to this page;
-  - a quick fix, **Convert to import**, for one reference, and **Convert all references in this file**;
+  - a quick fix, **Convert to named import**, for one reference or default import, and **Convert all in this file**;
   - a hover on the reference that shows the removal date and the new form.
-- **The language server** also supports the new syntax: completion of import paths, program names and the declared name in the braces, go to definition and find references on import names, and a quick fix for a wrong name or a default import.
-- **`rein migrate imports`** changes every file of the project. It adds one named import for each target, with `as` only when two names collide, and replaces each reference with the name. It changes nothing when no `@` reference is left. `rein migrate imports --check` lists the files it would change and exits 1 if there are any.
+- **The language server** also supports the new syntax: completion of import paths, program names and the declared name in the braces, go to definition and find references on import names, and a quick fix for a wrong name.
+- **`rein migrate imports`** changes every file of the project. It adds one named import for each target, with `as` only when two names collide, replaces each reference with the name, and turns each default import into a named import. It renames the uses when the default import gave another name. It changes nothing when no `@` reference or default import is left. `rein migrate imports --check` lists the files it would change and exits 1 if there are any.
 - **`rein step`, `rein run` and the MCP tools** stay quiet. A deprecation is never part of an agent step, so a run does not change during the month.
 - **The VS Code extension** colors `import`, `from`, `as` and the path string.
 
@@ -105,8 +106,8 @@ Every tool gives the same warning text and the same removal date.
 
 | Repo | Item |
 | --- | --- |
-| [rein](https://github.com/rein-lang/rein) | Parse named imports. Resolve them with the reference rules and the declared name. Give the errors above. |
-| [rein](https://github.com/rein-lang/rein) | Give the deprecation warning, the summary line and `--deny-deprecated` in `rein check`. |
+| [rein](https://github.com/rein-lang/rein) | Parse named imports, and default imports with a deprecation warning. Resolve them with the reference rules and the declared name. Give the errors above. |
+| [rein](https://github.com/rein-lang/rein) | Give the deprecation warnings for `@` references and default imports, the summary line and `--deny-deprecated` in `rein check`. |
 | [rein](https://github.com/rein-lang/rein) | Language server: the `Deprecated` tag, the diagnostic code, the quick fixes, the hover, and import completion. |
 | [rein](https://github.com/rein-lang/rein) | `rein migrate imports` and `--check`. |
 | [rein](https://github.com/rein-lang/rein) | README: say that Rein uses `import { name } from`, not `@` references. |
@@ -115,9 +116,9 @@ Every tool gives the same warning text and the same removal date.
 | [examples](https://github.com/rein-lang/examples) | Migrate every example program with `rein migrate imports`. |
 | rein-lang programs | Migrate each program repo before 2026-12-19, and add `rein check --deny-deprecated` to its CI. |
 
-## Next: remove `@` references (2026-12-19)
+## Next: remove `@` references and default imports (2026-12-19)
 
-- `@./path`, `@../path` and `@program` become an error. The error text keeps the new form and the `rein migrate imports` hint.
+- `@./path`, `@../path`, `@program` and default imports become an error. The error text keeps the new form and the `rein migrate imports` hint.
 - `rein migrate imports` stays for one more minor release, so a late program can still migrate in one command.
 - The spec drops the deprecated forms.
 
