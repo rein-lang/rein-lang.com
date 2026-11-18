@@ -146,6 +146,7 @@ const config = withMermaid(
         { text: 'Concepts', link: '/concepts' },
         { text: 'Examples', link: '/examples/' },
         { text: 'Reference', link: '/reference/spec' },
+        { text: 'Roadmap', link: '/reference/roadmap' },
         { text: 'Alpha', link: '/reference/decisions' },
       ],
       sidebar: [
@@ -181,6 +182,7 @@ const config = withMermaid(
           items: [
             { text: 'Language reference', link: '/reference/spec' },
             { text: 'Decisions and open questions', link: '/reference/decisions' },
+            { text: 'Roadmap', link: '/reference/roadmap' },
             { text: 'Agent interface', link: '/reference/interface' },
             { text: 'CLI reference', link: '/reference/cli' },
             { text: 'CLI: run and step', link: '/reference/cli-run' },
