@@ -20,7 +20,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 13. Templates work like Rust macros: they expand to a string. A standard library ships templates such as `delegate(model, task)`.
 14. A function can send the agent an async request and branch on the typed response (`const x: boolean = await request(...)`).
 15. Every function returns something on every path: a string, a template, or a reference to another function.
-16. No import statements: functions reference each other with relative paths (`@./path`, `@../path`).
+16. A file names another file or program with a TypeScript named import, by the name the target declares: `import { fix } from "./ci/fix";` for a function, `import { Message } from "./message.struct";` for a shared struct, `import { prHandling } from "pr-handling";` for a program. A default import is an error. `@` references are deprecated and become an error on 2026-12-19. See the [roadmap](roadmap.md). (Amended 2026-11-19.)
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
 18. A program is its entry file (fact 25). Scoped folders are only a catalog: project (`rein/`), user (the user programs folder, filled by `rein install -g`), system; the closest scope wins. `rein list` shows the catalog. The agent finds a program there by name, not by navigating a dot-folder. (Amended 2026-11-12.)
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
@@ -29,7 +29,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 22. No global scope. A function gets a value only from its parameters. The caller passes it.
 23. Templates are permanent, and user templates (`templates/*.rein`) stay, not only the std `delegate` and `askUser`. A template call is a value, not a step: it nests as an argument and adds no hop to the `rein step` trace. Template arguments are always checked: the count equals the parameter count, every parameter is used in the template literal, and every parameter has its own doc comment. (2026-11-12)
 24. Call arguments are named, as in Python: `f(name=value, other=value)`. A positional argument is a compile error, and no flag allows it. Order does not matter. Each name is a parameter, given once. A name says what a value is, and it still works when a parameter moves. (2026-11-12)
-25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see Planned). (2026-11-12)
+25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see the [roadmap](roadmap.md)). (2026-11-12)
 26. A function takes one parameter at most. The parameter is a scalar or a struct. An inline struct lives in the function's file, is that function's input, and cannot be exported. A struct that more than one function needs is a standalone `<name>.struct.rein` file that exports only that struct. (2026-11-12)
 
 ## PoC choices (revisable)
@@ -162,8 +162,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 ## Planned (not built)
 
-- Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
-- Research an agent-agnostic tool that installs agent hooks. Why: each agent keeps its hook config in its own format and place, so Rein should not own a per-agent installer.
+Planned work and its dates live in the [roadmap](roadmap.md).
 
 ## Open questions
 
