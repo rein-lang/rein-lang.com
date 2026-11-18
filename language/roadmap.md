@@ -19,9 +19,11 @@ Rein mimics TypeScript. The `@` reference is the one form TypeScript does not ha
 
 ### The new syntax
 
+The samples below use the planned syntax. Today's `rein check` rejects them until `import` ships.
+
 A function file has one `export default function`. Import it with a default import:
 
-```ts
+```typescript
 import fix from "./ci/fix";
 import prHandling from "pr-handling";
 
@@ -44,7 +46,7 @@ export default function triage({ flaky, pr }: Input) {
 
 A shared struct file holds one exported interface. Import it with a named import:
 
-```ts
+```typescript
 import { Message } from "./message.struct";
 
 /** Tells the customer the next step. */
