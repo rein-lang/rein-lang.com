@@ -20,6 +20,8 @@ Rein has four kinds of doc comment. Each one holds only its own text.
 - An answer doc comment. It sits right before the `const` of an async request (section 4, Async requests).
 
 ```ts
+import { escalate } from "./escalate";
+
 interface Ticket {
   /** What kind of ticket is it? */
   category: "billing" | "bug" | "question";
@@ -35,7 +37,7 @@ interface Ticket {
  */
 export default function handleTicket({ category, vip }: Ticket) {
   if (vip) {
-    return @./escalate;
+    return escalate;
   }
 
   return `Answer the ${category} ticket.`;

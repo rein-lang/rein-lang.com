@@ -46,6 +46,9 @@ A decision tree needs five things:
 That is the full list. Rein has these five things, and each one is part of the language:
 
 ```rein
+import { review_code } from "./review_code";
+import { fix } from "./fix";
+
 interface Input {
   /** Does the PR change only documentation files? */
   docs_only: boolean;
@@ -63,9 +66,9 @@ export default function main({ docs_only, ci }: Input) {
 
   switch (ci) {
     case "green":
-      return @./review_code;
+      return review_code;
     case "red":
-      return @./fix;
+      return fix;
     case "pending":
       return `Wait for CI, then run this process again.`;
   }
