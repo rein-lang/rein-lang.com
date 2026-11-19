@@ -91,7 +91,7 @@ A call follows each reference in the same call. The `trace` lists the functions 
 ## Quickstart
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.3 --locked rein  # puts `rein` on PATH
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.4 --locked rein  # puts `rein` on PATH
 git clone https://github.com/rein-lang/examples
 cd examples
 rein list                               # the programs visible from here
