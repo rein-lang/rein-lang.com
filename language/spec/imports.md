@@ -5,12 +5,12 @@ An import names a function or a shared struct of another file. Rein has one impo
 ```ts
 import { fix } from "./ci/fix";
 import { Message } from "./message.struct";
-import { prHandling } from "pr-handling";
+import { main } from "pr-handling";
 ```
 
 - `import { fix } from "./ci/fix";` names the function that `ci/fix.rein` declares with `export default function`.
 - `import { Message } from "./message.struct";` names the struct that `message.struct.rein` declares with `export default interface`.
-- `import { prHandling } from "pr-handling";` names the entry function of the installed program `pr-handling`. The name is the name that the entry declares.
+- `import { main } from "pr-handling";` names the entry function of the installed program `pr-handling`. The name is the name that the entry declares, here `main`.
 
 Rules:
 
