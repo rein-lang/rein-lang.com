@@ -11,7 +11,7 @@ This page builds the `rein` command and runs a first process. It needs a Rust to
 Install the binary from a release tag:
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.2 --locked rein
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.3 --locked rein
 rein --version
 ```
 
