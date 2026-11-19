@@ -25,7 +25,7 @@ A project holds one function per file, and the file path gives the function its 
 
 ## Functions hand off by reference
 
-A function ends in text for the agent, a reference to another function, or a call to a template that builds text. A reference is a relative path from the current file. Rein has no imports. See [References](/reference/spec#references) and [Templates](/reference/spec#templates).
+A function ends in text for the agent, a reference to another function, or a call to a template that builds text. An import names another function by its path from the current file, as `import { fix } from "./fix";`. See [Imports](/reference/spec#imports) and [Templates](/reference/spec#templates).
 
 ## Inputs are typed questions
 

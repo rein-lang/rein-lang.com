@@ -11,7 +11,7 @@ Rein is a language for agent processes. Other tools manage the harness or a grap
 
 Do you use skills today? A skill gives the agent knowledge, and a process gives it the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each. See [Progressive disclosure](/progressive-disclosure) for how each one gives the agent its text.
 
-Rein mimics TypeScript syntax and types, except `@` references. There are no imports, no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
+Rein mimics TypeScript syntax and types. It uses named imports, as TypeScript does. There is no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
 
 ## Sample
 

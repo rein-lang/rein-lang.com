@@ -3,7 +3,7 @@
 Status: proof of concept. Rules here drive the checker and the evaluator.
 Design reasons and open questions live in [decisions.md](decisions.md).
 
-Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no global scope, and no `default` or `else`. A function gets its values only from its parameter and its answers.
+Rein mimics TypeScript syntax and types. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no loops, no global scope, and no `default` or `else`. Its imports are named imports, as in TypeScript (section 4, Imports). A function gets its values only from its parameter and its answers.
 ## Topics
 
 Each topic file keeps its section numbers. Read the file for the rule you need.

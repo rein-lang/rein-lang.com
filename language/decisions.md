@@ -36,13 +36,13 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 
 Each choice can change. The reason is one line.
 
-- Rein mimics TypeScript syntax and types, except `@` references. Why: the owner wants TypeScript syntax, and the references need a form TypeScript does not have. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
+- Rein mimics TypeScript syntax and types. (changed 2026-11-19: `@` references were the one exception; named imports, as in TypeScript, replace them.) Why: the owner wants TypeScript syntax. Rein files are not valid TypeScript, so the TypeScript syntax check is gone.
 - File extension is `.rein`. Why: short, and easy to match in editors.
 - A process root is a directory that holds `main.rein`, or the folder of a program's entry file (fact 25). The `rein.toml` marker is gone. Why: the entry file already marks the root, and a folder per process matches `.claude/`.
 - Scopes: project (`rein/` up the tree), user (`~/.config/rein/programs/`), system (`/etc/rein/`). Why: visible folders an agent can read and write with its normal tools.
 - The hook injects the context on the first prompt, not at session start. Why: polyhook 0.2.0 cannot write a SessionStart context in Claude Code's format. It names the event `UserPromptSubmit` (or `BeforeAgent` for a payload it misreads as Gemini CLI). Claude Code expects `hookEventName: "SessionStart"`. The prompt path is in polyhook's format. Revisit when polyhook can write SessionStart context.
 - Function name is the file path relative to the root, without `.rein` (`ci/fix.rein` is `ci/fix`). Why: the name is the location, so no separate registry is needed. The `export default function` name is a free identifier. Why: it follows TypeScript, where the name need not match the file.
-- Functions are used through references: `return @./ci/fix;`. Why: no import statement; a reference is a path from the current file, so a file is moved with its folder.
+- Functions are used through named imports: `import { fix } from "./ci/fix";`, then `return fix;`. (changed 2026-11-19: the first design used `@./ci/fix` references, which are deprecated.) Why: the name in the braces is the name the target declares, so a reader and a search find one name for one function. The path is still from the current file, so a file is moved with its folder.
 - A reference path starts with `./` or `../` and has no extension, and must stay inside the project. Why: a relative, bounded path keeps every function inside one project.
 - Std names need no import: `delegate`, `askUser`, `request`. Why: the std library is part of the language, so it is always there.
 - Templates are files with `string` parameters, called by a std name or a reference. Why: a template is a string builder, and calls keep the caller in control of the values.
@@ -74,7 +74,7 @@ Each choice can change. The reason is one line.
 - A struct is an `interface`. There is no `type X = { ... }` form. Why: one form keeps the grammar small, and an `interface` reads as a named record in TypeScript.
 - A struct parameter is destructured: `({ a, b }: Input)`. Why: the body reads each field by its bare name, as before, so conditions, templates, answer keys and the step protocol do not change. It is valid TypeScript.
 - The braces name every field of the struct. Why: Rein is strict, and a field the function cannot read is a mistake.
-- A shared struct is named with a reference in the type position: `@./message` is `message.struct.rein`. Why: Rein has no imports (fact 16), and the reference form and its root rules already exist.
+- A shared struct is named with an import: `import { Message } from "./message.struct";`, then `Message` in the type position. (changed 2026-11-19: it was a reference, `@./message`, which is deprecated.) Why: the same name rule as a function import, and the root rules of references still apply.
 - A call names the fields: `f(a=..., b=...)`. Why: existing calls keep working, and fact 24 stays true.
 - A `.struct.rein` file is not a function. It has no graph node and no reachability warning. Why: it holds no decision and cannot be run.
 - A struct doc comment is required only on a shared struct. Why: an inline struct is described by its function.
