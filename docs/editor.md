@@ -11,7 +11,7 @@ The VS Code extension adds syntax highlighting, snippets, and language server su
 The extension starts the `rein` CLI as its language server. Install it from this repo:
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.1 --locked rein
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.2 --locked rein
 ```
 
 `rein` must be on your `PATH`. Otherwise set `rein.serverPath` to its full path.
