@@ -3,13 +3,15 @@
 A function can ask the agent for a step and wait for an answer. The answer is a typed `const`:
 
 ```ts
+import { escalate } from "../escalate";
+
 /** Answer a FAQ ticket with a help article, or escalate it. */
 export default async function answerFaq(
   /** Did you find a help article that answers the question? */
   article_found: boolean,
 ) {
   if (!article_found) {
-    return @../escalate;
+    return escalate;
   }
 
   /** Did the customer confirm the article solved the problem? */
@@ -22,7 +24,7 @@ export default async function answerFaq(
     return `Close the ticket as solved.`;
   }
 
-  return @../escalate;
+  return escalate;
 }
 ```
 
@@ -38,6 +40,8 @@ export default async function answerFaq(
 An answer can be a struct. The struct is an inline `interface` in the file, or a shared `@./name` (`name.struct.rein`). Section 4, Structs, gives the struct rules.
 
 ```ts
+import { main } from "pr-handling";
+
 interface Pick {
   /** The link of the pull request. */
   pr: string;
@@ -49,7 +53,7 @@ interface Pick {
 export default async function pullRequest() {
   /** The pull request of the next notification. */
   const pick: Pick = await request(`Pick the next pull request notification.`);
-  return @pr-handling(pr=pick.pr);
+  return main(pr=pick.pr);
 }
 ```
 

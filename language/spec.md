@@ -13,6 +13,7 @@ Each topic file keeps its section numbers. Read the file for the rule you need.
 - [Grammar](spec/grammar.md): section 3, and the parser errors.
 - [Functions and parameters](spec/functions-and-parameters.md): section 4, functions, doc comments and parameters.
 - [Structs](spec/structs.md): section 4, inline and shared structs.
+- [Imports](spec/imports.md): section 4, named imports of functions and structs.
 - [References](spec/references.md): section 4, relative and program references.
 - [Std and templates](spec/std-and-templates.md): section 4, std names and templates.
 - [Inputs](spec/inputs.md): section 4, `string` parameters.

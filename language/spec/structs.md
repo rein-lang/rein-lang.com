@@ -10,7 +10,7 @@ A struct is inline or shared.
 - An inline struct that the function does not take gives a warning: `` unused struct `X`; an inline struct is the input of the function in its file ``.
 - A shared struct is a file `<name>.struct.rein`. It holds one `export default interface` and nothing else. Error: ``a `.struct.rein` file holds one `export default interface` and nothing else``.
 - A shared struct needs a doc comment: `` missing doc comment on struct `Name`; put /** description */ right before `export default interface` ``.
-- A function names a shared struct with a reference: `({ a, b }: @./message)` names the struct of `message.struct.rein` in the same folder. The reference rules apply (section 4, References): the path is relative, has no extension, and stays inside the root. A missing file is an error: `` cannot find struct `@./message`; a shared struct is a `message.struct.rein` file ``.
+- A function names a shared struct with an import: `import { Message } from "./message.struct";` names the struct of `message.struct.rein` in the same folder, and `({ a, b }: Message)` uses it (section 4, Imports). The import rules apply: the path is relative, has no extension, and stays inside the root. A missing file is an error. Its text still names the old form: `` cannot find struct `@./message`; a shared struct is a `message.struct.rein` file ``. A struct reference, `({ a, b }: @./message)`, is deprecated; it gives a warning until rein 0.2.0 (section 4, References).
 - When two functions take the same struct, use a shared struct. An inline struct belongs to one function.
 - A function reference, such as `return @./message;`, never names a `.struct.rein` file.
 
@@ -31,12 +31,14 @@ export default interface Message {
 `refund/tell_customer.rein` takes it. `faq/close_ticket.rein` takes it the same way.
 
 ```ts
+import { Message } from "../message.struct";
+
 /**
  * Tell the customer what happens next, in one sentence.
  */
-export default function tellCustomer({ opening, next_step }: @../message) {
+export default function tellCustomer({ opening, next_step }: Message) {
   return `${opening} ${next_step}`;
 }
 ```
 
-A caller gives each field by name: ``@./refund/tell_customer(opening=`...`, next_step=`...`)``.
+A caller imports the function and gives each field by name: ``import { tellCustomer } from "./refund/tell_customer";`` and then ``tellCustomer(opening=`...`, next_step=`...`)``.

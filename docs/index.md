@@ -20,6 +20,9 @@ Rein mimics TypeScript syntax and types, except `@` references. There are no imp
 ```ts
 // merge_pr.rein
 
+import { review_code } from "./merge_pr/review_code";
+import { fix } from "./merge_pr/fix";
+
 interface Input {
   /** Does the PR change only documentation files? */
   docs_only: boolean;
@@ -37,9 +40,9 @@ export default function mergePr({ docs_only, ci }: Input) {
 
   switch (ci) {
     case "green":
-      return @./merge_pr/review_code;
+      return review_code;
     case "red":
-      return @./merge_pr/fix;
+      return fix;
     case "pending":
       return `wait for CI, then run merge_pr again`;
   }
@@ -88,7 +91,7 @@ A call follows each reference in the same call. The `trace` lists the functions 
 ## Quickstart
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.1 --locked rein  # puts `rein` on PATH
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.2 --locked rein  # puts `rein` on PATH
 git clone https://github.com/rein-lang/examples
 cd examples
 rein list                               # the programs visible from here
