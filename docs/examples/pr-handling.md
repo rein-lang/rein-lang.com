@@ -204,6 +204,11 @@ flowchart TD
 ### `main.rein`
 
 ```rein
+import { review } from "./review";
+import { address } from "./comments/address";
+import { fix } from "./ci/fix";
+import { merge } from "./merge";
+
 interface Input {
   /** The link of the pull request to handle. */
   pr: string;
@@ -224,13 +229,13 @@ export default function main({ pr, draft, task }: Input) {
 
   switch (task) {
     case "review":
-      return @./review(pr=pr);
+      return review(pr=pr);
     case "address comments":
-      return @./comments/address(pr=pr);
+      return address(pr=pr);
     case "fix ci":
-      return @./ci/fix(pr=pr);
+      return fix(pr=pr);
     case "merge":
-      return @./merge(pr=pr);
+      return merge(pr=pr);
   }
 }
 ```
@@ -318,6 +323,10 @@ export default async function addressComments({ pr, open_comments }: Input) {
 ### `merge.rein`
 
 ```rein
+import { fix } from "./ci/fix";
+import { address } from "./comments/address";
+import { review } from "./review";
+
 interface Input {
   /** The link of the pull request to merge. */
   pr: string;
@@ -335,7 +344,7 @@ interface Input {
 export default function merge({ pr, ci, conflicts, review }: Input) {
   switch (ci) {
     case "red":
-      return @./ci/fix(pr=pr);
+      return fix(pr=pr);
     case "pending":
       return `Wait for CI to finish on ${pr}. Then start this program again.`;
     case "green":
@@ -347,9 +356,9 @@ export default function merge({ pr, ci, conflicts, review }: Input) {
         case "approved":
           return `Merge the pull request ${pr}. Then delete its branch.`;
         case "changes requested":
-          return @./comments/address(pr=pr);
+          return address(pr=pr);
         case "no review":
-          return @./review(pr=pr);
+          return review(pr=pr);
       }
   }
 }
@@ -358,6 +367,9 @@ export default function merge({ pr, ci, conflicts, review }: Input) {
 ### `review.rein`
 
 ```rein
+import { security_review } from "./review/security_review";
+import { post_review } from "./review/post_review";
+
 interface Input {
   /** The link of the pull request to review. */
   pr: string;
@@ -380,7 +392,7 @@ export default async function review(
   }
 
   if (security_sensitive) {
-    return @./review/security_review(pr=pr);
+    return security_review(pr=pr);
   }
 
   /** What is the result of the code review? */
@@ -391,13 +403,13 @@ export default async function review(
     );
   switch (verdict) {
     case "clean":
-      return @./review/post_review(kind=`approve`,
+      return post_review(kind=`approve`,
         body=`one line on what you checked`, pr=pr);
     case "small problems":
-      return @./review/post_review(kind=`comment`,
+      return post_review(kind=`comment`,
         body=`each small problem, with its file and line`, pr=pr);
     case "blocking problems":
-      return @./review/post_review(kind=`request changes`,
+      return post_review(kind=`request changes`,
         body=`each blocking problem, with its file and line`, pr=pr);
   }
 }
@@ -427,6 +439,8 @@ export default function postReview({ kind, body, pr }: Input) {
 ### `review/security_review.rein`
 
 ```rein
+import { post_review } from "./post_review";
+
 /**
  * Review a pull request for security problems.
  * Request changes when one is found, else approve.
@@ -442,11 +456,11 @@ export default async function securityReview(
   );
 
   if (security_problem) {
-    return @./post_review(kind=`request changes`,
+    return post_review(kind=`request changes`,
       body=`each security problem, with its file and line`, pr=pr);
   }
 
-  return @./post_review(kind=`approve`,
+  return post_review(kind=`approve`,
     body=`the security checks you made`, pr=pr);
 }
 ```

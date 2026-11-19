@@ -8,7 +8,7 @@ A Rein program is a running app. The agent finds it by name, starts it, and answ
 
 - A program is written in `.rein` files, in the TypeScript-like syntax of [spec.md](spec.md).
 - Each parameter is a question. Its doc comment is the question text.
-- Functions reference each other with `@./path` and `@../path`.
+- Functions use each other through named imports, such as `import { fix } from "./ci/fix";`. The `@./path` and `@../path` references are deprecated.
 - A parameter asks for a fact. A `request` asks the agent to do a step, then answer.
 - The evaluator in `rein_core::step` is not changed. Every interface below calls it.
 

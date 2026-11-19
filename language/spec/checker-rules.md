@@ -60,7 +60,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
 | A template parameter is not used |
 | A template interpolates a boolean, or a name that is not a parameter or an answer |
-| An import statement is in the file (`Rein has no imports`) |
+| An `import type`, `import *`, or side-effect import (`` `import *` is not supported; write `import { name } from "path";` ``). A named import is allowed, section 4, Imports |
 | `await` without `export default async function` |
 | `await` of a name other than `request` or a reference (`only `request` or a reference like `@program` can be awaited`) |
 | `await` outside a `const` answer (`` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` ``) |

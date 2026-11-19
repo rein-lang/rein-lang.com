@@ -96,7 +96,7 @@ A general language has much more than those five things. Rein refuses each of th
 ```text
 error: Rein has no loops yet
 error: Rein has no variables
-error: Rein has no imports; reference functions with `@./path` and use std functions directly
+error: `import *` is not supported; write `import { name } from "path";`
 error: Rein has no `else`: end the `if` block with a return, and handle the other case after it
 ```
 

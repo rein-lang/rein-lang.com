@@ -2,7 +2,8 @@
 
 | Command | Purpose |
 | --- | --- |
-| `rein check [PATH]` | Check a project directory, a directory inside a project, or one `.rein` file. Default `.`. Prints `file:line:col: error: message` for the files under PATH. Exit code 1 when there are errors, when PATH does not exist, or when PATH is not a `.rein` file. |
+| `rein check [--deny-deprecated] [PATH]` | Check a project directory, a directory inside a project, or one `.rein` file. Default `.`. `--deny-deprecated` makes each deprecated `@` reference and default import an error, as they become in rein 0.2.0. Without it they give a warning. Prints `file:line:col: error: message` for the files under PATH. Exit code 1 when there are errors, when PATH does not exist, or when PATH is not a `.rein` file. |
+| `rein migrate imports [--check] [PATH]` | Change every `@` reference and default import of the project to a named import, in every file. Each target gets one `import { name } from "path";`, with `as` only when two names collide. It changes nothing when no `@` reference or default import is left. `--check` changes nothing: it lists the files it would change and exits 1 if there are any. Default `.`. |
 | `rein eval [FUNCTION] [--root DIR] [--set name=value]... [--json]` | Evaluate one step. `FUNCTION` defaults to `main`. Prints the returned string, or `next: target` with the target's description and inputs. Exit code 2 when a parameter is needed. Exit code 3 when the agent must do a request. `--set` also gives a value to a `string` parameter. A name given twice with `--set` is an error. |
 | `rein run [NAME] [--root DIR] [--entry FN] [--json]` | Run a program as a live process. Writes one step per line, reads one answer per line on stdin. See [interface.md](../interface.md). |
 | `rein describe [FUNCTION] [--root DIR]` | Print the function's schema as JSON. `FUNCTION` defaults to `main`. Usable as an agent tool schema. A template's parameters have type `string`. |
