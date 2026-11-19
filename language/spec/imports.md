@@ -23,6 +23,7 @@ Rules:
 - A bare path, such as `"pr-handling"`, names an installed program. The `package.json` dependency rules of References apply. Any other function of the program is an error. Call the program by its entry instead: https://rein-lang.com/docs/call-programs-by-entry.
 - The function identity stays the root-relative name, such as `ci/fix`. The CLI, the JSON output, the graph and the answer keys do not change.
 - An import name cannot be a std name, such as `delegate` or `askUser`. Std names stay global and need no import. Two imports with the same local name are an error.
+- An import name cannot equal a parameter, destructured field, const or struct name of the file. rein 0.1.4 gives a warning. rein 0.2.0 makes it an error.
 - An import that the file does not use is a warning.
 - `import type`, `import * as` and side-effect imports (`import "./x";`) are errors. Each error names the form to use.
 
