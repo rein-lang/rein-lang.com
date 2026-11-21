@@ -40,7 +40,7 @@ flowchart TD
     end
     subgraph s1 ["main.rein"]
         f1(["main(workplace)"])
-        f1_0[/"await find_projects<br/>projects: Projects"/]
+        f1_0[/"await @./find_projects<br/>projects: Projects"/]
         f1_1{"Did find_projects find no repository?<br/>projects.none: boolean"}
         f1_2("No priority project has activity.")
     end

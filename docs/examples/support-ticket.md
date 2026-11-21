@@ -45,7 +45,7 @@ flowchart TD
         f1_0{"Did you find a help article that answers the question?<br/>article_found: boolean"}
         f1_1[/"request: ˋReply with the help article link and ask the customer if it solved the<br/>problem.ˋ"/]
         f1_2{"Did the customer confirm the article solved the problem?<br/>solved: boolean"}
-        f1_3("close_ticket(opening=ˋGlad the help article solved the problem.ˋ, next_step=ˋReply to this ticket if it comes back.ˋ)")
+        f1_3("@./faq/close_ticket(opening=ˋGlad the help article solved the problem.ˋ, next_step=ˋReply to this ticket if it comes back.ˋ)")
     end
     subgraph s2 ["faq/close_ticket.rein"]
         f2[["faq/close_ticket(opening, next_step)"]]
@@ -59,7 +59,7 @@ flowchart TD
     subgraph s4 ["refund.rein"]
         f4[["refund"]]
         f4_0{"Is the requested refund above the agent's limit?<br/>refund_over_limit: boolean"}
-        f4_1("tell_customer(opening=ˋRefund the amount the customer asked for and confirm it in the<br/>ticket.ˋ, next_step=ˋThen tell the customer the refund takes 5 business days.ˋ)")
+        f4_1("@./refund/tell_customer(opening=ˋRefund the amount the customer asked for and confirm it in the<br/>ticket.ˋ, next_step=ˋThen tell the customer the refund takes 5 business days.ˋ)")
     end
     subgraph s5 ["refund/tell_customer.rein"]
         f5[["refund/tell_customer(opening, next_step)"]]

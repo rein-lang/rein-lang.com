@@ -25,7 +25,7 @@ The `@program` form is deprecated. It gives a warning, and it becomes an error i
 `"pr-handling/ci/fix"` names a function inside a program; import the program, such as `"pr-handling"`, and call its entry: https://rein-lang.com/docs/call-programs-by-entry
 ```
 
-The `@program/ci/fix` form gives the same rule with its own text: `` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead ``.
+The deprecated `@pr-handling/ci/fix` form gives the same rule with its own text: `` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead ``.
 
 ## Fix it
 

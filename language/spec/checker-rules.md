@@ -2,7 +2,7 @@
 
 When a file has a syntax error, only that error is reported for the file. It is the first syntax error. The other checks run after the syntax error is fixed.
 
-The quoted messages are the text that `rein check` prints. Some still show the deprecated `@` form, such as `@./tpl`, for a call to an imported function. The named import is the normal form. `@` references become errors in rein 0.2.0, on or after 2026-12-19.
+The quoted messages are the text that `rein check` prints. Some still show the deprecated `@` form, such as `@./tpl` or `@pr-handling`, for a call to an imported function or program. The named import is the normal form. `@` references become errors in rein 0.2.0, on or after 2026-12-19.
 
 ### Errors
 
@@ -50,7 +50,7 @@ The quoted messages are the text that `rein check` prints. Some still show the d
 | A statement follows a terminating statement (`unreachable statement`) |
 | An import does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A program reference names a program that is not installed (`` cannot find program `x`; run `rein list` to list programs ``), or a function the program does not have (`` cannot find function `f` in program `x` ``) |
-| A program reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
+| A program import or reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
 | An imported template is returned without a call |
 | A call, a hand-off or an `await` has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call, a hand-off or an `await` names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
