@@ -7,7 +7,7 @@
   - There is no `default`.
   - Labels with no body join the next body: `case "a": case "b": return x;` is one group.
   - A clause body that has statements must end in a return. Otherwise the error is `case falls through; end it with return`.
-- ``return `text`;``, `return `text ${x}`;`, `return @./fn;`, or a call ends the function. The `;` is optional.
+- ``return `text`;``, `return `text ${x}`;`, `return fn;`, or a call ends the function. The `;` is optional.
 - A statement after a `return`, or after a `switch` that always returns, is an error: `unreachable statement`.
 - A function must return on every path. A body that can end without a return is an error: `every path must return something; end the function with a return`.
 - A function returns something on every path: a string, a template, or a reference to another function. `return;` with no value is an error.

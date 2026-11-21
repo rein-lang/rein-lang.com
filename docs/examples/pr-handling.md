@@ -110,9 +110,9 @@ flowchart TD
         f4_2{"Does the PR change authentication, payments, or permissions code?<br/>security_sensitive: boolean"}
         f4_3[/"request: delegate(model=ˋuse haiku modelˋ, task=ˋreview the pull request ${pr}<br/>and list each problem with file and lineˋ)"/]
         f4_4{"What is the result of the code review?<br/>verdict: #quot;clean#quot; | #quot;small problems#quot; | #quot;blocking problems#quot;"}
-        f4_5("@./review/post_review(kind=ˋapproveˋ, body=ˋone line on what you checkedˋ, pr=pr)")
-        f4_6("@./review/post_review(kind=ˋcommentˋ, body=ˋeach small problem, with its file and lineˋ, pr=pr)")
-        f4_7("@./review/post_review(kind=ˋrequest changesˋ, body=ˋeach blocking problem, with its file and lineˋ, pr=pr)")
+        f4_5("post_review(kind=ˋapproveˋ, body=ˋone line on what you checkedˋ, pr=pr)")
+        f4_6("post_review(kind=ˋcommentˋ, body=ˋeach small problem, with its file and lineˋ, pr=pr)")
+        f4_7("post_review(kind=ˋrequest changesˋ, body=ˋeach blocking problem, with its file and lineˋ, pr=pr)")
     end
     subgraph s5 ["review/post_review.rein"]
         f5[["review/post_review(kind, body, pr)"]]
@@ -122,8 +122,8 @@ flowchart TD
         f6[["review/security_review(pr)"]]
         f6_0[/"request: delegate(model=ˋuse opus modelˋ, task=ˋreview the pull request ${pr}<br/>with a security focus and list each problem with file and lineˋ)"/]
         f6_1{"Did the security review find a problem that must be fixed?<br/>security_problem: boolean"}
-        f6_2("@./post_review(kind=ˋrequest changesˋ, body=ˋeach security problem, with its file and lineˋ, pr=pr)")
-        f6_3("@./post_review(kind=ˋapproveˋ, body=ˋthe security checks you madeˋ, pr=pr)")
+        f6_2("post_review(kind=ˋrequest changesˋ, body=ˋeach security problem, with its file and lineˋ, pr=pr)")
+        f6_3("post_review(kind=ˋapproveˋ, body=ˋthe security checks you madeˋ, pr=pr)")
     end
     f0 --> f0_0
     f0_0 -->|"flaky job"| f0_1

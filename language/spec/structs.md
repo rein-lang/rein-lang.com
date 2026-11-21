@@ -12,7 +12,7 @@ A struct is inline or shared.
 - A shared struct needs a doc comment: `` missing doc comment on struct `Name`; put /** description */ right before `export default interface` ``.
 - A function names a shared struct with an import: `import { Message } from "./message.struct";` names the struct of `message.struct.rein` in the same folder, and `({ a, b }: Message)` uses it (section 4, Imports). The import rules apply: the path is relative, has no extension, and stays inside the root. A missing file is an error. Its text still names the old form: `` cannot find struct `@./message`; a shared struct is a `message.struct.rein` file ``. A struct reference, `({ a, b }: @./message)`, is deprecated; it gives a warning until rein 0.2.0 (section 4, References).
 - When two functions take the same struct, use a shared struct. An inline struct belongs to one function.
-- A function reference, such as `return @./message;`, never names a `.struct.rein` file.
+- A function import, such as `import { message } from "./message";`, never names a `.struct.rein` file.
 
 Example: `message.struct.rein`, a shared struct that two templates take.
 

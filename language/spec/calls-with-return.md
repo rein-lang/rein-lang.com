@@ -32,7 +32,7 @@ export default async function work(
 }
 ```
 
-- The forms are `await REF(args)` and `await REF` with no arguments. REF is any hand-off target: `@./path`, `@../path`, `@program`, or `@program/function`. The argument rules are the rules of a hand-off (section 4, Inputs). Every `string` parameter of the target is given by name, once. A `boolean` or union parameter may be passed too, and then the target does not ask for it. A target with no parameters takes no arguments.
+- The forms are `await name(args)` and `await name` with no arguments. The target is any hand-off target: an imported function (`import { fix } from "./ci/fix";`), `@program`, or `@program/function`. The argument rules are the rules of a hand-off (section 4, Inputs). Every `string` parameter of the target is given by name, once. A `boolean` or union parameter may be passed too, and then the target does not ask for it. A target with no parameters takes no arguments.
 - The doc comment and type rules are the rules of a `request` answer (section 4, Async requests): a doc comment, and a `boolean`, union or struct type. `await` needs `export default async function`.
 - The target must be a function. A template gives text, not a run: `` `@./tpl` is a template; only a function can be awaited ``. A target that does not resolve gives the errors of a hand-off. A program target follows the `package.json` rule and targets only the entry of the program (section 4, References).
 - `await REF` outside a `const` answer is an error: `` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` ``.
