@@ -63,11 +63,11 @@ Each run prints one of these objects:
 ```json
 {"kind":"text","value":"..."}
 {"kind":"ref","function":"...","description":"...","inputs":[...]}
-{"kind":"need_input","input":{"name":"...","type":"boolean|union|string","options":["..."],"description":"..."}}
+{"kind":"need_input","input":{"name":"...","type":"boolean|union|string|format","options":["..."],"description":"..."}}
 {"kind":"request","instruction":"...","response":{"name":"...","type":"boolean|union","options":["..."],"description":"..."}}
 ```
 
-`options` appears only for `union` inputs. A boolean input has `"type":"boolean"`. A union input has `"type":"union"`, and its members are in `options`.
+`options` appears only for `union` inputs. A boolean input has `"type":"boolean"`. A union input has `"type":"union"`, and its members are in `options`. A format type input has the JSON name of its type, such as `"type":"iri"` (section 4, [Format and schema types](format-and-schema-types.md)).
 
 ### `rein describe` output
 

@@ -1,6 +1,6 @@
 ### Structs
 
-A struct is a TypeScript `interface`: a list of fields. A field is like a scalar parameter: a doc comment, a name and a type (`boolean`, `string`, or a union). A field ends with `;`, `,`, or nothing. A field cannot be a struct. Rein has one struct form, `interface`. It has no `type X = { ... }`.
+A struct is a TypeScript `interface`: a list of fields. A field is like a scalar parameter: a doc comment, a name and a type (`boolean`, `string`, a union, or a format or schema type, see [Format and schema types](format-and-schema-types.md)). A field ends with `;`, `,`, or nothing. A field cannot be a struct. Rein has one struct form, `interface`. It has no `type X = { ... }`.
 
 A struct is inline or shared.
 

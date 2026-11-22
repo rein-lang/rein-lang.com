@@ -1,15 +1,17 @@
 ### Imports
 
-An import names a function or a shared struct of another file. Rein has one import form: the named import, as in TypeScript. The name in the braces is the name that the target declares.
+An import names a function, a shared struct or a schema type of another file. Rein has one import form: the named import, as in TypeScript. The name in the braces is the name that the target declares.
 
 ```ts
 import { fix } from "./ci/fix";
 import { Message } from "./message.struct";
+import { Ticket } from "./ticket.schema";
 import { main } from "pr-handling";
 ```
 
 - `import { fix } from "./ci/fix";` names the function that `ci/fix.rein` declares with `export default function`.
 - `import { Message } from "./message.struct";` names the struct that `message.struct.rein` declares with `export default interface`.
+- `import { Ticket } from "./ticket.schema";` names the string type that `ticket.schema.json` declares as its `title`. See [Format and schema types](format-and-schema-types.md).
 - `import { main } from "pr-handling";` names the entry function of the installed program `pr-handling`. The name is the name that the entry declares, here `main`.
 
 Rules:
