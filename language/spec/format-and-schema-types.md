@@ -7,6 +7,7 @@ A format type is a `string` with a fixed shape, such as an IRI. A schema type is
 - A parameter of one of these types is an input, as a `string` parameter is. The agent is never asked for it.
 - The run checks each value against its type. The checks cover entry inputs (`--input`), hand-off arguments and the fields of a struct answer.
 - A value that is not a JSON string, in a struct answer, gives `` field `pick.pr` must be a string ``.
+- An empty value in a struct answer gives `` field `pick.pr` is empty; give some text ``. The rule is the same as for a `string` field.
 
 #### Built-in format types
 
@@ -56,8 +57,7 @@ The import reads `ticket.schema.json` in the folder of the importing file. Its p
   "title": "Ticket",
   "type": "string",
   "pattern": "^[A-Z]+-[0-9]+$",
-  "maxLength": 20,
-  "examples": ["ABC-123"]
+  "maxLength": 20
 }
 ```
 
@@ -65,9 +65,18 @@ Rules for the schema file:
 
 - It has `"type": "string"`. Another type is an error: `` a schema type must have `"type": "string"` ``.
 - It has a `title`, and the `title` is the name that the import gives. Another name is an error: `` `./ticket.schema` declares `Ticket`, not `Issue`; write `import { Ticket } from "./ticket.schema"` ``.
-- It has `examples` with at least one string. The first string of `examples` is the example. The example must pass the schema.
 - A file that the project does not have is an error: `` cannot find schema `./ticket.schema`; add a `ticket.schema.json` file ``.
 - A schema type is a type only. Using its name as a function or a struct is an error.
+
+#### Names
+
+A user name wins over a built-in format name. In a file that declares `interface Date`, or that imports a name `Date` (a schema, struct or function import), `Date` means that user type. The format `Date` is not used in that file. The rule applies to every format name, such as `Email`, and only in that file.
+
+```ts
+import { Email } from "./email.schema";
+```
+
+Here `Email` is the schema type of `email.schema.json`, and its `pattern` decides which values pass.
 
 #### Checks
 
@@ -78,7 +87,9 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-`rein graph` walks an entry input of a format or schema type with a valid example value, since it has no value for it. For a schema type, that value is its first example.
+A walk uses stand-in values, and it skips the format checks. `rein graph` walks an entry input that has no value as `<name>`, so the graph shows the path of the program without a value. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+
+Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
 
 #### Step JSON
 
