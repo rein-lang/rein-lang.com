@@ -1,17 +1,62 @@
 ---
 import Base from "../layouts/Base.astro";
 import FlowDiagram from "../components/FlowDiagram.astro";
-import ConceptTurn from "../components/ConceptTurn.astro";
-import { GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
+import AppsNotManuals from "../components/AppsNotManuals.astro";
 import HomeFaq from "../components/HomeFaq.astro";
+import { GET_STARTED_HREF, HOME_DESCRIPTION } from "../../site.config.mjs";
 import { faqs, faqText } from "../data/faq";
 import { absolute, website } from "../data/structuredData";
 import { flows } from "../data/flows";
 import { useCases } from "../data/useCases";
 import { reinVersion } from "../data/docsPages";
 
-const title = "Rein language: instructions, not infrastructure for AI agents";
+const title = "Rein: give your agent apps, not manuals";
 const description = HOME_DESCRIPTION;
+const installCommand = `cargo install --git https://github.com/rein-lang/rein --tag v${reinVersion()} --locked rein`;
+
+// The eight outcomes. Each command is a real rein 0.1.4 command, checked with rein <cmd> --help.
+const outcomes = [
+  {
+    title: "No skipped steps",
+    text: "The agent gets the next step only after it answers. No prompt needs a line that says never skip.",
+    commands: [],
+  },
+  {
+    title: "The same result each run",
+    text: "The same answers lead to the same step, for every agent and every run.",
+    commands: [],
+  },
+  {
+    title: "See what happened",
+    text: "See the agents that run now, their answers, and the step each run waits on. Graph and debug show the path.",
+    commands: ["rein watch", "rein graph", "rein debug"],
+  },
+  {
+    title: "Change it safely",
+    text: "Add an option. The checker lists each place that needs a new case.",
+    commands: ["rein check"],
+  },
+  {
+    title: "Install, share and update like an app",
+    text: "Programs are packages with versions. Install one for your user account, list them, and update them.",
+    commands: ["rein install -g <package>", "rein list", "rein update"],
+  },
+  {
+    title: "The agent finds its apps",
+    text: "The agent gets the list of installed programs, like a home screen. It starts the one that matches the task.",
+    commands: ["rein agent-context"],
+  },
+  {
+    title: "Asks a person when it must",
+    text: "A program can stop and ask a person. The typed answer chooses the next step.",
+    commands: [],
+  },
+  {
+    title: "Programs call programs",
+    text: "One program hands off to another, as one app opens another. Import a program by its entry.",
+    commands: [],
+  },
+];
 
 // One linked graph: the site, the project, the language and its command line tool, and the questions below.
 const home = absolute("/");
@@ -41,7 +86,7 @@ const jsonLd = {
       "@type": "SoftwareApplication",
       "@id": `${home}#cli`,
       name: "rein",
-      description: "The rein command line tool checks, runs, steps, graphs and debugs Rein processes.",
+      description: "The rein command line tool checks, runs, steps, graphs and debugs Rein programs.",
       url: absolute(GET_STARTED_HREF),
       applicationCategory: "DeveloperApplication",
       operatingSystem: "Any",
@@ -70,23 +115,25 @@ const jsonLd = {
   <!-- Hero -->
   <section class="px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24" aria-labelledby="hero-heading">
     <div class="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
-      <div>
+      <div class="min-w-0">
         <p class="inline-flex items-center rounded-full border border-accent px-3 py-1 text-sm font-semibold text-accent">
           Alpha
         </p>
         <h1 id="hero-heading" class="mt-6 text-4xl leading-tight font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          Give agents instructions, not infrastructure
+          Give your agent apps, not manuals.
         </h1>
         <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-          Rein is a strict, TypeScript-like language for agent decision processes. Write each decision as a small
-          function, one file each. The agent answers the questions, then follows the pointers to its next step.
+          A Rein program asks your agent one question at a time. Each answer leads to the next step, so the agent cannot
+          skip one, and every run takes the same path.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href={GET_STARTED_HREF} class="btn btn-primary">Get started</a>
           <a href="/docs/" class="btn btn-secondary">Docs</a>
         </div>
+        <p class="mt-8 text-sm text-muted">Install the rein command line tool. It needs Rust and cargo.</p>
+        <pre class="card mt-2 overflow-x-auto p-4 text-sm"><code>{installCommand}</code></pre>
       </div>
-      <div class="card p-4 sm:p-6">
+      <div class="card min-w-0 p-4 sm:p-6">
         <FlowDiagram
           spec={flows.hero}
           label="Diagram. A decision asks questions, then leads to one of several instructions."
@@ -95,47 +142,64 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- Problem -->
-  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="problem-heading">
+  <AppsNotManuals />
+
+  <!-- Value -->
+  <section id="benefits" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="benefits-heading">
+    <div class="mx-auto max-w-6xl">
+      <h2 id="benefits-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">What you get</h2>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
+        Each outcome comes from the program. You do not add it to the agent's prompt.
+      </p>
+      <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          outcomes.map((o) => (
+            <li class="card flex flex-col gap-3 p-6">
+              <h3 class="text-lg font-semibold">{o.title}</h3>
+              <p class="text-muted">{o.text}</p>
+              {o.commands.length > 0 && (
+                <ul class="mt-auto flex flex-wrap gap-2 pt-2">
+                  {o.commands.map((c) => (
+                    <li>
+                      <code class="rounded bg-surface-2 px-2 py-1 text-sm">{c}</code>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="flow-heading">
     <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
       <div>
-        <h2 id="problem-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Agent systems turn into machines</h2>
+        <h2 id="flow-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Start at main. Answer. Follow the pointers.</h2>
         <p class="mt-5 text-lg leading-relaxed text-muted">
-          Agent frameworks ask you to build the machine. You define graphs, nodes, edges, shared state and retry
-          logic. The instructions end up spread across the wiring.
-        </p>
-        <p class="mt-4 text-lg leading-relaxed text-muted">
-          Rein does not build a harness or a graph. It gives the agent instructions for the decision it faces now.
+          Every program has a main function, its entry point. The agent answers only the questions on its path. It
+          follows each pointer until it reaches an instruction.
         </p>
       </div>
       <figure class="card overflow-hidden">
         <img
-          src="/images/concept-hook.webp"
+          src="/images/concept-flow.webp"
           width="1280"
           height="720"
           loading="lazy"
-          alt="A dark diagram of square nodes joined by many lines, a tangled graph. The caption reads: Frameworks make you build the machine."
+          alt="Four cards in a row, each with question chips above it, linked by a teal line that ends in an instruction. The caption reads: Start at main. Answer. Follow the pointers."
           class="h-auto w-full"
         />
       </figure>
     </div>
-    <div class="mx-auto mt-16 grid max-w-6xl items-center gap-10 lg:grid-cols-2">
-      <figure class="card overflow-hidden p-4 lg:order-2 sm:p-6">
-        <ConceptTurn />
-      </figure>
-      <div>
-        <h3 class="text-2xl font-bold tracking-tight">Rein flips it</h3>
-        <p class="mt-4 text-lg leading-relaxed text-muted">
-          You do not wire the agent. You write what it should decide, and what it should do for each answer.
-        </p>
-      </div>
-    </div>
   </section>
 
-  <!-- Four concept steps -->
-  <section id="how-it-works" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="steps-heading">
+  <!-- Four ideas -->
+  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="steps-heading">
     <div class="mx-auto max-w-6xl">
-      <h2 id="steps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Four ideas make a process</h2>
+      <h2 id="steps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Four ideas make a program</h2>
       <ol class="mt-12 grid gap-6 md:grid-cols-2">
         <li class="card flex flex-col gap-5 p-5 sm:p-6">
           <figure class="overflow-hidden rounded-xl">
@@ -151,8 +215,7 @@ const jsonLd = {
           <div>
             <h3 class="text-xl font-semibold"><span class="text-accent">1.</span> One decision, one file</h3>
             <p class="mt-2 text-muted">
-              Each decision is a small function. Each function sits in its own file and starts with a description of
-              what it decides.
+              Each decision is a small function in its own file. The file starts with a description of what it decides.
             </p>
           </div>
         </li>
@@ -170,8 +233,7 @@ const jsonLd = {
           <div>
             <h3 class="text-xl font-semibold"><span class="text-accent">2.</span> Inputs are questions</h3>
             <p class="mt-2 text-muted">
-              The inputs are questions the agent answers from what it sees. Each one is a yes or no, or one of a few
-              options.
+              The agent answers each question from what it sees. Each one is a yes or no, or one of a few options.
             </p>
           </div>
         </li>
@@ -215,36 +277,13 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- Process -->
-  <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="flow-heading">
-    <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
-      <div>
-        <h2 id="flow-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Start at main. Answer. Follow the pointers.</h2>
-        <p class="mt-5 text-lg leading-relaxed text-muted">
-          Every project has a main function. It is the agent's entry point. The agent answers only the questions on
-          its path, and follows each pointer until it reaches an instruction.
-        </p>
-      </div>
-      <figure class="card overflow-hidden">
-        <img
-          src="/images/concept-flow.webp"
-          width="1280"
-          height="720"
-          loading="lazy"
-          alt="Four cards in a row, each with question chips above it, linked by a teal line that ends in an instruction. The caption reads: Start at main. Answer. Follow the pointers."
-          class="h-auto w-full"
-        />
-      </figure>
-    </div>
-  </section>
-
-  <!-- Guarantees -->
+  <!-- Checker -->
   <section id="guarantees" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="guarantees-heading">
     <div class="mx-auto max-w-6xl">
-      <h2 id="guarantees-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A checker guards every process</h2>
+      <h2 id="guarantees-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A checker reads every program first</h2>
       <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-        The checker reads your functions and reports gaps. It catches these three problems before a process goes to an
-        agent.
+        Run <code class="rounded bg-surface-2 px-2 py-1 text-base">rein check</code>. It reads your functions and reports
+        three kinds of gap, before an agent runs the program.
       </p>
       <ul class="mt-10 grid gap-5 md:grid-cols-3">
         <li class="card p-6">
@@ -274,7 +313,7 @@ const jsonLd = {
         <div>
           <h3 class="text-2xl font-bold tracking-tight">Editor support</h3>
           <p class="mt-4 text-lg leading-relaxed text-muted">
-            The language server shows these problems as you type. Editor support starts with VS Code.
+            The language server shows these gaps as you type. Editor support starts with VS Code.
           </p>
         </div>
       </div>
@@ -285,7 +324,7 @@ const jsonLd = {
   <section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="video-heading">
     <div class="mx-auto max-w-4xl">
       <h2 id="video-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Watch the concept</h2>
-      <p class="mt-4 text-lg leading-relaxed text-muted">A concept video of about 70 seconds. It shows the four ideas and one process.</p>
+      <p class="mt-4 text-lg leading-relaxed text-muted">A video of about 70 seconds. It shows the four ideas and one program.</p>
       <figure class="card mt-8 overflow-hidden">
         <!--
           TODO: host the concept video (an mp4 built from rein-lang/videos concept/, not committed to this repo)
@@ -312,8 +351,8 @@ const jsonLd = {
       <p class="eyebrow">Alpha notice</p>
       <h2 id="alpha-heading" class="mt-3 text-3xl font-bold tracking-tight">Rein is in alpha</h2>
       <p class="mt-4 text-lg leading-relaxed text-muted">
-        Rein is a proof of concept. Syntax, tools and behavior can still change. Install the command
-        line tool, and write a first process in a few minutes.
+        Rein is a proof of concept. Syntax, tools and behavior can still change. Install the command line tool, then
+        write a first program in a few minutes.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={GET_STARTED_HREF} class="btn btn-primary">Get started</a>
@@ -326,7 +365,7 @@ const jsonLd = {
   <section id="use-cases" class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="use-cases-heading">
     <div class="mx-auto max-w-6xl">
       <h2 id="use-cases-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">Use cases</h2>
-      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">Each page shows one process, in concept terms.</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted">Each page shows one program, step by step.</p>
       <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {useCases.map((u) => (
           <li>
