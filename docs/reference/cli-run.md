@@ -8,13 +8,17 @@ description: "Reference for rein check, run, eval, step and describe. Check a pr
 
 Check a project directory, or one .rein file, and print diagnostics
 
-**Usage:** `rein check [PATH]`
+**Usage:** `rein check [OPTIONS] [PATH]`
 
 ###### **Arguments:**
 
 * `<PATH>` — Project directory or .rein file
 
   Default value: `.`
+
+###### **Options:**
+
+* `--deny-deprecated` — Make each deprecated `@` reference and default import an error
 
 
 
@@ -51,7 +55,7 @@ Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 ###### **Options:**
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
-* `--set <NAME=VALUE>` — Input value as name=value. A format or schema value is checked against its type. Repeat for each input
+* `--set <NAME=VALUE>` — Input value as name=value. Repeat for each input
 * `--json` — Print the result as JSON
 
 
