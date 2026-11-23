@@ -90,7 +90,7 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-The page of `rein debug` gives stand-in values to each input that has no value, and it skips the format checks for those stand-in values. The page checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+The page of `rein debug` gives stand-in values to each input that has no value, and it skips the format checks for those stand-in values. The page checks a format value that you set in a struct answer. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
 Real runs check each format or schema value that they get. These are `rein step`, `rein run`, `rein graph --input`, `rein eval --set`, the debug adapter (`rein dap`), and the MCP tools `rein_start` and `rein_answer`.
 
