@@ -6,18 +6,13 @@ export interface UseCase {
   description: string;
   h1: string;
   teaser: string;
-  /** What gets better for the reader. Leads the page. */
   outcome: string;
-  /** One question at a time, in the order the agent meets them. */
   agentSees: string[];
-  /** What the program guarantees, one line each. */
   guarantees: string[];
   flow: FlowSpec;
   flowLabel: string;
   flowCaption: string;
-  /** Install line for this program. Defaults to the generic install command. */
   installCommand?: string;
-  /** Public source or docs page for this program. */
   source?: { label: string; href: string };
 }
 
@@ -160,7 +155,7 @@ export const useCases: UseCase[] = [
     flowLabel:
       "Diagram. The app first asks whether there are two or more items. If not, it asks for more items. If yes, it asks whether the plan fits the capacity. A fit goes to review. Otherwise the plan is rebalanced.",
     flowCaption: "Each question has a yes or no answer. Each answer leads to one step.",
-    installCommand: 'rein install -g "github:rein-lang/moscow-prioritization#<commit sha>"',
+    installCommand: "rein install -g github:rein-lang/moscow-prioritization#v0.1.0",
     source: {
       label: "moscow-prioritization on GitHub",
       href: "https://github.com/rein-lang/moscow-prioritization",

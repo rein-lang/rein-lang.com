@@ -12,7 +12,7 @@ export function getStaticPaths() {
 const { useCase } = Astro.props as { useCase: UseCase };
 const path = `/use-cases/${useCase.slug}/`;
 const related = useCases.filter((u) => u.slug !== useCase.slug);
-const installLines = `${useCase.installCommand ?? "rein install -g <package>"}\nrein list`;
+const installLines = `${useCase.installCommand ?? ""}\nrein list`;
 
 const jsonLd = [
   {
@@ -66,19 +66,26 @@ const jsonLd = [
       </figure>
     </section>
 
-    <section aria-labelledby="install-heading" class="card mt-12 p-6 sm:p-8">
-      <h2 id="install-heading" class="text-2xl font-bold tracking-tight">Install it like an app</h2>
-      <p class="mt-3 text-muted">
-        Install the program once. <code>rein list</code> shows the programs you have, and
-        <code>rein agent-context</code> prints the list your agent reads to pick one.
-      </p>
-      <pre class="mt-5 overflow-x-auto rounded-md border border-line p-4 text-sm"><code>{installLines}</code></pre>
-      {useCase.source && (
-        <p class="mt-4 text-sm text-muted">
-          Source: <a href={useCase.source.href} class="text-ink">{useCase.source.label}</a>
+    {useCase.installCommand ? (
+      <section aria-labelledby="install-heading" class="card mt-12 p-6 sm:p-8">
+        <h2 id="install-heading" class="text-2xl font-bold tracking-tight">Install it like an app</h2>
+        <p class="mt-3 text-muted">
+          Install the program once. <code>rein list</code> shows the programs you have, and
+          <code>rein agent-context</code> prints the list your agent reads to pick one.
         </p>
-      )}
-    </section>
+        <pre class="mt-5 overflow-x-auto rounded-md border border-line p-4 text-sm"><code>{installLines}</code></pre>
+        {useCase.source && (
+          <p class="mt-4 text-sm text-muted">
+            Source: <a href={useCase.source.href} class="text-ink">{useCase.source.label}</a>
+          </p>
+        )}
+      </section>
+    ) : (
+      <p class="mt-12 text-lg text-muted">
+        Write this program in a few minutes. <a href="/docs/getting-started/" class="font-semibold">Read the getting started guide</a>.
+        {useCase.source && <> Example: <a href={useCase.source.href} class="text-ink">{useCase.source.label}</a>.</>}
+      </p>
+    )}
 
     <section aria-labelledby="alpha-heading" class="card mt-12 p-6 sm:p-8">
       <p class="eyebrow">Alpha</p>
