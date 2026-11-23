@@ -6,4 +6,4 @@ export const GET_STARTED_HREF = "/docs/getting-started";
 
 // The home page description. Also the summary in llms.txt.
 export const HOME_DESCRIPTION =
-  "Rein is an alpha language for agent decision processes. Write each decision as a small function in its own file. Every path ends in an instruction or a pointer.";
+  "Rein programs are apps for AI agents. Each program asks one typed question at a time, so the agent never skips a step. Skills are manuals.";
