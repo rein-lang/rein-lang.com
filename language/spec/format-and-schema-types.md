@@ -13,6 +13,8 @@ A format type is a `string` with a fixed shape, such as an IRI. A schema type is
 
 Rein has 19 built-in format types. Each one has a name that a program writes, such as `IRI`, and a JSON name. The JSON name is the `type` of the field in the step JSON (section 11, Stepping). The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
 
+A function takes its inputs as a struct. This fragment shows the fields of one such struct, which a function takes as `({ link }: Input)`:
+
 ```ts
 interface Input {
   /** The link of the pull request. */
@@ -66,7 +68,7 @@ Rules for the schema file:
 - It has `"type": "string"`. Another type is an error: `` a schema type must have `"type": "string"` ``.
 - It has a `title`. The `title` is a valid name, and it is the name that the import gives. Another name is an error: `` `./ticket.schema` declares `Ticket`, not `Issue`; write `import { Ticket } from "./ticket.schema"` ``.
 - Load errors start with the schema file name, such as `` `ticket.schema.json`: a schema type must have `"type": "string"` ``.
-- A file that the project does not have is an error: `` cannot find schema `./ticket.schema`; add a `ticket.schema.json` file ``.
+- A file that the project does not have is an error: `` cannot find schema `./ticket.schema`; add a `ticket.schema.json` file ``. The message names the full project path, so a schema in a subfolder shows that folder in the path.
 - A schema type is a type only. Using its name as a function or a struct is an error.
 
 #### Names
@@ -88,7 +90,7 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-A walk uses stand-in values, and it skips the format checks. A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk gives each input that has no value the text `<name>`. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk gives the text `<name>` to each input that has no value, and it skips the format checks for those stand-in values. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
 Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
 
