@@ -51,7 +51,7 @@ Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 ###### **Options:**
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
-* `--set <NAME=VALUE>` — Input value as name=value. Repeat for each input
+* `--set <NAME=VALUE>` — Input value as name=value. A format or schema value is checked against its type. Repeat for each input
 * `--json` — Print the result as JSON
 
 
