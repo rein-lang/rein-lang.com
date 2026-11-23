@@ -27,7 +27,7 @@ export const faqs: Faq[] = [
   {
     question: "How does my agent find my programs?",
     answer:
-      "Install a program with rein install -g. Rein's agent hook gives the agent the list of installed programs, like a home screen. The agent starts the program that matches its task. Run rein list to see the same list.",
+      "Install a program with rein install -g <package>. Rein's agent hook gives the agent the list of installed programs, like a home screen. The agent starts the program that matches its task. Run rein list to see the same list.",
     link: { href: "/docs/reference/cli-agents", label: "Read the agent hook reference" },
   },
   {
