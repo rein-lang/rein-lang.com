@@ -21,7 +21,7 @@ Rules:
 - `as` gives a local name when two targets declare the same name: `import { fix as ciFix } from "./ci/fix";`. An `as` that keeps the same name is a warning.
 - A file exports one name, so the braces hold one name. A second name is an error. Write one `import` line for each name.
 - A path that starts with `./` or `../` names a file of the project. It has no `.rein` extension. The target must stay inside the project root, as in References (section 4).
-- `"./message.struct"` names `message.struct.rein`. A struct name is used only as a type. A function name is used only as a hand-off, a template call or an `await`.
+- `"./message.struct"` names `message.struct.rein`. A struct name is used only as a type. A schema name is used only as a type. A function name is used only as a hand-off, a template call or an `await`.
 - A bare path, such as `"pr-handling"`, names an installed program. The `package.json` dependency rules of References apply. Any other function of the program is an error. Call the program by its entry instead: https://rein-lang.com/docs/call-programs-by-entry.
 - The function identity stays the root-relative name, such as `ci/fix`. The CLI, the JSON output, the graph and the answer keys do not change.
 - An import name cannot be a std name, such as `delegate` or `askUser`. Std names stay global and need no import. Two imports with the same local name are an error.
