@@ -90,10 +90,10 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk may give stand-in values to inputs that have no value, and it skips the format checks for those stand-in values. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+The page of `rein debug` gives stand-in values to each input that has no value, and it skips the format checks for those stand-in values. The page checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
-Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
+Real runs check each format or schema value that they get. These are `rein step`, `rein run`, `rein graph --input`, `rein eval --set`, the debug adapter (`rein dap`), and the MCP tools `rein_start` and `rein_answer`.
 
 #### Step JSON
 
-A field of a format or schema type has a `schema` key in the step JSON. For a format type, the key holds the JSON Schema of the type, such as `{"type": "string", "format": "iri"}`. For a schema type, it holds the schema of the file. A field of another type has no `schema` key.
+A field of a format or schema type has a `schema` key in the step JSON. For a format type, the key holds the JSON Schema of the type, such as `{"type": "string", "format": "iri"}`. For a schema type, it holds the schema of the file, and the `type` of the field is `string`. A field of another type has no `schema` key.
