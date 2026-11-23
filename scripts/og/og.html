@@ -17,7 +17,7 @@
         background-image: radial-gradient(#1c2330 1.2px, transparent 1.2px);
         background-size: 28px 28px;
       }
-      .copy { position: absolute; left: 72px; top: 96px; width: 580px; }
+      .copy { position: absolute; left: 72px; top: 0; bottom: 0; width: 580px; display: flex; flex-direction: column; justify-content: center; }
       .brand { display: flex; align-items: center; gap: 16px; }
       .brand img { width: 64px; height: 64px; }
       .brand span { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; }
@@ -27,12 +27,12 @@
       }
       .sub { margin: 26px 0 0; font-size: 30px; line-height: 1.3; color: #a3adbd; font-weight: 500; }
       .pill {
-        display: inline-block; margin-top: 40px; padding: 10px 20px;
+        display: inline-block; align-self: flex-start; margin-top: 40px; padding: 10px 20px;
         border: 2px solid #2dd4bf; border-radius: 999px;
         color: #2dd4bf; font-size: 22px; font-weight: 700;
       }
 
-      .side { position: absolute; left: 696px; top: 104px; width: 432px; }
+      .side { position: absolute; left: 696px; top: 0; bottom: 0; width: 432px; display: flex; flex-direction: column; justify-content: center; }
       .card-head {
         font-size: 17px; font-weight: 700; letter-spacing: 0.08em;
         text-transform: uppercase; color: #a3adbd; margin: 0 0 14px;
@@ -88,7 +88,7 @@
         <p class="shout">IMPORTANT: never skip the review.</p>
       </div>
 
-      <p class="card-head accent">App &middot; Step 2 of 4</p>
+      <p class="card-head accent">App</p>
       <div class="app-card">
         <div class="question">Do the tests pass?</div>
         <div class="answers">
