@@ -21,9 +21,9 @@ export const useCases: UseCase[] = [
     slug: "pull-request-gates",
     title: "Pull request app for AI agents | Rein",
     description:
-      "An agent app that merges docs-only pull requests, sends code to review, and waits for CI. Each CI status has a set step.",
-    h1: "Merge, review or wait for each pull request",
-    teaser: "An app that merges docs changes, sends code to review, and waits on CI.",
+      "An agent app that approves docs-only pull requests, sends code to review, and waits for CI. Each CI status has a set step.",
+    h1: "Approve, review or wait for each pull request",
+    teaser: "An app that approves docs changes, sends code to review, and waits on CI.",
     outcome:
       "Docs-only changes are approved at once. Code changes get a review. A red build goes back for a fix. Your agent handles each pull request the same way, every run.",
     agentSees: [
