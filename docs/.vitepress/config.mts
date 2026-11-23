@@ -43,7 +43,7 @@ const config = withMermaid(
   defineConfig({
     title: 'Rein',
     description:
-      'Rein is a strict, typed language for agent processes. Each step asks the agent a typed question and returns the next instruction. Alpha.',
+      'Rein programs are apps for AI agents. Each step asks the agent a typed question and returns the next instruction, so no step is skipped. Alpha.',
     base: '/docs/',
     // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
     cleanUrls: true,
@@ -159,7 +159,7 @@ const config = withMermaid(
             { text: 'Concepts', link: '/concepts' },
             { text: 'Call another program', link: '/call-programs-by-entry' },
             { text: 'Write faster programs', link: '/write-faster-programs' },
-            { text: 'Rein and skills', link: '/rein-vs-skills' },
+            { text: 'Skills and programs', link: '/rein-vs-skills' },
             { text: 'Progressive disclosure', link: '/progressive-disclosure' },
             { text: 'Why not an existing language', link: '/why-not-a-programming-language' },
             { text: 'Editor', link: '/editor' },
