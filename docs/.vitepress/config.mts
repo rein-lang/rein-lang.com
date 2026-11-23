@@ -158,6 +158,7 @@ const config = withMermaid(
             { text: 'Install a program', link: '/install-programs' },
             { text: 'Concepts', link: '/concepts' },
             { text: 'Call another program', link: '/call-programs-by-entry' },
+            { text: 'Write faster programs', link: '/write-faster-programs' },
             { text: 'Rein and skills', link: '/rein-vs-skills' },
             { text: 'Progressive disclosure', link: '/progressive-disclosure' },
             { text: 'Why not an existing language', link: '/why-not-a-programming-language' },
