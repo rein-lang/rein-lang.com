@@ -5,15 +5,15 @@ A format type is a `string` with a fixed shape, such as an IRI. A schema type is
 - The checker treats a format type and a schema type as a `string`. A template can read one. A condition or a `switch` cannot (section 4, Inputs).
 - A parameter or a field can have one of these types. A `const` answer cannot: `` an `IRI` answer is not allowed; answer a struct with an `IRI` field ``.
 - A parameter of one of these types is an input, as a `string` parameter is. The agent is never asked for it.
-- The run checks each value against its type. The checks cover entry inputs (`--input`), hand-off arguments and the fields of a struct answer.
+- The run checks each value against its type. The checks cover entry inputs (`--input`), hand-off arguments, the fields of a struct answer and the values of `rein eval --set`.
 - A value that is not a JSON string, in a struct answer, gives `` field `pick.pr` must be a string ``.
 - An empty value in a struct answer gives `` field `pick.pr` is empty; give some text ``. The rule is the same as for a `string` field.
 
 #### Built-in format types
 
-Rein has 19 built-in format types. Each one has a name that a program writes, such as `IRI`, and a JSON name. The JSON name is the `type` of the field in the step JSON (section 11, Stepping). The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
+Rein has 19 built-in format types. Each one has a name that a program writes, such as `IRI`, and a JSON name. The JSON name is the `type` of the field in the step JSON. The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
 
-A function takes its inputs as a struct. This fragment shows the fields of one such struct, which a function takes as `({ link }: Input)`:
+A function can take a struct and read its fields, such as `({ link }: Input)`. This fragment shows the fields of such a struct:
 
 ```ts
 interface Input {
@@ -52,7 +52,7 @@ A schema type is a string type that the project defines in a JSON Schema file. T
 import { Ticket } from "./ticket.schema";
 ```
 
-The import reads `ticket.schema.json` in the folder of the importing file. Its path is relative, as for any import. The file holds one schema:
+The import reads `ticket.schema.json` in the folder of the importing file. Its path is relative, as for any import. The file holds one schema. A schema file needs no `examples` entry:
 
 ```json
 {
@@ -90,10 +90,10 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk gives the text `<name>` to each input that has no value, and it skips the format checks for those stand-in values. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk may give stand-in values to inputs that have no value, and it skips the format checks for those stand-in values. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
 Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
 
 #### Step JSON
 
-A field of a format or schema type has a `schema` key in the step JSON (section 11, Stepping). For a format type, the key holds the JSON Schema of the type, such as `{"type": "string", "format": "iri"}`. For a schema type, it holds the schema of the file. A field of another type has no `schema` key.
+A field of a format or schema type has a `schema` key in the step JSON. For a format type, the key holds the JSON Schema of the type, such as `{"type": "string", "format": "iri"}`. For a schema type, it holds the schema of the file. A field of another type has no `schema` key.
