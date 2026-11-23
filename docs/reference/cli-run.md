@@ -51,7 +51,7 @@ Evaluate one function, for debugging. Agents use `rein run` or `rein step`
 ###### **Options:**
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
-* `--set <NAME=VALUE>` — Input value as name=value. Repeat for each input
+* `--set <NAME=VALUE>` — Input value as name=value. A format or schema value is checked against its type. Repeat for each input
 * `--json` — Print the result as JSON
 
 
@@ -72,7 +72,7 @@ Step the whole process from `main`. This is the agent-facing interface: answer o
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 * `--flow <NAME>` — Program to step, by name (see `rein list`). Same as the positional program
 * `--answer <KEY=VALUE>` — Answer as key=value, such as `merge_pr.ci=green`. Repeat for each answer
-* `--input <NAME=VALUE>` — Value of a `string` parameter of the entry function, as name=value. Repeat for each input
+* `--input <NAME=VALUE>` — Value of a `string`, format or schema parameter of the entry function, as name=value. Repeat for each input
 * `--stdin` — Read the whole request as JSON from stdin. Output is always JSON
 * `--json` — Print the response as JSON
 
