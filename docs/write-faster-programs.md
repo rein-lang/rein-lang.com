@@ -11,7 +11,7 @@ On a slow agent, most of the time goes to model calls. Each `request` is one cal
 
 Each `request` costs one model call over the whole context. In one measured pull-request flow, the agent got about 25 questions before its review. Each question took 4 to 9 seconds.
 
-Ask fewer questions. One request with a struct answer beats ten boolean requests. Let one script fill the struct. This example replaces three boolean requests:
+Ask fewer questions. One request with a struct answer beats ten boolean requests. Let one script fill the struct. This example asks one request for two facts:
 
 ```ts
 interface Facts {
@@ -125,7 +125,7 @@ After that answer, the callee ends with text. The caller then asks for its own a
 
 Do not copy a sub-flow. Copies usually exist only because their last step differs. A call with return lets each caller choose its own next step, so one shared function replaces the copies.
 
-The shared function returns one plain word for each outcome, and it must hold at least one `request`. A function with no request returns at once, and the checker warns that `async` has no `await`.
+The shared function returns one plain word for each outcome, and it should hold at least one `request`. When an import awaits a function with no request, the call still runs, and `rein check` warns that `async` has no `await`. Awaiting a template is an error: `` `@./reply` is a template; only a function can be awaited ``. A template is a function whose body is one `return` of a template literal.
 
 `release.rein` chooses its own next step after the same `sync` function:
 
@@ -162,7 +162,9 @@ Keep the nesting shallow and the `const` names short, so keys stay short. Do not
 
 ## Do not end a run early
 
-Every `return` ends the run. Return text only when the work of this run is done. When another question follows, ask it with a request. An early end costs a full replay: the next run asks every earlier question again.
+Every `return` ends the run. Return text only when the work of this run is done. When another question follows, ask it with a request in the same run. An early end costs a full replay: the next run asks every earlier question again.
+
+Before, the run ends with an instruction, and the test question never comes:
 
 ```ts
 /** Fix the branch of one pull request. */
@@ -170,17 +172,39 @@ export default async function fix(
   /** The link of the pull request. */
   pr: string,
 ) {
-  /** Did the tests of the fix pass? */
+  /** Did the fix push? */
+  const pushed: boolean = await request(`Fix ${pr} and push the fix.`);
+
+  if (pushed) {
+    return `Run the tests of ${pr}, then start this program again.`;
+  }
+
+  return `Fix the branch, then start this program again.`;
+}
+```
+
+After, the test question follows in the same run. The run returns only when both answers are known:
+
+```ts
+/** Fix the branch of one pull request. */
+export default async function fix(
+  /** The link of the pull request. */
+  pr: string,
+) {
+  /** Did the fix push? */
+  const pushed: boolean = await request(`Fix ${pr} and push the fix.`);
+
+  /** Did the tests pass after the fix? */
   const tests_ok: boolean = await request(
     `Run scripts/tests.sh ${pr} from this program's folder.
     Answer yes when it exits 0.`,
   );
 
-  if (!tests_ok) {
-    return `Send the branch to the fix step.`;
+  if (pushed && tests_ok) {
+    return `Send the pull request to review.`;
   }
 
-  return `Send the pull request to review.`;
+  return `Send the branch to the fix step.`;
 }
 ```
 
