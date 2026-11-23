@@ -25,7 +25,7 @@ export const useCases: UseCase[] = [
     h1: "Merge, review or wait for each pull request",
     teaser: "An app that merges docs changes, sends code to review, and waits on CI.",
     outcome:
-      "Docs-only changes merge at once. Code changes get a review. A red build goes back for a fix. Your agent handles each pull request the same way, every run.",
+      "Docs-only changes are approved at once. Code changes get a review. A red build goes back for a fix. Your agent handles each pull request the same way, every run.",
     agentSees: [
       "The first question is whether the change touches only documentation. If yes, the agent approves the pull request.",
       "If no, the app asks for the CI status. The agent answers with one status from a fixed set. Each status leads to its own step: review the code, fix the build, or wait for CI.",
@@ -139,7 +139,7 @@ export const useCases: UseCase[] = [
     h1: "Prioritize a backlog with MoSCoW, in one plan",
     teaser: "Sort any list into Must, Should, Could and Won't, and save it as moscow.md.",
     outcome:
-      "You get a plan that fits your time box. Each item has a category, an effort and a reason. You approve the plan before the file is written.",
+      "You get a plan that fits your time box. Each item has a category, an effort and a reason. The plan is written to moscow.md first. You review it there, then approve it, ask for changes, or start over. Starting over deletes moscow.md.",
     agentSees: [
       "The agent collects the items from a file, a link, or a plain list. The first question is whether there are two or more. If not, the app asks for more items.",
       "The user gives the goal, the time box, the capacity and the Must limit. The agent does not set them alone.",
