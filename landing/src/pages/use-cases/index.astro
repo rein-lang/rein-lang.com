@@ -5,9 +5,9 @@ import { useCases } from "../../data/useCases";
 import { absolute, breadcrumbs, website } from "../../data/structuredData";
 
 const path = "/use-cases/";
-const title = "Rein use cases: agent decision processes | Rein";
+const title = "Rein use cases: apps for AI agents | Rein";
 const description =
-  "See what agents do with Rein: pull request gates, incident triage, customer support, delegation to subagents, and human-in-the-loop requests.";
+  "Apps for AI agents built with Rein: merge pull requests, triage incidents, answer tickets, prioritize a backlog with MoSCoW, and more.";
 
 const jsonLd = [
   {
@@ -40,11 +40,11 @@ const jsonLd = [
       </ol>
     </nav>
     <h1 id="use-cases-heading" class="mt-6 text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
-      What agents do with Rein
+      Apps your agent uses
     </h1>
     <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-      A Rein process is a set of decisions. Each decision asks the agent one typed question, and each answer leads to
-      an instruction or to the next decision. Each page below shows one process, with its decision graph.
+      Give your agent apps, not manuals. Each Rein program asks the agent one question at a time, and it cannot
+      skip a step. Each page below shows one program, what the agent sees, and what the program guarantees.
     </p>
     <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {useCases.map((u) => (
