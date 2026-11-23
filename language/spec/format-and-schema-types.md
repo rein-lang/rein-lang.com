@@ -3,7 +3,7 @@
 A format type is a `string` with a fixed shape, such as an IRI. A schema type is a `string` whose shape a JSON Schema file defines. Both go where `string` goes. These rules need a rein release newer than 0.1.4.
 
 - The checker treats a format type and a schema type as a `string`. A template can read one. A condition or a `switch` cannot (section 4, Inputs).
-- A parameter or a field can have one of these types. A `const` answer cannot: `` a `IRI` answer is not allowed; answer a struct with a `IRI` field ``.
+- A parameter or a field can have one of these types. A `const` answer cannot: `` an `IRI` answer is not allowed; answer a struct with an `IRI` field ``.
 - A parameter of one of these types is an input, as a `string` parameter is. The agent is never asked for it.
 - The run checks each value against its type. The checks cover entry inputs (`--input`), hand-off arguments and the fields of a struct answer.
 - A value that is not a JSON string, in a struct answer, gives `` field `pick.pr` must be a string ``.
@@ -12,6 +12,8 @@ A format type is a `string` with a fixed shape, such as an IRI. A schema type is
 #### Built-in format types
 
 Rein has 19 built-in format types. Each one has a name that a program writes, such as `IRI`, and a JSON name. The JSON name is the `type` of the field in the step JSON (section 11, Stepping). The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
+
+A function takes its inputs as a struct. This fragment shows the fields of one such struct, which a function takes as `({ link }: Input)`:
 
 ```ts
 interface Input {
@@ -64,8 +66,9 @@ The import reads `ticket.schema.json` in the folder of the importing file. Its p
 Rules for the schema file:
 
 - It has `"type": "string"`. Another type is an error: `` a schema type must have `"type": "string"` ``.
-- It has a `title`, and the `title` is the name that the import gives. Another name is an error: `` `./ticket.schema` declares `Ticket`, not `Issue`; write `import { Ticket } from "./ticket.schema"` ``.
-- A file that the project does not have is an error: `` cannot find schema `./ticket.schema`; add a `ticket.schema.json` file ``.
+- It has a `title`. The `title` is a valid name, and it is the name that the import gives. Another name is an error: `` `./ticket.schema` declares `Ticket`, not `Issue`; write `import { Ticket } from "./ticket.schema"` ``.
+- Load errors start with the schema file name, such as `` `ticket.schema.json`: a schema type must have `"type": "string"` ``.
+- A file that the project does not have is an error: `` cannot find schema `./ticket.schema`; add a `ticket.schema.json` file ``. The message names the full project path, so a schema in a subfolder shows that folder in the path.
 - A schema type is a type only. Using its name as a function or a struct is an error.
 
 #### Names
@@ -87,7 +90,7 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-A walk uses stand-in values, and it skips the format checks. The walks are `rein graph` without `--input`, and the page of `rein debug`. A walk gives each input that has no value the text `<name>`. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+A walk runs for `rein graph` with `--entry`, `--answer` or `--input`, and for the page of `rein debug`. A walk gives the text `<name>` to each input that has no value, and it skips the format checks for those stand-in values. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
 Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
 
