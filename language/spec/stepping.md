@@ -35,7 +35,7 @@ Protocol version 1. A request and a response are JSON objects, each with a `vers
 | `done` | `instruction` | The process ended. Do `instruction`. | 0 |
 | `error` | `message`, `key` (or `null`), `diagnostics` (`file`, `line`, `column`, `message`) | The request is not valid. Fix it and step again. | 1 |
 
-For a struct answer, `response.type` is `struct`, `options` is `null`, and `response.fields` lists the fields of the struct, in order. Each field is `{name, type, options, description}`: `type` is `boolean`, `union` or `string`, `options` lists the members of a union (else `null`), and `description` is the field doc comment. A field of a format type has the JSON name of that type as its `type`, such as `iri`. A field of a schema type has `type` `string`. Such a field also has a `schema` key, the JSON Schema of its type (section 4, [Format and schema types](format-and-schema-types.md)). The answer is a JSON object with exactly these fields.
+For a struct answer, `response.type` is `struct`, `options` is `null`, and `response.fields` lists the fields of the struct, in order. Each field is `{name, type, options, description}`: `type` is `boolean`, `union` or `string`, `options` lists the members of a union (else `null`), and `description` is the field doc comment. A field of a format type has the JSON name of that type as its `type`, such as `iri`. A field of a schema type has `type` `string`. Both kinds of field also have a `schema` key, the JSON Schema of their type (section 4, [Format and schema types](format-and-schema-types.md)). The answer is a JSON object with exactly these fields.
 
 ```json
 {"kind": "request", "version": 1, "key": "main.pick", "function": "main", "instruction": "Pick the next pull request notification.",
