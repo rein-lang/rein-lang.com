@@ -87,7 +87,7 @@ Each check reports the value and the type that it fails:
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.
 
-A walk uses stand-in values, and it skips the format checks. `rein graph` walks an entry input that has no value as `<name>`, so the graph shows the path of the program without a value. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
+A walk uses stand-in values, and it skips the format checks. The walks are `rein graph` without `--input`, and the page of `rein debug`. A walk gives each input that has no value the text `<name>`. The page of `rein debug` checks no format value, even one that you set. A value that you give to `rein graph` with `--input` is a real value, and it is checked.
 
 Real runs check each format or schema value that they get. These are `rein step`, `rein eval --set`, and the debug adapter (`rein dap`).
 
