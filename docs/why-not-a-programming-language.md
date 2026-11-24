@@ -171,7 +171,6 @@ The three work together. The process gives the order. A step names the skill or 
 
 - Rein has no loops yet. A retry is a reference back to an earlier function, and the checker warns about such a cycle.
 - A tree that needs a calculation inside a branch does not fit. Move the calculation to a script.
-- The reasons for each rule are in [Decisions](/reference/decisions).
 
 ## Read next
 

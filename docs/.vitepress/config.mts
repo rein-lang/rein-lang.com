@@ -17,10 +17,8 @@ const examplesSource = /^(?:\.\.\/)*examples\/(.*)$/
 const siteAnchor = (hash: string) => hash.replace(/^#(?=\d)/, '#_')
 const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
-  'docs/decisions.md': '/reference/decisions',
   'docs/interface.md': '/reference/interface',
   'docs/install-programs.md': '/install-programs',
-  '../decisions.md': '/reference/decisions',
   '../interface.md': '/reference/interface',
   '../install-programs.md': '/install-programs',
 }
@@ -147,7 +145,6 @@ const config = withMermaid(
         { text: 'Examples', link: '/examples/' },
         { text: 'Reference', link: '/reference/spec' },
         { text: 'Roadmap', link: '/reference/roadmap' },
-        { text: 'Alpha', link: '/reference/decisions' },
       ],
       sidebar: [
         {
@@ -182,7 +179,6 @@ const config = withMermaid(
           text: 'Reference',
           items: [
             { text: 'Language reference', link: '/reference/spec' },
-            { text: 'Decisions and open questions', link: '/reference/decisions' },
             { text: 'Roadmap', link: '/reference/roadmap' },
             { text: 'Agent interface', link: '/reference/interface' },
             { text: 'CLI reference', link: '/reference/cli' },

@@ -1,7 +1,6 @@
 # Rein language reference
 
 Status: proof of concept. Rules here drive the checker and the evaluator.
-Design reasons and open questions live in [decisions.md](decisions.md).
 
 Rein mimics TypeScript syntax and types. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no loops, no global scope, and no `default` or `else`. Its imports are named imports, as in TypeScript (section 4, Imports). A function gets its values only from its parameter and its answers.
 ## Topics
