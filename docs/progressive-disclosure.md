@@ -104,7 +104,7 @@ The disclosure is also the same on each run. The same answers give the same step
 
 Rein has limits too:
 
-- **The start.** An agent finds a program by its name and its description, the same as level 1 of a skill. Someone must start the run: the agent, the user, or a hook. A trigger that starts a program before a guarded action is a proposal, and it is not built. See [Agent interface](/reference/interface).
+- **The start.** An agent finds a program by its name and its description, the same as level 1 of a skill. Someone must start the run: the agent, the user, or a hook. Rein does not start a program by itself before a guarded action. See [Agent interface](/reference/interface).
 - **The answers.** The program picks the path from the answers of the agent. A wrong answer leads to a wrong path. The trace shows each answer, so you can find it.
 - **Knowledge.** A step can need knowledge, such as how to review code. Rein does not hold that knowledge. A skill does, and a step can name the skill.
 

@@ -49,7 +49,7 @@ Claude Code and Codex call tools. They cannot keep a stdin open across tool call
 - `rein_answer` answers the key the run waits on. The agent sends only the value.
 - An unknown run id is a tool error.
 - A program whose hand-offs reach a program that is not installed does not start. `rein_start`, and the `first_step` of `rein_programs`, give an error step. It names each missing program, the function that references it, and `rein install -g <name>`. The agent learns it before the first answer, not when the run reaches the hand-off.
-- Runs live until `rein_stop` or until the host exits. Saving runs to disk, to resume after a crash, is not built. It is optional, and it is not the main path.
+- Runs live until `rein_stop` or until the host exits. A run is not saved to disk, so it does not resume after a crash.
 
 Register it in Claude Code:
 
