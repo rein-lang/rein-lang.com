@@ -2,6 +2,10 @@
 
 These notes moved from the site page [Agent interface](../language/interface.md). They are for people who work on Rein.
 
+## Saved runs (optional)
+
+- Save live runs to disk, so a run resumes after a crash. It is optional, and it is not the main path.
+
 ## Harness enforcement (proposal)
 
 - A hook injects the current step of each live run into the agent context, on each prompt. The agent sees what the program waits on.
