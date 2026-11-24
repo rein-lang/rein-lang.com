@@ -28,7 +28,7 @@ export default async function check(
 ) {
   /** The facts of the pull request. */
   const facts: Facts = await request(
-    `Run scripts/pr-facts.sh ${pr} from this program's folder.
+    `Run pr-facts.sh ${pr} from this program's folder.
     Answer with its JSON output.`,
   );
 
@@ -54,7 +54,7 @@ export default async function check(
 ) {
   /** Is the branch behind its base? */
   const behind: boolean = await request(
-    `Run scripts/behind.sh ${pr} from this program's folder.
+    `Run behind.sh ${pr} from this program's folder.
     Answer yes when it prints behind.`,
   );
 
@@ -102,7 +102,7 @@ export default async function sync(
 ) {
   /** Did the rebase finish without a conflict? */
   const clean: boolean = await request(
-    `Run scripts/rebase.sh with the link ${pr}. Answer yes when it exits 0.`,
+    `Run rebase.sh with the link ${pr}. Answer yes when it exits 0.`,
   );
 
   if (clean) {
@@ -196,7 +196,7 @@ export default async function fix(
 
   /** Did the tests pass after the fix? */
   const tests_ok: boolean = await request(
-    `Run scripts/tests.sh ${pr} from this program's folder.
+    `Run tests.sh ${pr} from this program's folder.
     Answer yes when it exits 0.`,
   );
 
