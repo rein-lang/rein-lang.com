@@ -117,7 +117,6 @@ Examples: [merge-pr](/examples/merge-pr), [incident-triage](/examples/incident-t
 - [Skills and programs](/rein-vs-skills): when to write a manual and when to write an app.
 - [Editor](/editor): the VS Code extension.
 - [Language reference](/reference/spec): syntax, rules, evaluation, CLI.
-- [Decisions](/reference/decisions): owner facts, PoC choices, open questions.
 - [Agent interface](/reference/interface): programs as named apps, the MCP host, and `rein run`.
 
 ## License

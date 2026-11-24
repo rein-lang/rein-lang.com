@@ -2,7 +2,7 @@
 
 Status: alpha. This page lists future work only: Now, Next and Later.
 Shipped work is in the [rein releases](https://github.com/rein-lang/rein/releases) and the merged pull requests. Named imports, the deprecation warnings, the language server support and `rein migrate imports` shipped in [rein 0.1.2](https://github.com/rein-lang/rein/releases/tag/v0.1.2).
-Language rules live in [spec.md](spec.md). The reasons live in [decisions.md](decisions.md).
+Language rules live in [spec.md](spec.md).
 
 ## Key dates
 
