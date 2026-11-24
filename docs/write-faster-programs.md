@@ -62,7 +62,7 @@ export default async function check(
 }
 ```
 
-Even for judgment, let one script gather all the text in a single call. See [Bundle scripts](/install-programs#bundle-scripts-built) for how a program ships its scripts.
+Even for judgment, let one script gather all the text in a single call. See [Bundle scripts](/install-programs#bundle-scripts) for how a program ships its scripts.
 
 ## Never restart to go on
 
