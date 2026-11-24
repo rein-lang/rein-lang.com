@@ -1,7 +1,7 @@
 # Decisions
 
 Status: proof of concept.
-Language rules live in [spec.md](spec.md). This file holds the reasons and the open work.
+Language rules live in [spec.md](../language/spec.md). This file holds the reasons and the open work.
 
 ## Facts from the owner
 
@@ -20,7 +20,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 13. Templates work like Rust macros: they expand to a string. A standard library ships templates such as `delegate(model, task)`.
 14. A function can send the agent an async request and branch on the typed response (`const x: boolean = await request(...)`).
 15. Every function returns something on every path: a string, a template, or a reference to another function.
-16. A file names another file or program with a TypeScript named import, by the name the target declares: `import { fix } from "./ci/fix";` for a function, `import { Message } from "./message.struct";` for a shared struct, `import { main } from "pr-handling";` for a program. `@` references and default imports are deprecated and become an error on 2026-12-19. See the [roadmap](roadmap.md). (Amended 2026-11-19.)
+16. A file names another file or program with a TypeScript named import, by the name the target declares: `import { fix } from "./ci/fix";` for a function, `import { Message } from "./message.struct";` for a shared struct, `import { main } from "pr-handling";` for a program. `@` references and default imports are deprecated and become an error on 2026-12-19. See the [roadmap](../language/roadmap.md). (Amended 2026-11-19.)
 17. The runtime is stateless: each step takes the project and all answers so far and returns the next question, request or final instruction. The CLI is interface-agnostic; a daemon can wrap the same request/response types later.
 18. A program is its entry file (fact 25). Scoped folders are only a catalog: project (`rein/`), user (the user programs folder, filled by `rein install -g`), system; the closest scope wins. `rein list` shows the catalog. The agent finds a program there by name, not by navigating a dot-folder. (Amended 2026-11-12.)
 19. Rein injects itself into agent sessions with a SessionStart hook, built on polyhook so it works across agents.
@@ -29,7 +29,7 @@ Language rules live in [spec.md](spec.md). This file holds the reasons and the o
 22. No global scope. A function gets a value only from its parameters. The caller passes it.
 23. Templates are permanent, and user templates (`templates/*.rein`) stay, not only the std `delegate` and `askUser`. A template call is a value, not a step: it nests as an argument and adds no hop to the `rein step` trace. Template arguments are always checked: the count equals the parameter count, every parameter is used in the template literal, and every parameter has its own doc comment. (2026-11-12)
 24. Call arguments are named, as in Python: `f(name=value, other=value)`. A positional argument is a compile error, and no flag allows it. Order does not matter. Each name is a parameter, given once. A name says what a value is, and it still works when a parameter moves. (2026-11-12)
-25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see the [roadmap](roadmap.md)). (2026-11-12)
+25. A program is its entry file. If you want a pluggable program, use the files: give any `.rein` file to the CLI and run it from there. No `rein/` folder, manifest or scope is needed. A compiled one-file program is a planned tool (see the [roadmap](../language/roadmap.md)). (2026-11-12)
 26. A function takes one parameter at most. The parameter is a scalar or a struct. An inline struct lives in the function's file, is that function's input, and cannot be exported. A struct that more than one function needs is a standalone `<name>.struct.rein` file that exports only that struct. (2026-11-12)
 
 ## PoC choices (revisable)
@@ -67,8 +67,8 @@ Each choice can change. The reason is one line.
 - Reference cycles are allowed, but the checker warns. A cycle with an `await` call on it is not warned only when a question comes before one of its edges, such as a parameter the agent answers or a `request` above the call. Why: a cycle of returns, or an `await` cycle with no question, replays the same answers and fails at the 64-step limit. An `await` after a question asks a new key at each level, so the recursion can run until the agent stops it. A retry process needs a loop.
 - One step per eval. `rein eval` evaluates one function and returns its string or the next function. The agent, or the harness, decides whether to follow it. Why: the agent keeps control of each step.
 - `choice` stays the CLI and JSON name for a union parameter. Why: the output shape is stable for agent tools.
-- Agents consume processes through `rein step` (protocol v1, see [spec.md section 11](spec/stepping.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same process. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
-- Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
+- Agents consume processes through `rein step` (protocol v1, see [spec.md section 11](../language/spec/stepping.md#11-stepping-agent-interface)). The caller sends every answer so far, and the runtime follows references itself. Why: no state is kept between calls, so a CLI, a harness or a daemon can drive the same process. CLI, MCP tool, or library are still open for the transport; the request and response types are the same for each.
+- Agents hold a live run through the MCP host, `rein serve --mcp` (see [interface.md](../language/interface.md)). Why: Claude Code and Codex cannot keep a stdin open across tool calls, so the run lives in a host process. The evaluator stays stateless; the host keeps the answers.
 - Programs live in a visible `rein/` folder with a `rein.json` manifest, and packages come from `rein install`. Why: an agent finds, reads and writes visible files with its normal tools, so it can author programs too.
 - Programs are npm packages installed with pnpm into `<user programs>/npm` (with `-g`) or the repo's `rein/npm` (without). Why: Rein has no package manager of its own, and pnpm holds conflicting versions of one package side by side. (Proposed, 2026-11-12. The steps are on the Install a program page.)
 - A struct is an `interface`. There is no `type X = { ... }` form. Why: one form keeps the grammar small, and an `interface` reads as a named record in TypeScript.
@@ -162,7 +162,7 @@ Anyone can build and share a program, so two authors can pick the same name. The
 
 ## Planned (not built)
 
-Planned work and its dates live in the [roadmap](roadmap.md).
+Planned work and its dates live in the [roadmap](../language/roadmap.md).
 
 ## Open questions
 

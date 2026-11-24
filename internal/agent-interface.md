@@ -1,7 +1,7 @@
 # Agent interface: proposal
 
 Status: proposal. Not decided. No code implements it.
-The current rules are in [spec.md section 11](../language/spec/stepping.md#11-stepping-agent-interface) and [section 12](../language/spec/agent-integration.md#12-agent-integration). The reasons for the current choices are in [decisions.md](../language/decisions.md).
+The current rules are in [spec.md section 11](../language/spec/stepping.md#11-stepping-agent-interface) and [section 12](../language/spec/agent-integration.md#12-agent-integration). The reasons for the current choices are in [decisions.md](decisions.md).
 
 The built interface is in [interface.md](../language/interface.md): the MCP host, `rein run`, and programs as named apps. This file proposes what comes next.
 
