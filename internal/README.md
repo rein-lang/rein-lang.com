@@ -12,3 +12,4 @@ This folder holds the public docs for people who work on Rein. The site does not
 - [Agent interface proposal](agent-interface.md): what comes next for the agent interface, and its open questions.
 - [Agent interface: plan and known gaps](agent-interface-plan.md): harness enforcement, scope, and conflicts with the spec.
 - [Install a program: plan and open questions](install-programs-plan.md): what is proposed for installs and packages.
+- [Maintainer tasks](maintainer-tasks.md): migration work on the example and program repos, and research items.
