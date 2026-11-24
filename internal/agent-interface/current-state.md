@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | Trigger | One context block on the first prompt. The agent decides when a task matches a program. | [hook.rs](../../crates/rein/src/hook.rs) |
 | Step | The MCP host keeps the answers of a live run in memory. `rein step` stays for replay, and there the agent sends every answer. | [interface.md](../../language/interface.md) |
-| Answer source | The agent answers every question. | [decisions.md](../../language/decisions.md), last open question |
+| Answer source | The agent answers every question. | [decisions.md](../decisions.md), last open question |
 | Outcome | `done` holds free text. | [spec.md section 11](../../language/spec/stepping.md#11-stepping-agent-interface) |
 
 ## Findings

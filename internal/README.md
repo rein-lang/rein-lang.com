@@ -8,4 +8,5 @@ This folder holds the public docs for people who work on Rein. The site does not
 
 ## Pages
 
+- [Decisions](decisions.md): why Rein works as it does, planned features, and the open questions.
 - [Agent interface proposal](agent-interface.md): what comes next for the agent interface, and its open questions.
