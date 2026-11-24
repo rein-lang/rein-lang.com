@@ -1,6 +1,6 @@
 # Agent interface
 
-Status: proof of concept. The MCP host, `rein run`, `rein list` and `rein show` are built. Harness enforcement is a proposal.
+Status: proof of concept.
 
 A Rein program is a running app. The agent finds it by name, starts it, and answers it step by step. The program keeps its state while it runs. The agent does not resend earlier answers.
 
@@ -174,26 +174,3 @@ Logging never changes the output or the exit code of a command. Write errors are
 ## `rein step` stays for replay
 
 Stateless `rein step` does not change. It is for replay, debugging, and tests. The same answers always give the same step. The old single-function `rein run FUNCTION --set ...` is now `rein eval`.
-
-## Harness enforcement (proposal)
-
-This part is not built.
-
-- A hook injects the current step of each live run into the agent context, on each prompt. The agent sees what the program waits on.
-- A Stop hook blocks the agent from ending its turn while a run waits on a step. The hook tells the agent to answer the step or to call `rein_stop`.
-- The hooks read the live runs from the host, with `rein_list`.
-- The harness then enforces the program the way an operating system enforces a process. The agent cannot drift away from it.
-
-## Not in scope
-
-- Graph editors.
-- Links between agents.
-- Protocol layers above MCP.
-
-## Conflicts with spec section 11
-
-- Section 11 says the runtime keeps nothing between calls. The evaluator still keeps nothing. The MCP host and `rein run` keep the answers in memory, above the evaluator.
-- A step from `rein_start`, `rein_answer` and `rein_status` has a `run` field. A `rein step` response does not. MCP steps list their keys in alphabetical order.
-- In `rein step`, a bad answer is an error with exit code 1. In a live run, a bad answer is an error step, and the run goes on.
-- Sections 9 and 10 named the single-function command `rein run`. It is now `rein eval`. `rein run` starts a live run.
-- The manifest `entry` can name a file other than `main.rein`. The checker still asks for a `main.rein` in each program.
