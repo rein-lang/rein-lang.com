@@ -24,7 +24,7 @@ Each question names who answers it.
 | `user` | The user only. | Approval, such as "may I deploy?" |
 
 - A probe needs no agent turn. A program that reads its facts with probes asks fewer questions.
-- A probe needs a program input, such as the pull request number. Program inputs are built ([spec.md section 4](../spec/functions-and-parameters.md#4-declarations)). Probes are still a proposal. An input is a `string`. It goes into templates and probes only, and never into a condition.
+- A probe needs a program input, such as the pull request number. Program inputs are built ([spec.md section 4](../../language/spec/functions-and-parameters.md#4-declarations)). Probes are still a proposal. An input is a `string`. It goes into templates and probes only, and never into a condition.
 - The response for a `user` question says so. The harness can then use its own ask dialog, and the agent must not answer.
 
 ### 4. Outcome: a verdict that a gate can read
