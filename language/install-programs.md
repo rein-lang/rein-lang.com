@@ -110,7 +110,7 @@ A program package can ship scripts with its `.rein` files. Put shell commands in
 - Do not make a `scripts/` or `tests/` folder. Files that work together stay together, so a person or an agent sees which files belong to a step from the folder alone.
 - List the scripts in `files`, and leave the tests out. For a registry, tarball or git install, pnpm keeps only the files that `files` lists. A local folder install links the whole folder. Either way, the executable bit stays.
 - In the request text, name the script by its path from the program's folder, and its arguments: ``await request(`Run pick/no-patch-facts.sh <alert id> from this program's folder.`)``.
-- The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
+- The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein sets no environment variable for this folder, so the agent looks it up this way.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
 
 ```json
