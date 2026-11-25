@@ -2,6 +2,8 @@
 
 When a file has a syntax error, only that error is reported for the file. It is the first syntax error. The other checks run after the syntax error is fixed.
 
+The quoted messages are the text that `rein check` prints. Some still show the deprecated `@` form, such as `@./tpl` or `@pr-handling`, for a call to an imported function or program. The named import is the normal form. `@` references become errors in rein 0.2.0, on or after 2026-12-19.
+
 ### Errors
 
 | Rule |
@@ -46,10 +48,10 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | An `if` block does not end in a return (`every `if` block must end in a return`) |
 | A path through the function ends without a return (`every path must return something`) |
 | A statement follows a terminating statement (`unreachable statement`) |
-| A reference does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
+| An import does not resolve (`` cannot find function `@./x` ``), or leaves the root (`` `@../../x` leaves the project root ``) |
 | A program reference names a program that is not installed (`` cannot find program `x`; run `rein list` to list programs ``), or a function the program does not have (`` cannot find function `f` in program `x` ``) |
-| A program reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
-| A reference to a template is returned without a call |
+| A program import or reference targets a function that is not the entry of the program (`` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry ``). Section 4, References, has the rule |
+| An imported template is returned without a call |
 | A call, a hand-off or an `await` has a positional argument (`` missing argument `a` in call to `@./tpl`; write `a=value` ``) |
 | A call, a hand-off or an `await` names an argument that is not a parameter (`` `c` is not a parameter of `@./tpl`; parameters are a, b ``) |
 | A call, a hand-off or an `await` gives one parameter twice (`` `a` is given twice in call to `@./tpl`; give each name once ``) |
@@ -82,7 +84,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A hand-off or an `await` leaves a `boolean` or union parameter of the target out (`` missing argument `ci` in call to `@./merge`; write `ci=value` ``). The target asks the agent for it (section 4, Inputs) |
 | An inline struct is not the parameter of the function in its file (`unused struct`) |
 | An `async` function has no `await` |
-| A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return or `await` of a reference that closes the cycle. The one exception: a cycle with an `await` call on it is not warned when a question comes before one of its edges (a parameter the agent answers, or a `request` answer above the call). Each level then asks a new key, and the 64-step limit still stops endless recursion. An `await` with no question before it on the cycle, such as `const again: boolean = await @./a;` as the first step, is warned, since it fails at the 64-step limit |
+| A reference cycle, such as `a -> b -> a`. A cycle acts as a loop. The checker gives one warning on every return or `await` of a reference that closes the cycle. The one exception: a cycle with an `await` call on it is not warned when a question comes before one of its edges (a parameter the agent answers, or a `request` answer above the call). Each level then asks a new key, and the 64-step limit still stops endless recursion. An `await` with no question before it on the cycle, such as `const again: boolean = await a;` as the first step, is warned, since it fails at the 64-step limit |
 | A doc tag other than `@param` (`unknown tag `@x``) |
 | A function cannot be reached from the entry (`main`, or `entry` in `rein.json`) through references (`x is not reachable from main`). This warning is not given when the entry is missing or has a syntax error |
 | A function that exactly one other function calls is not in the folder named after that caller (`` `fix_ci` is only called by `merge`; move it to `merge/fix_ci.rein` so the folders show the process. The move changes its answer keys ``). A function that only the entry calls belongs at the root. It is not given when the entry is missing or has a syntax error, since reachability is unknown. Section 1 has the rule and its exceptions |

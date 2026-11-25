@@ -40,12 +40,12 @@ Helpful errors from the parser:
 | `import type`, `import *`, or a side-effect import (`import "path";`) | `` `import type` is not supported; write `import { name } from "path";` `` (each form has its own text, which names the same form) |
 | `default` in a switch | `Rein has no `default`; add a `case` for every member` |
 | `else` | `Rein has no `else`: end the `if` block with a return, and handle the other case after it` |
-| `return;` with no value | `` `return` needs a value: a string, a template, or `@./function` `` |
+| `return;` with no value | `` `return` needs a value: a string, a template, or an imported function `` |
 | `true` or `false` in a condition or comparison | `use the boolean parameter directly` |
 | a doc comment in any other place | `the doc comment must go right before `export default function`, an `interface`, a parameter, a field, or a const answer` |
-| `x: Name` or `x: @./name` as a parameter | `` a struct parameter is destructured: write `{ field, ... }: Name` `` |
+| `x: Name` as a parameter, where `Name` is a struct | `` a struct parameter is destructured: write `{ field, ... }: Name` `` |
 | a doc comment before a struct parameter | `` a struct parameter has no doc comment; document each field in its `interface` `` |
 | `await` of a name other than `request` or a reference | `only `request` or a reference like `@program` can be awaited` |
-| `await` outside a `const` answer, such as `await @./x;` or `return await @./x;` | `` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` `` |
-| a bare name as a return value | `expected a string, a template literal, or a reference like `@./path`` |
+| `await` outside a `const` answer, such as `await x;` or `return await x;` | `` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` `` |
+| a bare name as a return value | `` expected a string, a template literal, or an imported function, found name `x` `` |
 | a second `export default function` | `expected end of file ...; a file holds one `export default function`` |

@@ -6,9 +6,9 @@ A format type or schema type parameter is an input too. See [Format and schema t
 
 - An input is used only in a template literal, as `${name}`, or as a bare name argument of a call.
 - A condition or a switch subject cannot read an input. Error: `` `pr` is a string input; a condition cannot read it ``.
-- `return @./merge(pr=pr);` hands the agent to a normal function and passes the value. The arguments bind by name to the target's parameters.
+- `return merge(pr=pr);` hands the agent to an imported normal function and passes the value. The arguments bind by name to the target's parameters.
 - An argument for a `string` parameter is `name=value`, where the value is a STRING, a template literal, or a bare name of a `string` parameter of the caller. Any other bare name is an error: `` `x` is not a string input ``.
-- Every `string` parameter of the target is given by name, once. `return @./merge;` to that function is an error: `` `@./merge` takes 1 argument, got 0 ``.
+- Every `string` parameter of the target is given by name, once. `return merge;` to that function is an error: `` `@./merge` takes 1 argument, got 0 ``.
 - Arguments to a function with no parameters are an error: `` `@./x` takes no arguments; return it without a call ``.
 
 #### Passing a boolean or a union
