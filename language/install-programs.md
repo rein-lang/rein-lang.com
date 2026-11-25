@@ -112,6 +112,7 @@ A program package can ship scripts with its `.rein` files. Put shell commands in
 - In the request text, name the script by its path from the program's folder, and its arguments: ``await request(`Run pick/no-patch-facts.sh <alert id> from this program's folder.`)``.
 - The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein sets no environment variable for this folder, so the agent looks it up this way.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
+- Security: bundled scripts run with the agent's rights, and `--ignore-scripts` does not protect against them. Review a third-party program's bundled scripts before you install it.
 
 ```json
 {
