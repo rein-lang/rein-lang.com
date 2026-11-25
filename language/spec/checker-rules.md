@@ -32,7 +32,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A condition uses a union parameter bare |
 | A condition compares a boolean parameter with `===` or `!==` |
 | A condition or switch subject names an unknown parameter |
-| A condition or switch subject names a `string` parameter (`` `pr` is a string input; a condition cannot read it ``) |
+| A condition or switch subject names a `string` parameter, or a format or schema type parameter (`` `pr` is a string input; a condition cannot read it ``, or `` `pr` is an IRI input; a condition cannot read it `` for a format type, with the name of its type) |
 | A bare name in an argument for a `string` parameter is not a `string` parameter of the caller (`` `x` is not a string input ``) |
 | An argument for a `boolean` or union parameter is not a bare name or a literal (`` `ci` of `@./merge` is `"green" \| "red"`; pass a parameter or an answer of that type, ... ``), or names a value of another type (`` `ci` is `"green" \| "red"`, but `big` of `@./review` is `boolean` ``) |
 | A union argument can be a member that the target's union lacks (`` `ci` can be `pending`, which `ci` of `@./merge` does not have; its members are `green`, `red` ``) |
@@ -60,7 +60,7 @@ When a file has a syntax error, only that error is reported for the file. It is 
 | A template has an `if`, a `switch`, an import, or a statement other than one template return |
 | A template parameter is not used |
 | A template interpolates a boolean, or a name that is not a parameter or an answer |
-| An import statement is in the file (`Rein has no imports`) |
+| An `import type`, `import *`, or side-effect import (`` `import *` is not supported; write `import { name } from "path";` ``). A named import is allowed, section 4, Imports |
 | `await` without `export default async function` |
 | `await` of a name other than `request` or a reference (`only `request` or a reference like `@program` can be awaited`) |
 | `await` outside a `const` answer (`` `await` gives an answer; write `/** question */ const name: Type = await @program(...);`, then read `name` ``) |

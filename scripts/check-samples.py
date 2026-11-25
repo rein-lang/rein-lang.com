@@ -14,8 +14,8 @@ import subprocess
 import sys
 import tempfile
 
-# Messages about the files around a sample, which the docs do not show.
-CONTEXT = ("cannot find function", "leaves the project root", "unknown parameter", "unknown program")
+# Messages about the files around a sample, such as a missing function or struct file, which the docs do not show.
+CONTEXT = ("cannot find function", "cannot find struct", "leaves the project root", "unknown parameter", "unknown program")
 
 files = sorted(glob.glob("language/**/*.md", recursive=True)) + sorted(glob.glob("docs/*.md"))
 failures = 0

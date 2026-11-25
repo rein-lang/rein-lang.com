@@ -3,13 +3,15 @@
 A function can ask the agent for a step and wait for an answer. The answer is a typed `const`:
 
 ```ts
+import { escalate } from "../escalate";
+
 /** Answer a FAQ ticket with a help article, or escalate it. */
 export default async function answerFaq(
   /** Did you find a help article that answers the question? */
   article_found: boolean,
 ) {
   if (!article_found) {
-    return @../escalate;
+    return escalate;
   }
 
   /** Did the customer confirm the article solved the problem? */
@@ -22,7 +24,7 @@ export default async function answerFaq(
     return `Close the ticket as solved.`;
   }
 
-  return @../escalate;
+  return escalate;
 }
 ```
 
@@ -38,6 +40,8 @@ export default async function answerFaq(
 An answer can be a struct. The struct is an inline `interface` in the file, or a shared `@./name` (`name.struct.rein`). Section 4, Structs, gives the struct rules.
 
 ```ts
+import { main } from "pr-handling";
+
 interface Pick {
   /** The link of the pull request. */
   pr: string;
@@ -49,12 +53,12 @@ interface Pick {
 export default async function pullRequest() {
   /** The pull request of the next notification. */
   const pick: Pick = await request(`Pick the next pull request notification.`);
-  return @pr-handling(pr=pick.pr);
+  return main(pr=pick.pr);
 }
 ```
 
 - Only a `request` answer can be a struct. A parameter cannot.
-- Every field is `boolean`, a union, or `string`, and has a doc comment (the struct rules of section 4). A `string` field is allowed because the struct gives the value a name, a doc comment and a schema.
+- Every field is `boolean`, a union, `string`, or a format or schema type, and has a doc comment (the struct rules of section 4). A `string` field is allowed because the struct gives the value a name, a doc comment and a schema.
 - `pick.pr` reads one field. It is one level: `a.b.c` is an error. The field is in scope as long as the answer is.
 - A `string` field is used where a `string` parameter is used: a hand-off or template argument (`@./merge(pr=pick.pr)`) and `${pick.pr}` in a template literal. A `boolean` or union field is used like a boolean or union answer: in a condition or in a `switch` (`switch (pick.task)`).
 - Errors: `` `z` is not a field of `Pick`; fields are pr, task ``, `` `pick.pr` is a string input; a condition cannot read it ``, and `` `pick` is a struct answer; read one of its fields, like `pick.field` ``.

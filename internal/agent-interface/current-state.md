@@ -3,15 +3,15 @@
 | Contract | Today | Source |
 | --- | --- | --- |
 | Trigger | One context block on the first prompt. The agent decides when a task matches a program. | [hook.rs](../../crates/rein/src/hook.rs) |
-| Step | The MCP host keeps the answers of a live run in memory. `rein step` stays for replay, and there the agent sends every answer. | [interface.md](../interface.md) |
+| Step | The MCP host keeps the answers of a live run in memory. `rein step` stays for replay, and there the agent sends every answer. | [interface.md](../../language/interface.md) |
 | Answer source | The agent answers every question. | [decisions.md](../decisions.md), last open question |
-| Outcome | `done` holds free text. | [spec.md section 11](../spec/stepping.md#11-stepping-agent-interface) |
+| Outcome | `done` holds free text. | [spec.md section 11](../../language/spec/stepping.md#11-stepping-agent-interface) |
 
 ## Findings
 
 Measured on 2026-11-11 with the installed `rein 0.1.0`. The commit of that build is not known. On commit `9d65e21`, the test `reference_cycle_hits_the_hop_limit` in [step.rs](../../crates/rein-core/src/step.rs) asserts the error of finding 1.
 
-1. A reached reference cycle always ends in an error. An answer key is `<function>.<name>`, so a second visit gets the same answers and takes the same path. A call with return (`await`) is the exception: the keys inside it start with the caller's answer key and `>`, such as `main.b>fn.ok`, so each call, and each level of a recursive call, gets its own answers ([spec.md section 11](../spec/stepping.md#11-stepping-agent-interface)). Run the `merge-pr` example with these answers:
+1. A reached reference cycle always ends in an error. An answer key is `<function>.<name>`, so a second visit gets the same answers and takes the same path. A call with return (`await`) is the exception: the keys inside it start with the caller's answer key and `>`, such as `main.b>fn.ok`, so each call, and each level of a recursive call, gets its own answers ([spec.md section 11](../../language/spec/stepping.md#11-stepping-agent-interface)). Run the `merge-pr` example with these answers:
 
    ```text
    $ rein step --root <merge-pr example> --json \

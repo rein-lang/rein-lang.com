@@ -20,6 +20,8 @@ Rein has four kinds of doc comment. Each one holds only its own text.
 - An answer doc comment. It sits right before the `const` of an async request (section 4, Async requests).
 
 ```ts
+import { escalate } from "./escalate";
+
 interface Ticket {
   /** What kind of ticket is it? */
   category: "billing" | "bug" | "question";
@@ -35,7 +37,7 @@ interface Ticket {
  */
 export default function handleTicket({ category, vip }: Ticket) {
   if (vip) {
-    return @./escalate;
+    return escalate;
   }
 
   return `Answer the ${category} ticket.`;
@@ -54,10 +56,10 @@ Parsing rules, for each doc block:
 
 - A function has zero parameters or one. Two or more is an error: `` a function takes one parameter; put `a` and `b` in a struct ``.
 - The parameter is a scalar or a struct.
-- A scalar parameter is `name: type`. The type is `boolean`, a union of strings, or `string`.
+- A scalar parameter is `name: type`. The type is `boolean`, a union of strings, `string`, or a format or schema type (see Format and schema types).
 - `boolean` is true or false. A union is one of its string members. It needs at least 2 unique, non-empty members. A leading `|` is allowed.
 - The agent answers a `boolean` or union parameter, unless the caller passes its value (section 4, Inputs).
-- `string` is text. It is an input: the caller passes its value, and the agent is never asked for it (section 4, Inputs).
+- `string` is text. It is an input: the caller passes its value, and the agent is never asked for it (section 4, Inputs). A format or schema type is an input in the same way.
 - A struct parameter is destructured: `{ a, b }: Name`. The braces name every field of the struct, each one once. The body reads each field by its name, as it reads a scalar parameter.
 - Errors on the braces: `` `z` is not a field of `Name`; fields are a, b ``, `` destructure every field of `Name`; missing: `b` ``, and `` `a` is destructured twice ``.
 - In the rest of this reference, a parameter is the scalar parameter or a field of the struct parameter. Its name is unique within the function. Answer keys, `--set`, `--input`, `rein describe` and the graph use the field names.
