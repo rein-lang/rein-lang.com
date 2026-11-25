@@ -8,13 +8,17 @@ description: "Reference for rein check, run, eval, step and describe. Check a pr
 
 Check a project directory, or one .rein file, and print diagnostics
 
-**Usage:** `rein check [PATH]`
+**Usage:** `rein check [OPTIONS] [PATH]`
 
 ###### **Arguments:**
 
 * `<PATH>` — Project directory or .rein file
 
   Default value: `.`
+
+###### **Options:**
+
+* `--deny-deprecated` — Make each deprecated `@` reference and default import an error
 
 
 
@@ -72,7 +76,7 @@ Step the whole process from `main`. This is the agent-facing interface: answer o
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 * `--flow <NAME>` — Program to step, by name (see `rein list`). Same as the positional program
 * `--answer <KEY=VALUE>` — Answer as key=value, such as `merge_pr.ci=green`. Repeat for each answer
-* `--input <NAME=VALUE>` — Value of a `string` parameter of the entry function, as name=value. Repeat for each input
+* `--input <NAME=VALUE>` — Value of a `string`, format or schema parameter of the entry function, as name=value. Repeat for each input
 * `--stdin` — Read the whole request as JSON from stdin. Output is always JSON
 * `--json` — Print the response as JSON
 

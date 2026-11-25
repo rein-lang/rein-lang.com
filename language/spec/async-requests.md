@@ -58,7 +58,7 @@ export default async function pullRequest() {
 ```
 
 - Only a `request` answer can be a struct. A parameter cannot.
-- Every field is `boolean`, a union, or `string`, and has a doc comment (the struct rules of section 4). A `string` field is allowed because the struct gives the value a name, a doc comment and a schema.
+- Every field is `boolean`, a union, `string`, or a format or schema type, and has a doc comment (the struct rules of section 4). A `string` field is allowed because the struct gives the value a name, a doc comment and a schema.
 - `pick.pr` reads one field. It is one level: `a.b.c` is an error. The field is in scope as long as the answer is.
 - A `string` field is used where a `string` parameter is used: a hand-off or template argument (`merge(pr=pick.pr)`) and `${pick.pr}` in a template literal. A `boolean` or union field is used like a boolean or union answer: in a condition or in a `switch` (`switch (pick.task)`).
 - Errors: `` `z` is not a field of `Pick`; fields are pr, task ``, `` `pick.pr` is a string input; a condition cannot read it ``, and `` `pick` is a struct answer; read one of its fields, like `pick.field` ``.

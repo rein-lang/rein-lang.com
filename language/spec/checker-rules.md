@@ -34,7 +34,7 @@ The quoted messages are the text that `rein check` prints. Some still show the d
 | A condition uses a union parameter bare |
 | A condition compares a boolean parameter with `===` or `!==` |
 | A condition or switch subject names an unknown parameter |
-| A condition or switch subject names a `string` parameter (`` `pr` is a string input; a condition cannot read it ``) |
+| A condition or switch subject names a `string` parameter, or a format or schema type parameter (`` `pr` is a string input; a condition cannot read it ``, or `` `pr` is an IRI input; a condition cannot read it `` for a format type, with the name of its type) |
 | A bare name in an argument for a `string` parameter is not a `string` parameter of the caller (`` `x` is not a string input ``) |
 | An argument for a `boolean` or union parameter is not a bare name or a literal (`` `ci` of `@./merge` is `"green" \| "red"`; pass a parameter or an answer of that type, ... ``), or names a value of another type (`` `ci` is `"green" \| "red"`, but `big` of `@./review` is `boolean` ``) |
 | A union argument can be a member that the target's union lacks (`` `ci` can be `pending`, which `ci` of `@./merge` does not have; its members are `green`, `red` ``) |

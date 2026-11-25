@@ -2,7 +2,7 @@
 
 Status: alpha. This page lists future work only: Now, Next and Later.
 Shipped work is in the [rein releases](https://github.com/rein-lang/rein/releases) and the merged pull requests. Named imports, the deprecation warnings, the language server support and `rein migrate imports` shipped in [rein 0.1.2](https://github.com/rein-lang/rein/releases/tag/v0.1.2).
-Language rules live in [spec.md](spec.md). The reasons live in [decisions.md](decisions.md).
+Language rules live in [spec.md](spec.md).
 
 ## Key dates
 
@@ -15,10 +15,10 @@ The removal is a release, not a clock. An installed `rein` binary never starts t
 
 ## Now: migrate before 2026-12-19
 
-Until 2026-12-19, `@` references and default imports still check. Each one gives a deprecation warning. Rein 0.1.2 has the new forms. The remaining work:
+Until 2026-12-19, `@` references and default imports still check. Each one gives a deprecation warning. Rein 0.1.2 has the new forms. Before that date, for each of your programs:
 
-- Migrate each example program with `rein migrate imports`.
-- Migrate each program repo with `rein migrate imports` before 2026-12-19, and add `rein check --deny-deprecated` to its CI.
+- Run `rein migrate imports` in the program folder.
+- Add `rein check --deny-deprecated` to its CI, so no new `@` reference comes back.
 
 Each change is one import line for each target. Only the files that use `@` references change.
 
@@ -40,4 +40,3 @@ Each change is one import line for each target. Only the files that use `@` refe
 ## Later
 
 - Bundle tool: compiles a program into one self-contained `.rein` file, so an agent can load one file and run it as a full program.
-- Research an agent-agnostic tool that installs agent hooks. Why: each agent keeps its hook config in its own format and place, so Rein should not own a per-agent installer.

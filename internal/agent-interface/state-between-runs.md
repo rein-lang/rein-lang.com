@@ -6,7 +6,7 @@ Contract 2 covers one run. This section covers what stays after a run ends.
 
 The state hangs on a subject, such as one pull request. A subject is like a document in an app. A run starts with its subject, and a later run on the same subject continues from the stored state.
 
-The subject of a run is a program input, such as the pull request link. The caller passes it as a `string` parameter ([spec.md section 4](../spec/functions-and-parameters.md#4-declarations)).
+The subject of a run is a program input, such as the pull request link. The caller passes it as a `string` parameter ([spec.md section 4](../../language/spec/functions-and-parameters.md#4-declarations)).
 
 Not all state is equal:
 
