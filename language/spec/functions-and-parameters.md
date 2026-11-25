@@ -15,7 +15,7 @@
 Rein has four kinds of doc comment. Each one holds only its own text.
 
 - The function doc comment. It sits right before `export default function`.
-- A parameter doc comment. It sits right before the parameter, inside the parameter list. It gives the question the agent must answer for that parameter.
+- A parameter doc comment. It sits right before the parameter, inside the parameter list. For a `boolean` or union parameter of the entry function, or a `boolean` or union parameter that a caller did not pass while that is a warning (section 4, Inputs), it gives the question the agent must answer. For any other parameter, it describes the value the caller passes. A missing `string` argument is an error, never a question.
 - A field doc comment. It sits right before the field, inside the `interface`. It gives the question for that field, or the text the caller passes. A shared struct also has a struct doc comment, right before `export default interface`.
 - An answer doc comment. It sits right before the `const` of an async request (section 4, Async requests).
 
