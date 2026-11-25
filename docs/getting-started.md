@@ -4,14 +4,14 @@ description: "Install the rein CLI, write a first Rein process, then check, list
 
 # Getting started
 
-This page builds the `rein` command and runs a first process. It needs a Rust toolchain with `cargo`.
+Rein programs are apps for AI agents. This page installs the `rein` command, then builds a first program. The program asks one question and gives one instruction. The agent answers each step, and it cannot skip one. You need a Rust toolchain with `cargo` for the install.
 
 ## Install the CLI
 
 Install the binary from a release tag:
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.1 --locked rein
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.5 --locked rein
 rein --version
 ```
 

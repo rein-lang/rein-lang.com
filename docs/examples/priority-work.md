@@ -92,6 +92,9 @@ flowchart TD
 ### `main.rein`
 
 ```rein
+import { find_projects } from "./find_projects";
+import { open_prs } from "./open_prs";
+
 interface Projects {
   /**
    * The high priority repositories (`owner/name`), comma-separated,
@@ -110,13 +113,13 @@ export default async function main(
   workplace: string,
 ) {
   /** The high priority repositories. */
-  const projects: Projects = await @./find_projects(workplace=workplace);
+  const projects: Projects = await find_projects(workplace=workplace);
 
   if (projects.none) {
     return `No priority project has activity.`;
   }
 
-  return @./open_prs(repos=projects.repos);
+  return open_prs(repos=projects.repos);
 }
 ```
 

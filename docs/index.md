@@ -1,17 +1,17 @@
 ---
-title: "Rein: a typed language for agent processes"
-description: "Rein is a strict, typed language for agent processes. Read what a process is, see a sample, and see how an agent steps it one answer at a time."
+title: "Rein: apps for AI agents"
+description: "Rein programs are apps for AI agents. The agent answers one question at a time and cannot skip a step. Install a program like an app and watch each run."
 ---
 
 # Rein
 
 Status: proof of concept. Syntax can still change.
 
-Rein is a language for agent processes. Other tools manage the harness or a graph that the agent runs in. Rein does not. It gives the agent instructions for what to do. Each function is one file. It returns the next step as text, as a reference to another function, or as a template call. When it needs a fact, it asks the agent. When it needs a step done, it sends the agent a request and waits for the answer.
+Give your agent apps, not manuals. A Rein program opens for the agent, asks one question, and waits for the answer. Then it gives the next step. The agent cannot skip a step, and the program keeps track of where the agent is. The same answers lead to the same step, for every agent and every run.
 
-Do you use skills today? A skill gives the agent knowledge, and a process gives it the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each. See [Progressive disclosure](/progressive-disclosure) for how each one gives the agent its text.
+Install a program like an app, and your agent opens it when a task matches. Use `rein watch` to see each run, its answers, and the step it waits on. Do you use skills today? A skill is a manual. A program is an app. See [Skills and programs](/rein-vs-skills) for the difference.
 
-Rein mimics TypeScript syntax and types, except `@` references. There are no imports, no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
+Rein programs are written in Rein, a small language. Rein mimics TypeScript syntax and types. It uses named imports, as TypeScript does. There is no `else`, and no `default`. Every function returns on every path. A function takes one parameter: a scalar or a struct, and a shared struct is a `<name>.struct.rein` file.
 
 ## Sample
 
@@ -19,6 +19,9 @@ Rein mimics TypeScript syntax and types, except `@` references. There are no imp
 
 ```ts
 // merge_pr.rein
+
+import { review_code } from "./merge_pr/review_code";
+import { fix } from "./merge_pr/fix";
 
 interface Input {
   /** Does the PR change only documentation files? */
@@ -37,9 +40,9 @@ export default function mergePr({ docs_only, ci }: Input) {
 
   switch (ci) {
     case "green":
-      return @./merge_pr/review_code;
+      return review_code;
     case "red":
-      return @./merge_pr/fix;
+      return fix;
     case "pending":
       return `wait for CI, then run merge_pr again`;
   }
@@ -58,7 +61,7 @@ flowchart TD
 
 ## How an agent uses it
 
-The agent steps the process with `rein step`. The runtime keeps no state, so each call takes every answer so far. Each call returns one of four kinds: `question`, `request`, `done`, or `error`. The walk below runs `examples/rein/support-ticket`. Each line after `$` is one call. `# exit` is its exit code:
+The agent runs the program with `rein step`. The runtime keeps no state, so each call takes every answer so far. Each call returns one of four kinds: `question`, `request`, `done`, or `error`. The walk below runs `examples/rein/support-ticket`. Each line after `$` is one call. `# exit` is its exit code:
 
 ```text
 $ cd examples/rein/support-ticket
@@ -88,7 +91,7 @@ A call follows each reference in the same call. The `trace` lists the functions 
 ## Quickstart
 
 ```sh
-cargo install --git https://github.com/rein-lang/rein --tag v0.1.1 --locked rein  # puts `rein` on PATH
+cargo install --git https://github.com/rein-lang/rein --tag v0.1.5 --locked rein  # puts `rein` on PATH
 git clone https://github.com/rein-lang/examples
 cd examples
 rein list                               # the programs visible from here
@@ -108,12 +111,12 @@ Examples: [merge-pr](/examples/merge-pr), [incident-triage](/examples/incident-t
 
 ## Next steps
 
-- [Getting started](/getting-started): install the CLI and write a first process.
-- [Install a program](/install-programs): install, update, or remove a program.
+- [Getting started](/getting-started): install the CLI and write a first program.
+- [Install a program](/install-programs): install, list, update, or remove a program.
 - [Concepts](/concepts): the model in one page.
+- [Skills and programs](/rein-vs-skills): when to write a manual and when to write an app.
 - [Editor](/editor): the VS Code extension.
 - [Language reference](/reference/spec): syntax, rules, evaluation, CLI.
-- [Decisions](/reference/decisions): owner facts, PoC choices, open questions.
 - [Agent interface](/reference/interface): programs as named apps, the MCP host, and `rein run`.
 
 ## License

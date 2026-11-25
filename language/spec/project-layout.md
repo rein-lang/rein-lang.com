@@ -29,4 +29,4 @@ Programs (processes) live in scopes: project, user, and system. The folders, the
 
 - `rein check <dir>`, `rein eval --root <dir>` and `rein run --root <dir>` still work on any process root passed explicitly.
 - A program is also one `.rein` file, the file form. `rein step <file.rein>`, `rein run <file.rein>` and `rein check <file.rein>` take it: the file's folder is the process root, and the file name without `.rein` is the entry. No folder, manifest or scope is needed. Scopes and `rein list` only find programs by name.
-- Imports do not exist. Relative references (`@./`, `@../`) stay inside the process root. A program reference names another installed program.
+- Imports (`import { name } from "./path"`) and the deprecated relative references (`@./`, `@../`) stay inside the process root. A program import or reference names another installed program.

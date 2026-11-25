@@ -3,6 +3,9 @@
 A function can run another function and use its result as a value. The answer is a `const`, as for `request`. The value after `await` is a reference:
 
 ```ts
+import { open_prs } from "./work/open_prs";
+import { main } from "priority-projects";
+
 interface Projects {
   /**
    * The high priority repositories (`owner/name`), comma-separated,
@@ -19,13 +22,13 @@ export default async function work(
   workplace: string,
 ) {
   /** The high priority repositories. */
-  const projects: Projects = await @priority-projects(workplace=workplace);
+  const projects: Projects = await main(workplace=workplace);
 
   if (projects.none) {
     return `No priority project has activity.`;
   }
 
-  return @./work/open_prs(repos=projects.repos);
+  return open_prs(repos=projects.repos);
 }
 ```
 

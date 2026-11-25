@@ -101,6 +101,10 @@ flowchart TD
 ### `main.rein`
 
 ```rein
+import { page_human } from "./page_human";
+import { follow } from "./follow";
+import { open } from "./open";
+
 interface Alert {
   /** How severe is the alert? */
   severity: "sev1" | "sev2" | "sev3";
@@ -119,19 +123,19 @@ export default function main({
   known_runbook,
 }: Alert) {
   if (customer_impact) {
-    return @./page_human;
+    return page_human;
   }
 
   switch (severity) {
     case "sev1":
-      return @./page_human;
+      return page_human;
     case "sev2":
     case "sev3":
       if (known_runbook) {
-        return @./follow;
+        return follow;
       }
 
-      return @./open;
+      return open;
   }
 }
 ```
@@ -139,6 +143,8 @@ export default function main({
 ### `follow.rein`
 
 ```rein
+import { page_human } from "./page_human";
+
 /**
  * Follow the runbook for an alert that has one.
  */
@@ -153,7 +159,7 @@ export default async function followRunbook() {
     return `Close the alert. Write a one-line note with the steps you ran.`;
   }
 
-  return @./page_human;
+  return page_human;
 }
 ```
 

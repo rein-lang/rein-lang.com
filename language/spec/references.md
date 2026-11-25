@@ -1,5 +1,7 @@
 ### References
 
+The main form to name another function or program is the named import (section 4, [Imports](imports.md)). An `@` reference is deprecated. It gives a warning now, and it becomes an error in rein 0.2.0, on or after 2026-12-19. Write `import { fix } from "./ci/fix";` and use `fix`, or run `rein migrate imports` to change every file. The rules below describe the `@` form until its removal.
+
 A relative reference names another function of the project. The path is relative to the file that holds it, and it has no extension.
 
 - `@./name` is a function in the same folder. `@./ci/fix` is `ci/fix` in the same folder. `@../escalate` is `escalate` one folder up.

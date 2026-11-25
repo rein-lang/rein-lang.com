@@ -8,9 +8,11 @@ description: "The full Rein language reference: project layout, grammar, functio
 <!--@include: ../../language/spec/grammar.md-->
 <!--@include: ../../language/spec/functions-and-parameters.md-->
 <!--@include: ../../language/spec/structs.md-->
+<!--@include: ../../language/spec/imports.md-->
 <!--@include: ../../language/spec/references.md-->
 <!--@include: ../../language/spec/std-and-templates.md-->
 <!--@include: ../../language/spec/inputs.md-->
+<!--@include: ../../language/spec/format-and-schema-types.md-->
 <!--@include: ../../language/spec/async-requests.md-->
 <!--@include: ../../language/spec/calls-with-return.md-->
 <!--@include: ../../language/spec/statements-conditions-values.md-->

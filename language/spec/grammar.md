@@ -8,7 +8,7 @@ params      := param ("," param)* ","?       // more than one param is a checker
 param       := DOC IDENT ":" type            // a scalar parameter. DOC is required; the checker reports a missing one
              | "{" IDENT ("," IDENT)* ","? "}" ":" (IDENT | REF)   // a struct parameter, destructured
 field       := DOC IDENT ":" type (";" | ",")?   // DOC is required; the checker reports a missing one
-type        := "boolean" | "string" | "|"? STRING ("|" STRING)*
+type        := "boolean" | "string" | FORMAT | SCHEMA | "|"? STRING ("|" STRING)*   // FORMAT, such as IRI; SCHEMA, a schema import name (section 4, Format and schema types)
 block       := "{" stmt* "}"
 stmt        := if | switch | return | answer
 if          := "if" "(" expr ")" block       // no else: see section 5
@@ -37,7 +37,7 @@ Helpful errors from the parser:
 | --- | --- |
 | `for`, `while`, `do` in a body | `Rein has no loops yet` |
 | `let`, `var` in a body, or `const` that is not an answer | `Rein has no variables, except `/** question */ const x: type = await request(...)`` |
-| `import` at the top of a file | `Rein has no imports; reference functions with `@./path` and use std functions directly` |
+| `import type`, `import *`, or a side-effect import (`import "path";`) | `` `import type` is not supported; write `import { name } from "path";` `` (each form has its own text, which names the same form) |
 | `default` in a switch | `Rein has no `default`; add a `case` for every member` |
 | `else` | `Rein has no `else`: end the `if` block with a return, and handle the other case after it` |
 | `return;` with no value | `` `return` needs a value: a string, a template, or `@./function` `` |

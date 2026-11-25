@@ -2,6 +2,8 @@
 
 A `string` parameter of a normal function is an input. The caller passes its value. The agent is never asked for it.
 
+A format type or schema type parameter is an input too. See [Format and schema types](format-and-schema-types.md).
+
 - An input is used only in a template literal, as `${name}`, or as a bare name argument of a call.
 - A condition or a switch subject cannot read an input. Error: `` `pr` is a string input; a condition cannot read it ``.
 - `return @./merge(pr=pr);` hands the agent to a normal function and passes the value. The arguments bind by name to the target's parameters.
@@ -23,12 +25,16 @@ A hand-off, an `await` call, and a hand-off to another program can also pass a `
 In `main`, with `account: "work" | "home"`:
 
 ```ts
-return @./handle(account=account, mode="fast");
+import { handle } from "./handle";
+
+return handle(account=account, mode="fast");
 ```
 
 Example, `main.rein` and `merge.rein`. `main` passes `pr` to `merge`. `merge` uses it in a template literal. `merge` also asks the agent for `ci`, a union, so it is a normal function.
 
 ```ts
+import { merge } from "./merge";
+
 /**
  * Merge the pull request when it is ready.
  */
@@ -36,7 +42,7 @@ export default function main(
   /** The pull request link. */
   pr: string,
 ) {
-  return @./merge(pr=pr);
+  return merge(pr=pr);
 }
 ```
 

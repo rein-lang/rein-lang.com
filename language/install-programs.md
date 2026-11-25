@@ -2,16 +2,14 @@
 
 This page is the single source for installing a Rein program. Other pages link here.
 
-Status: the npm model is partly built. Sections marked **(Built)** describe the `rein` binary today. Sections marked **(Proposed)** are not built.
-
-## Model (Built)
+## Model
 
 - A program is an npm package.
 - Rein has no package manager and no registry of its own. It uses pnpm.
 - Rein keeps one pnpm project per scope. The user scope has `<user programs folder>/npm/`. A repo has `<project rein folder>/npm/`. Each has its own `package.json` and `pnpm-lock.yaml`.
 - Rein runs pnpm in those folders. You do not run pnpm there yourself.
 
-## Which folder an install uses (Built)
+## Which folder an install uses
 
 `rein install`, `rein uninstall` and `rein update` pass their arguments to pnpm. The `-g` flag picks the folder:
 
@@ -25,7 +23,7 @@ Status: the npm model is partly built. Sections marked **(Built)** describe the 
 - Outside a repository, with no `rein/` folder, the command fails: `not in a repository; use -g to install for the user`.
 - The npm folder and its `package.json` are created on first use, in either place. The `package.json` is `"private": true`, so it cannot be published.
 
-## User programs folder (Built)
+## User programs folder
 
 Rein finds the user programs folder this way:
 
@@ -35,7 +33,7 @@ Rein finds the user programs folder this way:
 
 The user npm project is the `npm/` folder inside it. With the default path, it is `~/.config/rein/programs/npm/`.
 
-## Install, update, and remove (Built)
+## Install, update, and remove
 
 | Rein command | pnpm command that Rein runs |
 | --- | --- |
@@ -43,7 +41,7 @@ The user npm project is the `npm/` folder inside it. With the default path, it i
 | `rein uninstall <args>...` | `pnpm remove <args>...` |
 | `rein update [<args>...]` | `pnpm update --ignore-scripts [<args>...]` |
 
-- The arguments go to pnpm unchanged. Any pnpm flag works. Rein reads no package spec. (A change is proposed: see Naming in decisions.md.)
+- The arguments go to pnpm unchanged. Any pnpm flag works. Rein reads no package spec.
 - The one exception is `--ignore-scripts`. `add` and `update` get it first, so package install scripts do not run. If your arguments already contain `--ignore-scripts`, Rein adds nothing. To let scripts run, pass `--ignore-scripts=false`. `remove` gets no such flag.
 - `rein update` with no arguments updates each direct dependency within its range.
 
@@ -65,7 +63,7 @@ rein install github:owner/repo
 rein install git+https://example.com/owner/repo.git
 ```
 
-## Several versions side by side (Built)
+## Several versions side by side
 
 pnpm can hold two versions of one package. It does this with npm aliases. An alias gives a package a second name:
 
@@ -77,9 +75,8 @@ rein run pr-handling-v2
 ```
 
 - The alias is the program name. The `name` field in the package does not change it.
-- Selecting a version by a range, such as `rein run pr-handling@1`, is still proposed. See [Open questions](#open-questions).
 
-## Program package (Built)
+## Program package
 
 A program package uses `package.json`, as a VS Code extension does. It has these standard fields:
 
@@ -103,21 +100,22 @@ A program package uses `package.json`, as a VS Code extension does. It has these
 
 - Rein reads `name`, `version`, `description` and `engines.rein`. Other fields are npm's.
 - Rein reads `^x.y.z` and `x.y.z` ranges in `engines.rein`. `rein list -l` warns about a program when the running rein does not hold one. Other range forms are not checked yet.
-- Rein checks `engines.rein` at install. (Proposed)
-- Rein-specific fields do not go in `package.json`. A separate Rein file holds them. That file is defined later. (Proposed)
 
-## Bundle scripts (Built)
+## Bundle scripts
 
-A program package can ship scripts next to its `.rein` files. Put shell commands in those scripts. Do not put them in a `request(...)` text or in a `/** */` doc comment.
+A program package can ship scripts with its `.rein` files. Put shell commands in those scripts. Do not put them in a `request(...)` text or in a `/** */` doc comment.
 
-- Put the scripts in a `scripts/` folder, and add the folder to `files`. For a registry, tarball or git install, pnpm keeps only the files that `files` lists. A local folder install links the whole folder. Either way, the executable bit stays.
-- In the request text, name the script and its arguments: ``await request(`Run scripts/mark-done.sh <thread id> from this program's folder.`)``.
+- Put each script next to the `.rein` file that runs it, in the same folder. A script that `pick/no_patch.rein` runs goes in `pick/`. A script that more than one `.rein` file runs goes in the nearest folder that holds all of them.
+- Put the test of a script next to the script. Name it after the script with `.test` before the extension: `pick/no-patch-facts.sh` and `pick/no-patch-facts.test.sh`.
+- Do not make a `scripts/` or `tests/` folder. Files that work together stay together, so a person or an agent sees which files belong to a step from the folder alone.
+- List the scripts in `files`, and leave the tests out. For a registry, tarball or git install, pnpm keeps only the files that `files` lists. A local folder install links the whole folder. Either way, the executable bit stays.
+- In the request text, name the script by its path from the program's folder, and its arguments: ``await request(`Run pick/no-patch-facts.sh <alert id> from this program's folder.`)``.
 - The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
 
 ```json
 {
-  "files": ["**/*.rein", "scripts/", "README.md", "rein.json"]
+  "files": ["**/*.rein", "**/*.sh", "!**/*.test.sh", "README.md", "rein.json"]
 }
 ```
 
@@ -141,10 +139,10 @@ Rein finds programs in three scopes:
 - Inside the project scope, the nearest `rein/` folder wins.
 - A program that loses a clash is shadowed. `rein list` hides it. `rein list -a` shows it marked `(shadowed by <scope>)`. The name runs the winning program.
 - `REIN_SYSTEM_DIRS` replaces the system folders. It is a colon-separated list.
-- `rein list` also lists the packages in each `npm/node_modules/` folder of the project and user scopes. Each top-level link is one program, named by its link name, including an alias. A scope folder such as `@scope/` holds `@scope/name` programs. (A change is proposed: see Naming in decisions.md.) Dot entries such as `.pnpm` are skipped. A package without a Rein entry is not a program.
+- `rein list` also lists the packages in each `npm/node_modules/` folder of the project and user scopes. Each top-level link is one program, named by its link name, including an alias. A scope folder such as `@scope/` holds `@scope/name` programs. Dot entries such as `.pnpm` are skipped. A package without a Rein entry is not a program.
 - `npm` is reserved in every `rein/` folder. It is the package project, so it is never a program.
 
-## Confirm the install (Built)
+## Confirm the install
 
 Run these commands:
 
@@ -158,7 +156,7 @@ rein show <name>
 - A package installed with `-g` has the scope `user`. A repo-bound package has the scope `project`.
 - User programs appear from any directory. Project programs appear only under their project.
 
-## Run the program (Built)
+## Run the program
 
 ```sh
 rein run <name>
@@ -166,7 +164,7 @@ rein run <name>
 
 `rein run <name>` starts the program from any directory. Answer each question on stdin. An agent starts the same program by name with `rein_start`. A live run in `rein serve --mcp` keeps the files it loaded at start.
 
-## Today (Built)
+## The rein.json manifest
 
 - The manifest is `rein.json`. Its fields are `name`, `description`, and `entry`. Every field is optional.
   - `name` defaults to the folder name.
@@ -178,13 +176,3 @@ rein run <name>
 - A `rein.json` that is not valid JSON is ignored. The defaults apply.
 - A folder that starts with `.` is not a program. A folder with only `main.rein` is a program.
 - A folder copied by hand into the user programs folder still works. Remove it with `rm -r ~/.config/rein/programs/<name>`.
-
-The future of `rein.json` is an open question.
-
-## Open questions
-
-- The name of the future Rein file, and its fields. Rein-specific fields go there.
-- The future of `rein.json`. Does the Rein file replace it?
-- Version selection at start. Is it `rein run pr-handling@1`, or the alias name `rein run pr-handling-v1`?
-- Lockfile sharing. Is there one `pnpm-lock.yaml` for all programs, or one per program?
-- Scripts. The default passes `--ignore-scripts`. Should a package be able to allow its own scripts without the user passing `--ignore-scripts=false`?

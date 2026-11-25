@@ -1,11 +1,13 @@
 ---
 title: "Call another program by its entry"
-description: "A Rein hand-off or await to another program targets only its entry: @program or @program/<entry>. See why, the error, and how to fix it."
+description: "A Rein import of another program names only its entry: import { main } from \"pr-handling\". See why, the error, and how to fix it."
 ---
 
 # Call another program by its entry
 
-A hand-off or an `await` to another program targets only the entry of that program. Write `@program` or `@program/<entry>`, such as `@pr-handling` or `@pr-handling/main`. Any other path, such as `@pr-handling/ci/fix`, is a `rein check` error.
+A named import of another program names only the entry of that program. Write `import { main } from "pr-handling";`, where `main` is the name the entry declares. Any other path inside the program, such as `"pr-handling/ci/fix"`, is a `rein check` error.
+
+The `@program` form is deprecated. It gives a warning, and it becomes an error in rein 0.2.0, on or after 2026-12-19. It has the same rule.
 
 ## Why
 
@@ -17,11 +19,13 @@ A hand-off or an `await` to another program targets only the entry of that progr
 
 ## The error
 
-`rein check` gives this error on the reference:
+`rein check` gives this error on the import:
 
 ```text
-`@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead. If `ci/fix` must run alone, move it to its own program: https://rein-lang.com/docs/call-programs-by-entry
+`"pr-handling/ci/fix"` names a function inside a program; import the program, such as `"pr-handling"`, and call its entry: https://rein-lang.com/docs/call-programs-by-entry
 ```
+
+The `@program/ci/fix` form gives the same rule with its own text: `` `@pr-handling/ci/fix` reaches inside program `pr-handling`; call its entry `@pr-handling` instead ``.
 
 ## Fix it
 
@@ -29,14 +33,18 @@ A hand-off or an `await` to another program targets only the entry of that progr
 
 Before, the caller goes into an inner function:
 
-```rein
-return @pr-handling/ci/fix(pr=pr);
+```ts
+import { fix } from "pr-handling/ci/fix";
+
+return fix(pr=pr);
 ```
 
 After, the caller goes through the entry. The entry picks `ci/fix` from its own inputs:
 
-```rein
-return @pr-handling(pr=pr);
+```ts
+import { main } from "pr-handling";
+
+return main(pr=pr);
 ```
 
 ### Extract the function into its own program
@@ -48,8 +56,8 @@ Do you need only the one inner function, and not the full process of the entry? 
 3. Add a `package.json` with the program name, such as `"name": "ci-fix"`.
 4. Publish the program, or install it from its folder with `rein install ./ci-fix`.
 5. Add `ci-fix` to `dependencies` in the `package.json` of each caller, such as with `pnpm add ci-fix`.
-6. Make both programs hand off to it: `return @ci-fix(pr=pr);`.
+6. Make both programs import it and hand off to it: `import { main } from "ci-fix";` and `return main(pr=pr);`.
 
 Now `pr-handling` and your program share one public program. Neither one reaches into the other.
 
-See [References](/reference/spec#references) for the full rule, and [Install a program](/install-programs) for the package files.
+See [Imports](/reference/spec#imports) for the full rule, and [References](/reference/spec#references) for the deprecated `@` form. See [Install a program](/install-programs) for the package files.

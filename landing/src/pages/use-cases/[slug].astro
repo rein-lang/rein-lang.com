@@ -12,6 +12,7 @@ export function getStaticPaths() {
 const { useCase } = Astro.props as { useCase: UseCase };
 const path = `/use-cases/${useCase.slug}/`;
 const related = useCases.filter((u) => u.slug !== useCase.slug);
+const installLines = `${useCase.installCommand ?? ""}\nrein list`;
 
 const jsonLd = [
   {
@@ -41,24 +42,57 @@ const jsonLd = [
 
     <h1 class="mt-6 text-3xl leading-tight font-bold tracking-tight sm:text-4xl">{useCase.h1}</h1>
 
-    <div class="mt-6 space-y-5 text-lg leading-relaxed text-muted">
-      {useCase.paragraphs.map((p) => <p>{p}</p>)}
-    </div>
+    <p class="mt-6 text-lg leading-relaxed text-muted">{useCase.outcome}</p>
+
+    <section aria-labelledby="sees-heading" class="mt-12">
+      <h2 id="sees-heading" class="text-2xl font-bold tracking-tight">What your agent sees</h2>
+      <div class="mt-5 space-y-5 text-lg leading-relaxed text-muted">
+        {useCase.agentSees.map((p) => <p>{p}</p>)}
+      </div>
+    </section>
+
+    <section aria-labelledby="guarantees-heading" class="mt-12">
+      <h2 id="guarantees-heading" class="text-2xl font-bold tracking-tight">What the program guarantees</h2>
+      <ul class="mt-5 list-disc space-y-3 pl-6 text-lg leading-relaxed text-muted">
+        {useCase.guarantees.map((g) => <li>{g}</li>)}
+      </ul>
+    </section>
 
     <section aria-labelledby="flow-heading" class="mt-12">
-      <h2 id="flow-heading" class="text-2xl font-bold tracking-tight">The process in one picture</h2>
+      <h2 id="flow-heading" class="text-2xl font-bold tracking-tight">The steps in one picture</h2>
       <figure class="card mt-5 p-4 sm:p-8">
         <FlowDiagram spec={useCase.flow} label={useCase.flowLabel} />
         <figcaption class="mt-4 text-sm text-muted">{useCase.flowCaption}</figcaption>
       </figure>
     </section>
 
+    {useCase.installCommand ? (
+      <section aria-labelledby="install-heading" class="card mt-12 p-6 sm:p-8">
+        <h2 id="install-heading" class="text-2xl font-bold tracking-tight">Install it like an app</h2>
+        <p class="mt-3 text-muted">
+          Install the program once. <code>rein list</code> shows the programs you have, and
+          <code>rein agent-context</code> prints the list your agent reads to pick one.
+        </p>
+        <pre class="mt-5 overflow-x-auto rounded-md border border-line p-4 text-sm"><code>{installLines}</code></pre>
+        {useCase.source && (
+          <p class="mt-4 text-sm text-muted">
+            Source: <a href={useCase.source.href} class="text-ink">{useCase.source.label}</a>
+          </p>
+        )}
+      </section>
+    ) : (
+      <p class="mt-12 text-lg text-muted">
+        Write this program in a few minutes. <a href="/docs/getting-started/" class="font-semibold">Read the getting started guide</a>.
+        {useCase.source && <> Example: <a href={useCase.source.href} class="text-ink">{useCase.source.label}</a>.</>}
+      </p>
+    )}
+
     <section aria-labelledby="alpha-heading" class="card mt-12 p-6 sm:p-8">
       <p class="eyebrow">Alpha</p>
-      <h2 id="alpha-heading" class="mt-2 text-2xl font-bold tracking-tight">Try this process</h2>
+      <h2 id="alpha-heading" class="mt-2 text-2xl font-bold tracking-tight">Try this program</h2>
       <p class="mt-3 text-muted">
         Rein is a proof of concept. Syntax and tools can still change. Install the command line tool,
-        and write a first process in a few minutes.
+        and write a first program in a few minutes.
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
         <a href={GET_STARTED_HREF} class="btn btn-primary">Get started</a>

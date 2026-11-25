@@ -39,5 +39,5 @@ The site shows no code, syntax, keywords as code, file contents or CLI output. E
 
 - `public/brand/*`, `public/favicon.*` and `public/apple-touch-icon.png`: symlinks into the `assets/` submodule. [rein-lang/assets](https://github.com/rein-lang/assets) is the source; run `git submodule update --init` after clone. CI fails if one is a copy.
 - `public/images/concept-*.webp`: stills from `concept/out/stills` in [rein-lang/videos](https://github.com/rein-lang/videos), resized to 1280 px wide. Beat 5 is not used because its labels are keywords.
-- `public/og.png`: 1200x630 Open Graph card. Source is `design/og-card.html`. Re-render it with a 1200x630 screenshot if the copy changes.
+- `public/og.png`: 1200x630 Open Graph card. Source is `scripts/og/og.html`, rendered by `scripts/og/render.mjs` (writes `landing/public/og.png`). Run `node scripts/og/render.mjs` after the copy changes.
 - The concept video is not hosted yet. The home page has a `<video>` slot with the beat-9 still as its poster. A TODO comment in `src/pages/index.astro` names what to do when the mp4 has a host. Do not commit the mp4.
