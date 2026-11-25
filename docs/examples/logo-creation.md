@@ -51,6 +51,8 @@ flowchart TD
     B -- "user keeps the logo" --> K["done"]
     B -- "brief not written" --> Q["ask the user"]
     C -- "drawn and checked" --> P["draw_concepts/pick"]
+    C -- "concepts not drawn" --> Q
+    C -- "concepts still fail check-svg.sh" --> Q
     P -- "picked 1, 2 or 3" --> S["draw_concepts/pick/save"]
     P -- "none of them" --> F["write feedback, start again"]
     F -.-> M
