@@ -111,6 +111,7 @@ A program package can ship scripts with its `.rein` files. Put shell commands in
 - List the scripts in `files`, and leave the tests out. For a registry, tarball or git install, pnpm keeps only the files that `files` lists. A local folder install links the whole folder. Either way, the executable bit stays.
 - In the request text, name the script by its path from the program's folder, and its arguments: ``await request(`Run pick/no-patch-facts.sh <alert id> from this program's folder.`)``.
 - The agent finds the program's folder with `rein list -l <name>`. The path is a column of the output. `rein list --json <name>` gives it as `path`. Rein has no built-in value for this folder.
+- The agent learns `<name>` from the step response. At top level, it is the name given to `rein run` or `rein step --flow`. In a hand-off or a call, it is the `@name/` prefix of `function` and of the entries in `trace`, such as `@pr-handling/main`. With an alias install, the alias is the name, not the `name` field in `package.json`. So do not write the package name into the request text. Say "this program's folder" and let the agent find the name.
 - These scripts are not npm lifecycle scripts. `--ignore-scripts` does not affect them. The agent runs them when a step tells it to.
 
 ```json
