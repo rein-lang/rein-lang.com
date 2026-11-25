@@ -1,9 +1,8 @@
 # Rein language reference
 
 Status: proof of concept. Rules here drive the checker and the evaluator.
-Design reasons and open questions live in [decisions.md](decisions.md).
 
-Rein mimics TypeScript syntax and types, except `@` references. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no imports, no loops, no global scope, and no `default` or `else`. A function gets its values only from its parameter and its answers.
+Rein mimics TypeScript syntax and types. A reader who knows TypeScript can read a Rein file. Rein is not TypeScript: it has no loops, no global scope, and no `default` or `else`. Its imports are named imports, as in TypeScript (section 4, Imports). A function gets its values only from its parameter and its answers.
 ## Topics
 
 Each topic file keeps its section numbers. Read the file for the rule you need.
@@ -13,9 +12,11 @@ Each topic file keeps its section numbers. Read the file for the rule you need.
 - [Grammar](spec/grammar.md): section 3, and the parser errors.
 - [Functions and parameters](spec/functions-and-parameters.md): section 4, functions, doc comments and parameters.
 - [Structs](spec/structs.md): section 4, inline and shared structs.
+- [Imports](spec/imports.md): section 4, named imports of functions and structs.
 - [References](spec/references.md): section 4, relative and program references.
 - [Std and templates](spec/std-and-templates.md): section 4, std names and templates.
 - [Inputs](spec/inputs.md): section 4, `string` parameters.
+- [Format and schema types](spec/format-and-schema-types.md): section 4, string types with a fixed shape.
 - [Async requests](spec/async-requests.md): section 4, `request` answers and struct answers.
 - [Calls with return](spec/calls-with-return.md): section 4, `await` of a function.
 - [Statements, conditions and values](spec/statements-conditions-values.md): sections 5, 6 and 7.

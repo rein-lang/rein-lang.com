@@ -30,7 +30,7 @@ The agent writes a brief, and a subagent draws three SVG concepts. A script chec
 - **Rules in code.** Typed answers pick each branch, such as `info.logo == "has a logo"` in `write_brief`.
 - **A subagent hand-off.** `draw_concepts` gives the drawing to a subagent with `delegate`.
 - **A retry without a cycle.** On "none of them", the agent saves the feedback to `.logo/feedback.md` and starts the program again. `main` finds the brief and goes to `draw_concepts`.
-- **Names.** Each file except `main` is a snake_case imperative verb. A function with one caller sits in a folder named after the caller, such as `draw_concepts/pick`. A function that only the entry calls stays at the root, such as `write_brief`. See [Decisions](/reference/decisions#naming) and [Project layout](/reference/spec#_1-project-layout).
+- **Names.** Each file except `main` is a snake_case imperative verb. A function with one caller sits in a folder named after the caller, such as `draw_concepts/pick`. A function that only the entry calls stays at the root, such as `write_brief`. See [Project layout](/reference/spec#_1-project-layout).
 
 ## Run it
 

@@ -17,10 +17,8 @@ const examplesSource = /^(?:\.\.\/)*examples\/(.*)$/
 const siteAnchor = (hash: string) => hash.replace(/^#(?=\d)/, '#_')
 const siteLinks: Record<string, string> = {
   'docs/spec.md': '/reference/spec',
-  'docs/decisions.md': '/reference/decisions',
   'docs/interface.md': '/reference/interface',
   'docs/install-programs.md': '/install-programs',
-  '../decisions.md': '/reference/decisions',
   '../interface.md': '/reference/interface',
   '../install-programs.md': '/install-programs',
 }
@@ -43,7 +41,7 @@ const config = withMermaid(
   defineConfig({
     title: 'Rein',
     description:
-      'Rein is a strict, typed language for agent processes. Each step asks the agent a typed question and returns the next instruction. Alpha.',
+      'Rein programs are apps for AI agents. Each step asks the agent a typed question and returns the next instruction, so no step is skipped. Alpha.',
     base: '/docs/',
     // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
     cleanUrls: true,
@@ -146,7 +144,7 @@ const config = withMermaid(
         { text: 'Concepts', link: '/concepts' },
         { text: 'Examples', link: '/examples/' },
         { text: 'Reference', link: '/reference/spec' },
-        { text: 'Alpha', link: '/reference/decisions' },
+        { text: 'Roadmap', link: '/reference/roadmap' },
       ],
       sidebar: [
         {
@@ -157,7 +155,8 @@ const config = withMermaid(
             { text: 'Install a program', link: '/install-programs' },
             { text: 'Concepts', link: '/concepts' },
             { text: 'Call another program', link: '/call-programs-by-entry' },
-            { text: 'Rein and skills', link: '/rein-vs-skills' },
+            { text: 'Write faster programs', link: '/write-faster-programs' },
+            { text: 'Skills and programs', link: '/rein-vs-skills' },
             { text: 'Progressive disclosure', link: '/progressive-disclosure' },
             { text: 'Why not an existing language', link: '/why-not-a-programming-language' },
             { text: 'Editor', link: '/editor' },
@@ -180,7 +179,7 @@ const config = withMermaid(
           text: 'Reference',
           items: [
             { text: 'Language reference', link: '/reference/spec' },
-            { text: 'Decisions and open questions', link: '/reference/decisions' },
+            { text: 'Roadmap', link: '/reference/roadmap' },
             { text: 'Agent interface', link: '/reference/interface' },
             { text: 'CLI reference', link: '/reference/cli' },
             { text: 'CLI: run and step', link: '/reference/cli-run' },

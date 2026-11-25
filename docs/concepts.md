@@ -1,10 +1,10 @@
 ---
-description: "Learn the Rein model on one page: the agent drives the process, each function is one file, inputs are typed questions, and the checker is strict."
+description: "Learn the Rein model on one page: a Rein program is an app for the agent. Its process asks typed questions one at a time, and each function is one file."
 ---
 
 # Concepts
 
-Rein describes an agent process as a set of small functions. Each function is one file. The functions reference each other by path. Together they tell the agent what to do next, one step at a time.
+Rein describes a program as a set of small functions. Each function is one file. The functions reference each other by path. Together they tell the agent what to do next, one step at a time.
 
 ```mermaid
 flowchart TD
@@ -14,6 +14,17 @@ flowchart TD
     B -- "hands off" --> D["Function"]
     D -- "instructs" --> E["Agent acts"]
 ```
+
+## A program is an app
+
+A Rein program is an app for an AI agent. The agent opens the program. The program asks one question. The agent answers, and the program gives the next step. The agent cannot skip a step.
+
+Four words cover the model:
+
+- **Program.** The app. You install it, list it, and update it. Its entry point is `main`.
+- **Process.** The steps the program runs, from its first question to its last instruction.
+- **Question.** One typed input that the agent must answer. The program asks only the questions the current path needs.
+- **Step.** What the program gives the agent next: a question, a request, or the final instruction.
 
 ## The agent drives the process
 
@@ -25,7 +36,7 @@ A project holds one function per file, and the file path gives the function its 
 
 ## Functions hand off by reference
 
-A function ends in text for the agent, a reference to another function, or a call to a template that builds text. A reference is a relative path from the current file. Rein has no imports. See [References](/reference/spec#references) and [Templates](/reference/spec#templates).
+A function ends in text for the agent, a reference to another function, or a call to a template that builds text. An import names another function by its path from the current file, as `import { fix } from "./fix";`. See [Imports](/reference/spec#imports) and [Templates](/reference/spec#templates).
 
 ## Inputs are typed questions
 
@@ -37,8 +48,8 @@ Some steps ask the agent to act first. The agent does the step, gives the answer
 
 ## Strict by design
 
-Rein favors explicit cases over fallbacks. The checker reports a missing case, or a path with no result, before a run starts. The rules live in the [checker section](/reference/spec#_8-checker-rules). The reasons for these choices live in [Decisions](/reference/decisions). For why Rein is its own small language, see [Why not an existing language](/why-not-a-programming-language).
+Rein favors explicit cases over fallbacks. The checker reports a missing case, or a path with no result, before a run starts. The rules live in the [checker section](/reference/spec#_8-checker-rules). For why Rein is its own small language, see [Why not an existing language](/why-not-a-programming-language).
 
-## Rein and skills
+## Skills and programs
 
-A skill gives the agent knowledge. A process gives the agent the next step. See [Rein and skills](/rein-vs-skills) for the use cases of each.
+A skill is a manual. The agent reads it and decides each step. A program is an app. It asks the agent one question at a time. See [Skills and programs](/rein-vs-skills) for when to use each.

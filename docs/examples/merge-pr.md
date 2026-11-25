@@ -116,6 +116,9 @@ flowchart TD
 ### `main.rein`
 
 ```rein
+import { merge_pr } from "./merge_pr";
+import { review } from "./review";
+
 /**
  * Decide the next step for a pull request task.
  */
@@ -125,9 +128,9 @@ export default function main(
 ) {
   switch (task) {
     case "merge":
-      return @./merge_pr;
+      return merge_pr;
     case "security review":
-      return @./review;
+      return review;
   }
 }
 ```
@@ -136,6 +139,9 @@ export default function main(
 
 ```rein
 // merge_pr.rein
+
+import { review_code } from "./merge_pr/review_code";
+import { fix } from "./merge_pr/fix";
 
 interface Input {
   /** Does the PR change only documentation files? */
@@ -154,9 +160,9 @@ export default function mergePr({ docs_only, ci }: Input) {
 
   switch (ci) {
     case "green":
-      return @./merge_pr/review_code;
+      return review_code;
     case "red":
-      return @./merge_pr/fix;
+      return fix;
     case "pending":
       return `wait for CI, then run merge_pr again`;
   }

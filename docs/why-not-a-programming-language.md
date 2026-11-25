@@ -46,6 +46,9 @@ A decision tree needs five things:
 That is the full list. Rein has these five things, and each one is part of the language:
 
 ```rein
+import { review_code } from "./review_code";
+import { fix } from "./fix";
+
 interface Input {
   /** Does the PR change only documentation files? */
   docs_only: boolean;
@@ -63,9 +66,9 @@ export default function main({ docs_only, ci }: Input) {
 
   switch (ci) {
     case "green":
-      return @./review_code;
+      return review_code;
     case "red":
-      return @./fix;
+      return fix;
     case "pending":
       return `Wait for CI, then run this process again.`;
   }
@@ -93,7 +96,7 @@ A general language has much more than those five things. Rein refuses each of th
 ```text
 error: Rein has no loops yet
 error: Rein has no variables
-error: Rein has no imports; reference functions with `@./path` and use std functions directly
+error: `import *` is not supported; write `import { name } from "path";`
 error: Rein has no `else`: end the `if` block with a return, and handle the other case after it
 ```
 
@@ -168,7 +171,6 @@ The three work together. The process gives the order. A step names the skill or 
 
 - Rein has no loops yet. A retry is a reference back to an earlier function, and the checker warns about such a cycle.
 - A tree that needs a calculation inside a branch does not fit. Move the calculation to a script.
-- The reasons for each rule are in [Decisions](/reference/decisions).
 
 ## Read next
 

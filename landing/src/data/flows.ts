@@ -229,6 +229,54 @@ const hero: FlowSpec = {
   ],
 };
 
+// MoSCoW prioritization: enough items, then whether the plan fits the capacity.
+const moscow: FlowSpec = {
+  id: "moscow",
+  width: W,
+  height: H,
+  nodes: [
+    card("Items"),
+    question("Two or more?", 12),
+    question("Fits capacity?", 96),
+    outcome("Ask for items", 12),
+    outcome("Review plan", 88),
+    outcome("Rebalance", 164),
+  ],
+  edges: [
+    { d: "M158 150 C174 150 174 39 190 39" },
+    { d: "M350 39 L384 39", label: { text: "no", x: 352, y: 28 } },
+    { d: "M270 66 L270 96", label: { text: "yes", x: 278, y: 84 } },
+    { d: "M350 123 C366 123 366 115 384 115", label: { text: "yes", x: 352, y: 112 } },
+    { d: "M350 123 C366 123 366 191 384 191", label: { text: "no", x: 352, y: 186 } },
+  ],
+};
+
+// Priority work: priority list, then recent activity, then open pull requests.
+const priorityWork: FlowSpec = {
+  id: "priority-work",
+  width: W,
+  height: H,
+  nodes: [
+    card("Workplace"),
+    question("Priority list?", 12),
+    question("Active project?", 96),
+    question("Open pull requests?", 180),
+    outcome("Report no list", 12),
+    outcome("Report idle", 88),
+    outcome("Merge open PRs", 164),
+    outcome("Open a PR", 240),
+  ],
+  edges: [
+    { d: "M158 150 C174 150 174 39 190 39" },
+    { d: "M350 39 L384 39", label: { text: "no", x: 352, y: 28 } },
+    { d: "M270 66 L270 96", label: { text: "yes", x: 278, y: 84 } },
+    { d: "M350 123 C366 123 366 115 384 115", label: { text: "no", x: 352, y: 112 } },
+    { d: "M270 150 L270 180", label: { text: "yes", x: 278, y: 168 } },
+    { d: "M350 207 C366 207 366 191 384 191", label: { text: "yes", x: 352, y: 196 } },
+    { d: "M350 207 C366 207 366 267 384 267", label: { text: "no", x: 352, y: 250 } },
+  ],
+};
+
 export const flows = {
   hero,
   pullRequest,
@@ -237,4 +285,6 @@ export const flows = {
   delegation,
   humanInTheLoop,
   twoMoves,
+  moscow,
+  priorityWork,
 };

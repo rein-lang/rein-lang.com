@@ -1,0 +1,51 @@
+---
+// Side by side: a person using an app, and an agent using a Rein program. Plain HTML and Tailwind, no drawing.
+const person = [
+  { label: "Screen", text: "Ticket type: Bug, or Question?" },
+  { label: "Pick", text: "The person picks Bug." },
+  { label: "Next screen", text: "Is it urgent? Yes or no." },
+];
+const agent = [
+  { label: "Question", text: "Is the ticket urgent? Yes or no." },
+  { label: "Answer", text: "The agent answers: yes." },
+  { label: "Next step", text: "Escalate the ticket to on-call now." },
+];
+---
+
+<section class="border-t border-line px-4 py-16 sm:px-6 sm:py-24" aria-labelledby="apps-heading">
+  <div class="mx-auto max-w-6xl">
+    <h2 id="apps-heading" class="text-3xl font-bold tracking-tight sm:text-4xl">A program works like an app</h2>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+      An app shows one screen. You pick an option, and the next screen appears. A Rein program does the same for your
+      agent.
+    </p>
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      {
+        [
+          { title: "A person and an app", steps: person },
+          { title: "An agent and a Rein program", steps: agent },
+        ].map((side) => (
+          <div class="card p-5 sm:p-6">
+            <h3 class="text-xl font-semibold">{side.title}</h3>
+            <div class="mt-6 flex flex-col gap-3">
+              {side.steps.map((step, i) => (
+                <>
+                  {i > 0 && (
+                    <p class="text-center text-sm text-muted">
+                      <span aria-hidden="true" class="text-accent">↓</span>
+                    </p>
+                  )}
+                  <div class="rounded-xl bg-surface-2 p-4">
+                    <span class="block text-sm font-semibold text-accent">{step.label}</span>
+                    <span class="mt-1 block">{step.text}</span>
+                  </div>
+                </>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-10 text-lg font-semibold">A skill is a manual. The agent reads it all and decides alone.</p>
+  </div>
+</section>

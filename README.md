@@ -6,9 +6,10 @@ This repo is the source of https://rein-lang.com, the site for the Rein language
 
 - `landing/`: the Astro home page. It serves `/`.
 - `docs/`: the VitePress docs. It serves `/docs/`.
-- `language/`: the language reference, decisions and agent interface. The docs site includes them.
+- `language/`: the language reference and the agent interface. The docs site includes them.
+- `internal/`: public docs for people who work on Rein: proposals, plans, open questions and design reasons. The site does not publish them.
 
-All docs live in this repo. Edit them here: `docs/` for the pages, `language/` for the reference.
+All docs live in this repo. Edit them here: `docs/` for the pages, `language/` for the reference, `internal/` for the internal docs.
 
 ## Setup
 

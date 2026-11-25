@@ -116,6 +116,10 @@ flowchart TD
 ### `main.rein`
 
 ```rein
+import { escalate } from "./escalate";
+import { refund } from "./refund";
+import { faq } from "./faq";
+
 interface Ticket {
   /** What category best fits the ticket? */
   category: "billing" | "account" | "how_to";
@@ -128,16 +132,16 @@ interface Ticket {
  */
 export default function main({ category, vip }: Ticket) {
   if (vip) {
-    return @./escalate;
+    return escalate;
   }
 
   switch (category) {
     case "billing":
-      return @./refund;
+      return refund;
     case "account":
-      return @./escalate;
+      return escalate;
     case "how_to":
-      return @./faq;
+      return faq;
   }
 }
 ```
@@ -157,6 +161,9 @@ export default function escalate() {
 ### `faq.rein`
 
 ```rein
+import { escalate } from "./escalate";
+import { close_ticket } from "./faq/close_ticket";
+
 /**
  * Answer a how-to question from the help center.
  */
@@ -165,7 +172,7 @@ export default async function answerFaq(
   article_found: boolean,
 ) {
   if (!article_found) {
-    return @./escalate;
+    return escalate;
   }
 
   /** Did the customer confirm the article solved the problem? */
@@ -175,23 +182,25 @@ export default async function answerFaq(
   );
 
   if (solved) {
-    return @./faq/close_ticket(
+    return close_ticket(
       opening=`Glad the help article solved the problem.`,
       next_step=`Reply to this ticket if it comes back.`,
     );
   }
 
-  return @./escalate;
+  return escalate;
 }
 ```
 
 ### `faq/close_ticket.rein`
 
 ```rein
+import { Message } from "../message.struct";
+
 /**
  * Send the customer a last message, then close the ticket.
  */
-export default function closeTicket({ opening, next_step }: @../message) {
+export default function closeTicket({ opening, next_step }: Message) {
   return `Tell the customer: ${opening} ${next_step} Then close the ticket as
   solved.`;
 }
@@ -214,6 +223,9 @@ export default interface Message {
 ### `refund.rein`
 
 ```rein
+import { escalate } from "./escalate";
+import { tell_customer } from "./refund/tell_customer";
+
 /**
  * Process a refund request from a billing ticket.
  */
@@ -222,10 +234,10 @@ export default function refund(
   refund_over_limit: boolean,
 ) {
   if (refund_over_limit) {
-    return @./escalate;
+    return escalate;
   }
 
-  return @./refund/tell_customer(
+  return tell_customer(
     opening=`Refund the amount the customer asked for and confirm it in the
     ticket.`,
     next_step=`Then tell the customer the refund takes 5 business days.`,
@@ -236,10 +248,12 @@ export default function refund(
 ### `refund/tell_customer.rein`
 
 ```rein
+import { Message } from "../message.struct";
+
 /**
  * Tell the customer what happens next, in one sentence.
  */
-export default function tellCustomer({ opening, next_step }: @../message) {
+export default function tellCustomer({ opening, next_step }: Message) {
   return `${opening} ${next_step}`;
 }
 ```

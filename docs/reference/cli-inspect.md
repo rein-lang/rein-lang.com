@@ -20,7 +20,7 @@ Print the program graph: functions, questions, branches, outcomes, and hand-offs
 * `--refs` — Draw only the references: one node per function, one edge per reference
 * `--entry <ENTRY>` — Walk the process from this function, as its path under the root without `.rein`. Default: the program's entry
 * `--answer <KEY=VALUE>` — Walk the process with this answer, as key=value, such as `main.task=merge`. Repeat for each answer
-* `--input <NAME=VALUE>` — Walk the process with this value of a `string` parameter of the entry, as name=value. Repeat for each input
+* `--input <NAME=VALUE>` — Walk the process with this value of a `string`, format or schema parameter of the entry, as name=value. Repeat for each input
 * `--format <FORMAT>` — Output format. Default: `html` for a `.html` FILE or with --open, else `mermaid`
 
   Possible values:
@@ -49,7 +49,7 @@ Debug a program in the browser: set inputs and answers, step through, and watch 
 
 * `--root <ROOT>` — Project root. Default: the nearest directory with main.rein
 * `--entry <ENTRY>` — Function to start from, as its path under the root without `.rein`. Default: the program's entry
-* `--input <NAME=VALUE>` — First value of a `string` parameter of the entry, as name=value. Repeat for each input
+* `--input <NAME=VALUE>` — First value of a `string`, format or schema parameter of the entry, as name=value. Repeat for each input
 * `--answer <KEY=VALUE>` — First answer, as key=value, such as `main.task=merge`. Repeat for each answer
 * `--port <PORT>` — Port on 127.0.0.1. Default: a free port
 
