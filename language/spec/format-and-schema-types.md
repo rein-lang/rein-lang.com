@@ -1,9 +1,9 @@
 ### Format and schema types
 
-A format type is a `string` with a fixed shape, such as an IRI. A schema type is a `string` whose shape a JSON Schema file defines. Both go where `string` goes. These rules need a rein release newer than 0.1.4.
+A format type is a `string` with a fixed shape, such as `Iri`. A schema type is a `string` whose shape a JSON Schema file defines. Both go where `string` goes. These rules need a rein release newer than 0.1.4.
 
 - The checker treats a format type and a schema type as a `string`. A template can read one. A condition or a `switch` cannot (section 4, Inputs).
-- A parameter or a field can have one of these types. A `const` answer cannot: `` an `IRI` answer is not allowed; answer a struct with an `IRI` field ``.
+- A parameter or a field can have one of these types. A `const` answer cannot: `` a value of type `Iri` is not allowed as an answer; answer a struct with a field of type `Iri` ``.
 - A parameter of one of these types is an input, as a `string` parameter is. The agent is never asked for it.
 - The run checks each value against its type. The checks cover entry inputs (`--input`), hand-off arguments, the fields of a struct answer and the values of `rein eval --set`.
 - A value that is not a JSON string, in a struct answer, gives `` field `pick.pr` must be a string ``.
@@ -11,37 +11,41 @@ A format type is a `string` with a fixed shape, such as an IRI. A schema type is
 
 #### Built-in format types
 
-Rein has 19 built-in format types. Each one has a name that a program writes, such as `IRI`, and a JSON name. The JSON name is the `type` of the field in the step JSON. The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
+Rein has 19 built-in format types. Each one has a type name that a program writes, such as `Iri`, and a JSON name. The JSON name is the `type` of the field in the step JSON. The checks are the built-in `format` keywords of the jsonschema crate, as JSON Schema 2020-12 defines them.
+
+The list of format types comes from the jsonschema crate, not from rein. It is the list of `ValidationOptions::known_formats` under draft 2020-12. The table below reflects jsonschema 0.63.1. A format that a later jsonschema release adds appears in rein when rein moves to that release. No rein change is needed for it.
+
+The type name follows from the JSON name by one rule: split the JSON name on `-`, upper-case the first letter of each part, and join the parts. So `iri` gives `Iri`, `date-time` gives `DateTime`, and `relative-json-pointer` gives `RelativeJsonPointer`. Only the type name is valid in a program. `IRI` is not a type name.
 
 A function can take a struct and read its fields, such as `({ link }: Input)`. This fragment shows the fields of such a struct:
 
 ```ts
 interface Input {
   /** The link of the pull request. */
-  link: IRI;
+  link: Iri;
 }
 ```
 
 | Type | JSON name | Accepts |
 | --- | --- | --- |
-| `IRI` | `iri` | an absolute IRI, like `https://example.com/page` |
-| `IRIReference` | `iri-reference` | an IRI reference, like `/docs/page` |
-| `URI` | `uri` | an absolute URI, like `https://example.com/page` |
-| `URIReference` | `uri-reference` | a URI reference, like `/docs/page` |
-| `URITemplate` | `uri-template` | a URI template, like `https://example.com/items/{id}` |
+| `Iri` | `iri` | an absolute IRI, like `https://example.com/page` |
+| `IriReference` | `iri-reference` | an IRI reference, like `/docs/page` |
+| `Uri` | `uri` | an absolute URI, like `https://example.com/page` |
+| `UriReference` | `uri-reference` | a URI reference, like `/docs/page` |
+| `UriTemplate` | `uri-template` | a URI template, like `https://example.com/items/{id}` |
 | `Email` | `email` | an email address, like `someone@example.com` |
 | `IdnEmail` | `idn-email` | an email address, like `someone@example.com` |
 | `Hostname` | `hostname` | a hostname, like `example.com` |
 | `IdnHostname` | `idn-hostname` | a hostname, like `example.com` |
-| `IPv4` | `ipv4` | an IPv4 address, like `192.0.2.1` |
-| `IPv6` | `ipv6` | an IPv6 address, like `2001:db8::1` |
+| `Ipv4` | `ipv4` | an IPv4 address, like `192.0.2.1` |
+| `Ipv6` | `ipv6` | an IPv6 address, like `2001:db8::1` |
 | `Date` | `date` | a date, like `2026-11-23` |
 | `Time` | `time` | a time with an offset, like `13:45:00Z` |
 | `DateTime` | `date-time` | a date and time, like `2026-11-23T13:45:00Z` |
 | `Duration` | `duration` | an ISO 8601 duration, like `P1DT2H` |
-| `UUID` | `uuid` | a UUID, like `123e4567-e89b-12d3-a456-426614174000` |
-| `JSONPointer` | `json-pointer` | a JSON Pointer, like `/items/0` |
-| `RelativeJSONPointer` | `relative-json-pointer` | a relative JSON Pointer, like `1/items` |
+| `Uuid` | `uuid` | a UUID, like `123e4567-e89b-12d3-a456-426614174000` |
+| `JsonPointer` | `json-pointer` | a JSON Pointer, like `/items/0` |
+| `RelativeJsonPointer` | `relative-json-pointer` | a relative JSON Pointer, like `1/items` |
 | `Regex` | `regex` | a regular expression, like `^[a-z]+$` |
 
 #### Schema types
@@ -85,7 +89,7 @@ Here `Email` is the schema type of `email.schema.json`, and its `pattern` decide
 
 Each check reports the value and the type that it fails:
 
-- An entry input that fails its format: `` `link` must be an absolute IRI, like `https://example.com/page`; got `example.com` ``.
+- An entry input that fails its format: `` `link` must match format `iri`; got `example.com` ``.
 - A value that fails a schema type: `` `ticket` does not match `Ticket`: `` followed by the first error of the schema.
 - A hand-off argument that fails its type. The error names the target function and the parameter.
 - A field of a struct answer that fails its type. The error names the answer and the field, such as `pick.pr`.

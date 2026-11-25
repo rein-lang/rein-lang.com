@@ -8,7 +8,7 @@ params      := param ("," param)* ","?       // more than one param is a checker
 param       := DOC IDENT ":" type            // a scalar parameter. DOC is required; the checker reports a missing one
              | "{" IDENT ("," IDENT)* ","? "}" ":" (IDENT | REF)   // a struct parameter, destructured
 field       := DOC IDENT ":" type (";" | ",")?   // DOC is required; the checker reports a missing one
-type        := "boolean" | "string" | FORMAT | SCHEMA | "|"? STRING ("|" STRING)*   // FORMAT, such as IRI; SCHEMA, a schema import name (section 4, Format and schema types)
+type        := "boolean" | "string" | FORMAT | SCHEMA | "|"? STRING ("|" STRING)*   // FORMAT, such as Iri; SCHEMA, a schema import name (section 4, Format and schema types)
 block       := "{" stmt* "}"
 stmt        := if | switch | return | answer
 if          := "if" "(" expr ")" block       // no else: see section 5
