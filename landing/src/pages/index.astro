@@ -13,7 +13,7 @@ import { reinVersion } from "../data/docsPages";
 const title = "Rein: give your AI coding agent apps, not long manuals";
 const description = HOME_DESCRIPTION;
 const installCommand = "cargo install rein --locked";
-const brewCommand = "brew tap rein-lang/rein https://github.com/rein-lang/rein\nbrew install rein";
+const brewCommand = "brew tap rein-lang/rein https://github.com/rein-lang/rein\nbrew trust rein-lang/rein\nbrew install rein";
 
 // The eight outcomes. Each command is a real rein 0.1.4 command, checked with rein <cmd> --help.
 const outcomes = [
