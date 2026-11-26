@@ -13,6 +13,7 @@ import { reinVersion } from "../data/docsPages";
 const title = "Rein: give your AI coding agent apps, not long manuals";
 const description = HOME_DESCRIPTION;
 const installCommand = "cargo install rein --locked";
+const brewCommand = "brew tap rein-lang/rein https://github.com/rein-lang/rein\nbrew install rein";
 
 // The eight outcomes. Each command is a real rein 0.1.4 command, checked with rein <cmd> --help.
 const outcomes = [
@@ -130,7 +131,9 @@ const jsonLd = {
           <a href={GET_STARTED_HREF} class="btn btn-primary">Get started</a>
           <a href="/docs/" class="btn btn-secondary">Docs</a>
         </div>
-        <p class="mt-8 text-sm text-muted">Install the rein command line tool. It needs Rust and cargo.</p>
+        <p class="mt-8 text-sm text-muted">Install the rein command line tool with Homebrew.</p>
+        <pre class="card mt-2 overflow-x-auto p-4 text-sm"><code>{brewCommand}</code></pre>
+        <p class="mt-4 text-sm text-muted">Or install it with cargo. It needs Rust.</p>
         <pre class="card mt-2 overflow-x-auto p-4 text-sm"><code>{installCommand}</code></pre>
       </div>
       <div class="card min-w-0 p-4 sm:p-6">
