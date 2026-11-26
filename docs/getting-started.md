@@ -15,6 +15,8 @@ cargo install rein --locked
 rein --version
 ```
 
+The current release is 0.1.6.
+
 If you do not want to install it, clone [rein-lang/rein](https://github.com/rein-lang/rein) and run it from that folder with `cargo run -p rein -- <command>`.
 
 ## Install the editor extension
