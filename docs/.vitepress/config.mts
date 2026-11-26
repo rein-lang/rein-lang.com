@@ -41,7 +41,7 @@ const config = withMermaid(
   defineConfig({
     title: 'Rein',
     description:
-      'Rein programs are apps for AI agents. Each step asks the agent a typed question and returns the next instruction, so no step is skipped. Alpha.',
+      'Rein programs are apps for AI agents. Each step asks the agent a typed question and returns the next instruction, so no step is skipped. Beta.',
     base: '/docs/',
     // The host serves `/docs/page` and redirects `/docs/page.html` to it. Link to the final address.
     cleanUrls: true,
