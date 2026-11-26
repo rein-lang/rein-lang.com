@@ -9,7 +9,7 @@ export const faqs: Faq[] = [
   {
     question: "What is Rein?",
     answer:
-      "Rein is a small, strict language for AI agent programs. A program is an app for an agent. It asks typed questions one at a time. Each answer leads to the next step or to an instruction. Rein is in alpha.",
+      "Rein is a small, strict language for AI agent programs. A program is an app for an agent. It asks typed questions one at a time. Each answer leads to the next step or to an instruction. Rein is in beta.",
     link: { href: "/docs/", label: "Read the introduction" },
   },
   {

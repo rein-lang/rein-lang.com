@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Read the install command from Getting started
         id: install
-        run: echo "command=$(grep -m1 '^cargo install --git' docs/getting-started.md)" >> "$GITHUB_OUTPUT"
+        run: echo "command=$(grep -m1 '^cargo install rein' docs/getting-started.md)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         id: rein
         with:
