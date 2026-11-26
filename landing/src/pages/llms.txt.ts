@@ -15,7 +15,7 @@ export const GET: APIRoute = () => {
     "",
     `> ${HOME_DESCRIPTION}`,
     "",
-    "Rein is a small language for the decisions an agent makes. Each decision is a function in its own file. A function asks the agent one question. Each answer leads to an instruction or a pointer to the next function. The `rein` command checks that each case has a next step. It also runs a process one step at a time. Rein is in alpha.",
+    "Rein is a small language for the decisions an agent makes. Each decision is a function in its own file. A function asks the agent one question. Each answer leads to an instruction or a pointer to the next function. The `rein` command checks that each case has a next step. It also runs a process one step at a time. Rein is in beta.",
     "",
     `The full text of all docs pages is in [llms-full.txt](${new URL("/llms-full.txt", SITE_URL).href}).`,
     "",
