@@ -57,8 +57,8 @@ export function docsPages(): DocsPage[] {
   });
 }
 
-// The release tag that Getting started installs, so the site states one version.
+// The release that Getting started names, so the site states one version.
 export function reinVersion(): string | undefined {
   const text = readFileSync(join(DOCS_DIR, "getting-started.md"), "utf8");
-  return text.match(/--tag v(\S+)/)?.[1];
+  return text.match(/current release is (\d+\.\d+\.\d+)/)?.[1];
 }
